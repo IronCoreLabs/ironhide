@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "strict": true,
-        "declaration": true,
         "importHelpers": true,
         "module": "commonjs",
         "outDir": "lib",

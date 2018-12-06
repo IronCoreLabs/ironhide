@@ -113,9 +113,7 @@ export default class Encrypt extends Command {
      * Run both operations to get the source and destinations that we'll be reading/writing from for this operation.
      */
     getSourceAndDestinationStreams(encryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp) {
-        return this.getSourceStream(encryptOp).then((readStream) =>
-            this.getDestinationStream(encryptOp).then((writeStream) => [readStream, writeStream] as [NodeJS.ReadableStream, NodeJS.WritableStream])
-        );
+        return this.getSourceStream(encryptOp).then((readStream) => this.getDestinationStream(encryptOp).then((writeStream) => [readStream, writeStream]));
     }
 
     /**
@@ -125,7 +123,9 @@ export default class Encrypt extends Command {
      */
     getFileEncryptPromise(fileAccessList: DocumentAccessList, encryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp): Promise<EncryptResult> {
         return this.getSourceAndDestinationStreams(encryptOp)
-            .then(([sourceStream, destStream]) => ironnode().document.encryptStream(sourceStream, destStream, {accessList: fileAccessList}))
+            .then(([sourceStream, destStream]) =>
+                ironnode().document.encryptStream(sourceStream as NodeJS.ReadStream, destStream as NodeJS.WriteStream, {accessList: fileAccessList})
+            )
             .then((decryptResult) => {
                 if (!Utils.isStdInFileOperation(encryptOp) && encryptOp.deleteSource) {
                     try {

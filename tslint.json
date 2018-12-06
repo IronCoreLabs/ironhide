@@ -1,5 +1,5 @@
 {
-    "extends": ["tslint:latest", "tslint:recommended", "typestrict"],
+    "extends": ["tslint:latest", "tslint:recommended", "typestrict", "tslint-no-unused-expression-chai"],
     "rules": {
         /*Override stuff in latest*/
         "quotemark": false,

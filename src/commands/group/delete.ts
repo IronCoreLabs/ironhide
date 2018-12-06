@@ -27,6 +27,7 @@ export default class Delete extends Command {
     async verifyGroupName(enteredGroupName: string, groupID: string) {
         let group: GroupDetailResponse;
         try {
+            // tslint:disable-next-line
             group = (await ironnode().group.get(groupID)) as GroupDetailResponse;
             this.log(
                 chalk.yellowBright(
