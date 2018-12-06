@@ -1,0 +1,113 @@
+{
+    "name": "@ironcorelabs/ironhide",
+    "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
+    "version": "0.1.1",
+    "author": "IronCore Labs",
+    "repository": "https://github.com/IronCoreLabs/ironhide",
+    "homepage": "https://github.com/IronCoreLabs/ironhide",
+    "license": "MIT",
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "os": [
+        "darwin",
+        "linux"
+    ],
+    "cpu": [
+        "x64"
+    ],
+    "bin": {
+        "ironhide": "./bin/run"
+    },
+    "files": [
+        "/bin",
+        "/lib",
+        "oclif.manifest.json"
+    ],
+    "scripts": {
+        "postpack": "rm -f oclif.manifest.json",
+        "posttest": "tslint -p test -t stylish",
+        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+        "lint": "tslint -p \"tsconfig.json\" -e \"test/**\" \"src/**/*.ts\"",
+        "unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+        "start": "node bin/run"
+    },
+    "dependencies": {
+        "@ironcorelabs/ironnode": "0.6.0",
+        "@oclif/command": "1.5.6",
+        "@oclif/config": "1.9.0",
+        "@oclif/plugin-autocomplete": "^0.1.0",
+        "@oclif/plugin-help": "2.1.4",
+        "@oclif/plugin-not-found": "1.2.2",
+        "@oclif/plugin-warn-if-update-available": "1.5.4",
+        "chalk": "2.4.1",
+        "cli-table3": "0.5.1",
+        "node-fetch": "2.3.0",
+        "opn": "5.4.0",
+        "tslib": "1.9.3",
+        "wrap-ansi": "4.0.0"
+    },
+    "devDependencies": {
+        "@oclif/dev-cli": "^1",
+        "@oclif/test": "^1",
+        "@oclif/tslint": "^3",
+        "@types/chai": "^4.1.7",
+        "@types/mocha": "^5",
+        "@types/node": "^10.12.10",
+        "@types/node-fetch": "^2.1.4",
+        "@types/opn": "^5.1.0",
+        "@types/wrap-ansi": "^3.0.0",
+        "chai": "^4",
+        "globby": "^8",
+        "mocha": "^5",
+        "nyc": "^13",
+        "ts-node": "^7",
+        "tslint": "^5",
+        "typescript": "^3.1.6",
+        "typestrict": "^1.0.1"
+    },
+    "oclif": {
+        "commands": "./lib/commands",
+        "hooks": {
+            "prerun": [
+                "./lib/hooks/initializeSDK",
+                "./lib/hooks/checkArgumentSize"
+            ]
+        },
+        "topics": {
+            "help": {
+                "description": "Display help information."
+            },
+            "autocomplete": {
+                "description": "Display autocomplete installation instructions for your shell."
+            },
+            "file": {
+                "description": "Encrypt and decrypt files, display information about encrypted files, and grant or revoke access to encrypted files."
+            },
+            "group": {
+                "description": "Manage your cryptographic groups. Display groups you're a part of, create new groups, and manage group admins and members."
+            },
+            "user": {
+                "description": "Manage your devices and retrieve information about other users."
+            }
+        },
+        "bin": "ironhide",
+        "plugins": [
+            "@oclif/plugin-help",
+            "@oclif/plugin-not-found",
+            "@oclif/plugin-autocomplete",
+            "@oclif/plugin-warn-if-update-available"
+        ],
+        "warn-if-update-available": {
+            "timeoutInDays": 7
+        }
+    },
+    "prettier": {
+        "printWidth": 160,
+        "tabWidth": 4,
+        "trailingComma": "es5",
+        "bracketSpacing": false,
+        "jsxBracketSameLine": true,
+        "arrowParens": "always"
+    }
+}
