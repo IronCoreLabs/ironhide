@@ -95,4 +95,3 @@ The user commands have two purposes: 1) manage your own authorized devices and 2
 IronHide is licensed under the [GNU Affero General Public License](LICENSE). We also offer commercial licenses - [email](mailto:info@ironcorelabs.com) for more information.
 
 Copyright (c)  2018-present  IronCore Labs, Inc. All rights reserved.
-
