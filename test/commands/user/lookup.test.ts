@@ -13,7 +13,7 @@ function getMockedUserListResponse(mock: any) {
 }
 
 describe("userLookup", () => {
-    describe("successful display", () => {
+    describe("successful display of user public keys", () => {
         hookBypass
             .stdout()
             .stub(SDK, "ironnode", () =>
@@ -25,7 +25,7 @@ describe("userLookup", () => {
                     })
                 )
             )
-            .it("displays expected keys and errors", async (output) => {
+            .it("displays expected keys and missing users", async (output) => {
                 await new Lookup(["bob@example.com john@example.com mike@example.com"], null as any).run();
                 expect(output.stdout).to.contain("bobx");
                 expect(output.stdout).to.contain("boby");
