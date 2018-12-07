@@ -31,7 +31,8 @@
         "lint": "tslint -p \"tsconfig.json\" -e \"test/**\" \"src/**/*.ts\"",
         "unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
         "test": "yarn run lint && yarn run unit",
-        "start": "node bin/run"
+        "start": "node bin/run",
+        "checkcov": "nyc check-coverage --lines 80 --functions 80 --branches 70"
     },
     "dependencies": {
         "@ironcorelabs/ironnode": "0.6.0",
