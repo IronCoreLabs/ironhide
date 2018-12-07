@@ -157,7 +157,7 @@
     debug "^4.1.0"
     semver "^5.6.0"
 
-"@oclif/command@^1.4.31", "@oclif/command@^1.5.3", "@oclif/command@^1.5.4":
+"@oclif/command@^1.5.3", "@oclif/command@^1.5.4":
   version "1.5.4"
   resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.5.4.tgz#659456def965454e1c0115e8265533980eefb200"
   integrity sha512-R76o9r2nMYLmpiRyEGDyIlwWIs5n+7aL6TncnqHCtjk990bN4ax5GyKf1S/+vw+2GswwOzNJ/wvxy5gbB3QZbg==
@@ -175,7 +175,7 @@
     debug "^4.1.0"
     tslib "^1.9.3"
 
-"@oclif/config@^1.6.22", "@oclif/config@^1.8.7":
+"@oclif/config@^1.8.7":
   version "1.8.8"
   resolved "https://registry.yarnpkg.com/@oclif/config/-/config-1.8.8.tgz#fc29da619c9e3dcce6ca786dde3bf65e1875874d"
   integrity sha512-W+cethXtyFT34JlwzWYVEGNt64vaU9mYI/GYb3ELM+FJIk+N9KGMBNvqiE/MUoiWpvsj5GufrIA8XES7inCVAQ==
@@ -224,20 +224,6 @@
     "@oclif/linewrap" "^1.0.0"
     chalk "^2.4.1"
     tslib "^1.9.3"
-
-"@oclif/plugin-autocomplete@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-0.1.0.tgz#3e813277deaa5f9fc6a67878a20bd337ee3776ec"
-  integrity sha512-Dz2dGyBoOUcv6/gqr9qaG7KTIkYxILL0MvMVwlhkS0f6UqCsh8fC3adYTr8BeIPQmUqWkACtC7bYp9DyQ8m2Jw==
-  dependencies:
-    "@oclif/command" "^1.4.31"
-    "@oclif/config" "^1.6.22"
-    "@types/fs-extra" "^5.0.2"
-    chalk "^2.4.1"
-    cli-ux "^4.4.0"
-    debug "^3.1.0"
-    fs-extra "^6.0.1"
-    moment "^2.22.1"
 
 "@oclif/plugin-help@2.1.4":
   version "2.1.4"
@@ -321,13 +307,6 @@
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.7.tgz#1b8e33b61a8c09cbe1f85133071baa0dbf9fa71a"
   integrity sha512-2Y8uPt0/jwjhQ6EiluT0XCri1Dbplr0ZxfFXUz+ye13gaqE8u5gL5ppao1JrUYr9cIip5S6MvQzBS7Kke7U9VA==
-
-"@types/fs-extra@^5.0.2":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.4.tgz#b971134d162cc0497d221adde3dbb67502225599"
-  integrity sha512-DsknoBvD8s+RFfSGjmERJ7ZOP1HI0UZRA3FSI+Zakhrc/Gy26YQsLI+m5V5DHxroHRJqCDLKJp7Hixn8zyaF7g==
-  dependencies:
-    "@types/node" "*"
 
 "@types/lodash@^4.14.116":
   version "4.14.117"
@@ -715,7 +694,7 @@ cli-table3@0.5.1:
   optionalDependencies:
     colors "^1.1.2"
 
-cli-ux@^4.4.0, cli-ux@^4.9.0:
+cli-ux@^4.9.0:
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-4.9.1.tgz#3fce340f4d86f4e9249242d0c6a6adab10da4222"
   integrity sha512-0CPt5GrpZl/iDpiHnhs7ReqX3a8iNBG6vYvwsnFRfQgD/jEyLZfaoChybKWFSg9pQ5ZisKOfA0cLoNlKIk2Lvw==
@@ -1989,11 +1968,6 @@ mock-stdin@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/mock-stdin/-/mock-stdin-0.3.1.tgz#c657d9642d90786435c64ca5e99bbd4d09bd7dd3"
   integrity sha1-xlfZZC2QeGQ1xkyl6Zu9TQm9fdM=
-
-moment@^2.22.1:
-  version "2.22.2"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
-  integrity sha1-PCV/mDn8DpP/UxSWMiOeuQeD/2Y=
 
 ms@2.0.0:
   version "2.0.0"

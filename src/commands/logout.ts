@@ -20,6 +20,10 @@ export default class Logout extends Command {
             return this.exit(0);
         }
         try {
+            const SDK = ironnode();
+            if (!SDK) {
+                throw new Error(); //No message for this error as we don't display it below in the catch
+            }
             await ironnode().user.deleteDevice();
         } catch {
             this.log(chalk.red("Failed to deauthroize device keys from key server, but still attempting to delete local device keys."));

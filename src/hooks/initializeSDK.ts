@@ -100,8 +100,13 @@ const hook: Hook<"prerun"> = async ({argv, Command, config}) => {
         const SDK = await initialize(deviceKeys.accountID, deviceKeys.segmentID, deviceKeys.deviceKeys.privateKey, deviceKeys.signingKeys.privateKey);
         set(SDK);
     } catch (e) {
-        console.error(e.message);
-        throw new CLIError("Failed to authenticate. Try logging out and logging back in again to generate a new set of keys.");
+        //If init fails, throw an error unless the user is currently running the logout operation. Running the logout operation shouldn't fail to try and delete
+        //the users local keys even if can't init can't be run. The logout command currently checks whether the SDK init completed before trying to delete the
+        //device keys from the server.
+        if (Command.id !== "logout") {
+            console.error(e.message);
+            throw new CLIError("Failed to authenticate. Try logging out and logging back in again to generate a new set of keys.");
+        }
     }
 };
 
