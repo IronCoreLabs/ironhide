@@ -27,10 +27,12 @@
     "scripts": {
         "postpack": "rm -f oclif.manifest.json",
         "posttest": "tslint -p test -t stylish",
-        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest",
         "lint": "tslint -p \"tsconfig.json\" -e \"test/**\" \"src/**/*.ts\"",
         "unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-        "start": "node bin/run"
+        "test": "yarn run lint && yarn run unit",
+        "start": "node bin/run",
+        "checkcov": "nyc check-coverage --lines 80 --functions 80 --branches 70"
     },
     "dependencies": {
         "@ironcorelabs/ironnode": "0.6.0",
@@ -51,18 +53,23 @@
         "@oclif/test": "^1",
         "@oclif/tslint": "^3",
         "@types/chai": "^4.1.7",
+        "@types/chai-as-promised": "^7.1.0",
         "@types/mocha": "^5",
-        "@types/node": "^10.12.10",
+        "@types/node": "^10.12.12",
         "@types/node-fetch": "^2.1.4",
         "@types/opn": "^5.1.0",
         "@types/wrap-ansi": "^3.0.0",
         "chai": "^4",
+        "chai-as-promised": "^7.1.1",
         "globby": "^8",
         "mocha": "^5",
+        "nock": "^10.0.3",
         "nyc": "^13",
+        "sinon": "^7.1.1",
         "ts-node": "^7",
         "tslint": "^5",
-        "typescript": "^3.1.6",
+        "tslint-no-unused-expression-chai": "^0.1.4",
+        "typescript": "^3.2.1",
         "typestrict": "^1.0.1"
     },
     "oclif": {

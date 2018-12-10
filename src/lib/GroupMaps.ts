@@ -50,10 +50,11 @@ function createGroupMapByIndex(groupResult: GroupMetaResponse[]) {
             return maps;
         }
         const groupName = group.groupName;
-        if (Array.isArray(maps.groupsByName[groupName])) {
-            (maps.groupsByName[groupName] as GroupMetaResponse[]).push(group);
-        } else if (maps.groupsByName[groupName]) {
-            (maps.groupsByName[groupName] as GroupMetaResponse[]) = [maps.groupsByName[groupName] as GroupMetaResponse, group];
+        const groupAtIndex = maps.groupsByName[groupName];
+        if (Array.isArray(groupAtIndex)) {
+            groupAtIndex.push(group);
+        } else if (groupAtIndex) {
+            maps.groupsByName[groupName] = [groupAtIndex, group];
         } else {
             maps.groupsByName[groupName] = group;
         }
@@ -93,7 +94,7 @@ async function getGroupChoice(size: number): Promise<number> {
     }
     const numericalChoice = parseInt(choice);
     if (numericalChoice && numericalChoice > 0 && numericalChoice <= size) {
-        return numericalChoice - 1;
+        return Promise.resolve(numericalChoice - 1);
     }
     console.log(chalk.red("Invalid option, please try again."));
     return getGroupChoice(size);
@@ -113,14 +114,27 @@ async function getUsersGroupChoice(groupName: string, groups: GroupMetaResponse[
             groupDetailsTable.push([index + 1, group.groupID, group.isAdmin ? check : nope, group.isMember ? check : nope]);
         });
         console.log(groupDetailsTable.toString());
-        getGroupChoice(groups.length).then((groupIndexChoice) => resolve(groups[groupIndexChoice].groupID));
+        getGroupChoice(groups.length)
+            .then((groupIndexChoice) => resolve(groups[groupIndexChoice].groupID))
+            .catch(() => process.exit(-1));
     });
+}
+
+/**
+ * Clear group list cache. Used only within unit tests.
+ */
+export function clearCache() {
+    hasRequestedGroups = false;
+    groupsByIndexCache = {
+        groupsByName: {},
+        groupsByID: {},
+    };
 }
 
 /**
  * Get a map from group ID to group information for all the groups the user is a part of.
  */
-export async function getGroupMaps() {
+export async function getGroupMaps(): Promise<[GroupsByName, GroupsByID]> {
     let groupsByID: GroupsByID;
     let groupsByName: GroupsByName;
     try {
@@ -129,7 +143,7 @@ export async function getGroupMaps() {
         console.log(e);
         throw new CLIError("Unable to make request to lookup group information.");
     }
-    return [groupsByName, groupsByID] as [GroupsByName, GroupsByID];
+    return [groupsByName, groupsByID];
 }
 
 /**
@@ -138,7 +152,7 @@ export async function getGroupMaps() {
  */
 export async function convertGroupNamesToIDs(groupNames: string[] | undefined, groupsByName: GroupsByName) {
     if (!groupNames || !groupNames.length) {
-        return [];
+        return Promise.resolve([]);
     }
 
     //Iterate through each group and build up a Promise chain of all the group names to IDs. The promises will all be auto resolved unless
@@ -173,7 +187,7 @@ export async function convertGroupNamesToIDs(groupNames: string[] | undefined, g
  */
 export async function getGroupIDFromName(groupName: string) {
     if (isGroupID(groupName)) {
-        return groupName.substring(GROUP_ID_PREFIX.length);
+        return Promise.resolve(groupName.substring(GROUP_ID_PREFIX.length));
     }
     let groupsByName: GroupsByName;
     try {
@@ -188,7 +202,7 @@ export async function getGroupIDFromName(groupName: string) {
     if (isMultipleGroups(groupAtIndex)) {
         return getUsersGroupChoice(groupName, groupAtIndex);
     }
-    return groupAtIndex.groupID;
+    return Promise.resolve(groupAtIndex.groupID);
 }
 
 /**

@@ -51,9 +51,9 @@ export default class DeviceDelete extends Command {
         try {
             devices = await ironnode().user.listDevices();
         } catch (e) {
-            throw new Error("Failed to make request to delete device keys.");
+            throw new Error("Failed to make request to get current device keys.");
         }
-        const currentDevice = (devices! as UserDeviceListResponse).result.find((device) => device.isCurrentDevice);
+        const currentDevice = devices.result.find((device) => device.isCurrentDevice);
         if (currentDevice && deviceIDs.includes(`${currentDevice.id}`)) {
             throw new Error("Attempting to delete keys for the current device. Use the 'logout' command instead.");
         }
@@ -64,8 +64,9 @@ export default class DeviceDelete extends Command {
         try {
             await this.checkDeletionOfCurrentDevice(argv);
         } catch (e) {
-            this.error(chalk.red(e.message));
+            return this.error(chalk.red(e.message));
         }
+
         const deviceDeletes = argv.map((deviceID) => this.getDeviceDeletePromise(deviceID));
         return Promise.all(deviceDeletes).then((resultList) => {
             let successfulCount = 0;

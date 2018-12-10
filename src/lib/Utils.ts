@@ -83,7 +83,7 @@ export function normalizePathToFile(file: string) {
  * Attempt to delete the provided partial file path. Will throw an exception if the file isn't writable and cannot be deleted.
  */
 export function deleteFile(filePath: string) {
-    const sourceFile = normalizePathToFile(filePath as string);
+    const sourceFile = normalizePathToFile(filePath);
     fs.accessSync(sourceFile, fs.constants.W_OK);
     fs.unlinkSync(sourceFile);
 }

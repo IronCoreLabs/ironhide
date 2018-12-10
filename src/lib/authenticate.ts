@@ -110,37 +110,39 @@ export default async function authenticate() {
     return new Promise<string>((resolve, reject) => {
         const server = http.createServer(async (request, response) => {
             const {pathname, query} = url.parse(request.url as string, true);
-            //We only need to support a single endpoint
-            if (pathname === "/authorize") {
-                //Check that we got a code and that the state variable is the same to prevent CSRF
-                if (typeof query.code !== "string" || query.state !== authFlowTokens.state) {
-                    response.statusCode = 403;
-                    return response.end("Error with authorization token. Please try again.");
-                }
+            //We only need to support a single endpoint, otherwise show a 404
+            if (pathname !== "/authorize") {
+                response.statusCode = 404;
+                return response.end("Not Found");
+            }
+            //Check that we got a code and that the state variable is the same to prevent CSRF
+            if (typeof query.code !== "string" || query.state !== authFlowTokens.state) {
+                response.statusCode = 403;
+                return response.end("Error with authorization token. Please try again.");
+            }
+            try {
                 //Now that we have a token, exchange it for a JWT
                 const auth0Tokens = await getJwtFromAuthorizationCode(query.code, authFlowTokens.verifier);
-                try {
-                    verifyJwtSubject(auth0Tokens.id_token);
-                } catch (e) {
-                    return reject(e);
-                }
+                verifyJwtSubject(auth0Tokens.id_token);
                 response.statusCode = 302;
                 response.setHeader("Location", "https://github.com/IronCoreLabs/ironhide/wiki/Authentication-Successful!");
                 response.end();
-                resolve(auth0Tokens.id_token);
                 //We've got our JWT, close down our local server
                 server.close();
+                resolve(auth0Tokens.id_token);
+            } catch (e) {
+                server.close(); //Don't leave server open on error
+                return reject(e);
             }
-            //If any other endpoint is hit that isn't the authorize endpoint, show a 404.
-            response.statusCode = 400;
-            response.end("Not Found");
         });
         //Startup the local server and once it's up and running, open up the users browser to Auth0 to start the login process
         server.listen(LOCAL_PORT, (err: Error) => {
             if (err) {
-                reject(new Error(`Failed to startup local server to handle authentication workflow on port ${LOCAL_PORT}`));
+                server.close(); //Don't leave server open on error
+                return reject(new Error(`Failed to startup local server to handle authentication workflow on port ${LOCAL_PORT}`));
             }
             opn(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
+                server.close(); //Don't leave server open on error
                 throw new CLIError("Failed to kick of authentication workflow. Please try again");
             });
         });
