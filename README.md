@@ -4,6 +4,7 @@ IronHide
 Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.
 
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Fironhide.svg)](https://www.npmjs.com/package/@ironcorelabs/ironhide)
+[![Build Status](https://travis-ci.org/IronCoreLabs/ironhide.svg?branch=master)](https://travis-ci.org/IronCoreLabs/ironhide)
 
 ![](https://media.giphy.com/media/uZDTYzxdYzmbS/giphy.gif)
 
