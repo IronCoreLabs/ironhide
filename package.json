@@ -1,7 +1,7 @@
 {
     "name": "@ironcorelabs/ironhide",
     "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
-    "version": "0.1.1",
+    "version": "0.5.1",
     "author": "IronCore Labs",
     "repository": "https://github.com/IronCoreLabs/ironhide",
     "homepage": "https://github.com/IronCoreLabs/ironhide",
@@ -38,7 +38,6 @@
         "@ironcorelabs/ironnode": "0.6.0",
         "@oclif/command": "1.5.6",
         "@oclif/config": "1.9.0",
-        "@oclif/plugin-autocomplete": "^0.1.0",
         "@oclif/plugin-help": "2.1.4",
         "@oclif/plugin-not-found": "1.2.2",
         "@oclif/plugin-warn-if-update-available": "1.5.4",
@@ -85,9 +84,6 @@
             "help": {
                 "description": "Display help information."
             },
-            "autocomplete": {
-                "description": "Display autocomplete installation instructions for your shell."
-            },
             "file": {
                 "description": "Encrypt and decrypt files, display information about encrypted files, and grant or revoke access to encrypted files."
             },
@@ -102,7 +98,6 @@
         "plugins": [
             "@oclif/plugin-help",
             "@oclif/plugin-not-found",
-            "@oclif/plugin-autocomplete",
             "@oclif/plugin-warn-if-update-available"
         ],
         "warn-if-update-available": {

@@ -66,6 +66,8 @@ The first step in setting up IronHide is to authenticate yourself to access the 
 
 When you run `ironhide login`, we'll open a browser window on your machine where you can authenticate via Auth0. Upon successful authentication, we'll generate a master public-private key pair that is tied to your email address. The public key will be uploaded to the IronCore key server and will be discoverable by anybody else who has your email. We'll then ask you for a passphrase which is used to encrypt and protect your private key. Once your private key is secured, we'll upload the encrypted key to the IronCore key server for escrow storage. Nobody else will be able to access your encrypted private key on the IronCore key server except for you. Your private master key is only ever used to approve devices on which you want to use IronHide. Anytime you want to re-authenticate into IronHide, or you want to setup IronHide on another machine, you'll need to enter this passphrase to decrypt your private master key.
 
+**The passphrase you provide upon account creation is required to authorize devices for your account. Don't forget your passphrase! If you forget your passphrase there is no recovery option!**
+
 Once your master public and private keys are setup and escrowed, we'll then generate a separate public-private key pair (your device keys) for your computer. This device key pair will never leave your machine and will be stored in a `.iron` directory in your home directory. You'll also be asked to give a name to these device keys. After your device keys are successfully generated and stored, you'll be able to run any of the various commands provided by IronHide.
 
 ## File Operations
@@ -90,9 +92,12 @@ IronHide manages your collection of devices (like laptops or desktops) as if the
 
 The user commands have two purposes: 1) manage your own authorized devices and 2) look up other users in the system by email address. Use `ironhide user -h` to see the list of user and device commands available, including descriptions and examples.
 
+# Technology
+
+IronHide is built using the [IronCore Labs IronNode SDK](https://github.com/IronCoreLabs/ironnode). If you're interested in learning about the underlying technology that powers IronHide, visit our [documentation site](https://docs.ironcorelabs.com) or [contact us](https://ironcorelabs.com) to learn more.
+
 # License
 
 IronHide is licensed under the [GNU Affero General Public License](LICENSE). We also offer commercial licenses - [email](mailto:info@ironcorelabs.com) for more information.
 
 Copyright (c)  2018-present  IronCore Labs, Inc. All rights reserved.
-
