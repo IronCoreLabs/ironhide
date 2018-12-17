@@ -65,16 +65,14 @@ export default class Info extends Command {
      * Take the list of file meta results and groups by ID and create the display table, one row for each file we're getting information on.
      */
     buildResultTable(fileMeta: FileMetaResult[], groupsByID: GroupMaps.GroupsByID) {
-        const resultTable = createDisplayTable(["File", "ID", "Association", "Users with access", "Groups with access"]);
+        const resultTable = createDisplayTable(["File", "Users with access", "Groups with access"]);
         fileMeta.forEach((fileInfo) => {
             if (isError(fileInfo)) {
                 this.log(chalk.red(fileInfo.message));
             } else {
-                const {documentID, association, visibleTo} = fileInfo.metadata;
+                const {visibleTo} = fileInfo.metadata;
                 resultTable.push([
                     basename(fileInfo.source),
-                    documentID,
-                    association,
                     visibleTo.users.map((user) => user.id).join("\n"),
                     visibleTo.groups.map((group) => `${groupsByID[group.id].groupName} (${group.id})`).join("\n"),
                 ]);

@@ -35,7 +35,7 @@ export default class Lookup extends Command {
             const userPublicKey = userKeys[userID];
             table.push([
                 userID,
-                userPublicKey !== null ? chalk.green(`x: ${userPublicKey.x}\ny: ${userPublicKey.y}`) : chalk.red("User hasn't created an account yet."),
+                userPublicKey !== null ? chalk.green(`${userPublicKey.x}\n${userPublicKey.y}`) : chalk.red("User hasn't created an account yet."),
             ]);
         });
 

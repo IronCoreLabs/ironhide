@@ -1,9 +1,18 @@
 import {Hook, IConfig} from "@oclif/config";
-import {CLIError} from "@oclif/errors";
+import {handle, CLIError} from "@oclif/errors";
 import * as fs from "fs";
 import {initialize, DeviceDetails} from "@ironcorelabs/ironnode";
 import {validateExistingKeys, normalizePathToFile, isFileReadable} from "../lib/Utils";
 import {set} from "../lib/SDK";
+
+/**
+ * All errors that occur during various oclif commands use this.error() to report the error. This ends up throwing a new error which has
+ * some nice formatting. However, sometimes we want to call this.error() from within the catch() block of a Promise when things fail. Because
+ * this ends up throwing another error, we trigger the Node Unhandled Promise Rejection error issue and a bunch of unnecessary content gets
+ * dumped to the console. So to handle that we subscribe to that event and use the internal oclif error handling to print the error in the same
+ * way that all other this.error calls happen.
+ */
+process.on("unhandledRejection", (error) => handle(new CLIError(error)));
 
 /**
  * Check the command being run and various flags to see if we shouldn't run SDK initialization prior to this command running.
