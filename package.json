@@ -1,7 +1,7 @@
 {
     "name": "@ironcorelabs/ironhide",
     "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "author": "IronCore Labs",
     "repository": "https://github.com/IronCoreLabs/ironhide",
     "homepage": "https://github.com/IronCoreLabs/ironhide",
@@ -26,8 +26,7 @@
     ],
     "scripts": {
         "postpack": "rm -f oclif.manifest.json",
-        "posttest": "tslint -p test -t stylish",
-        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest",
+        "prepack": "yarn test && rm -rf lib && tsc -b && oclif-dev manifest",
         "lint": "tslint -p \"tsconfig.json\" -e \"test/**\" \"src/**/*.ts\"",
         "unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
         "test": "yarn run lint && yarn run unit",
