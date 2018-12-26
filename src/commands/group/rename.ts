@@ -47,7 +47,7 @@ export default class Rename extends Command {
 
     async run() {
         const {args} = this.parse(Rename);
-        if (args.newGroupName.includes(",") || args.newGroupName.includes(GroupMaps.GROUP_ID_PREFIX)) {
+        if (args.newGroupName.includes(",") || args.newGroupName.includes("^")) {
             return this.error("Group names cannot contain commas or carets.");
         }
         await this.checkGroupExists(args.newGroupName);
