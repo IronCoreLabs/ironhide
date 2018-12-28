@@ -7,14 +7,18 @@ chai.use(chaiAsPromised);
 
 describe("checkArgumentSize", () => {
     describe("throws errors", () => {
-        fancy.it("throws CLI error when file command has a lot of arguments", () => {
-            const hookArgs = {
-                Command: {id: "file:encrypt"},
-                argv: new Array(80),
-            };
-
-            expect(() => checkArgumentSize.call(null as any, hookArgs as any)).to.throw(CLIError);
-        });
+        fancy
+            .do(() => {
+                const hookArgs = {
+                    Command: {id: "file:encrypt"},
+                    argv: new Array(80),
+                };
+                checkArgumentSize.call(null as any, hookArgs as any);
+            })
+            .catch((err) => {
+                expect(err).to.be.instanceOf(CLIError);
+            })
+            .it("throws CLI error when file command has a lot of arguments");
     });
 
     describe("doesnt throw under various conditions", () => {

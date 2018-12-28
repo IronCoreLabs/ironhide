@@ -51,67 +51,64 @@ describe("initializeSDK", () => {
             config: {home: "/path/to/home"},
         };
 
-        sdkMock.stub(Utils, "isFileReadable", sinon.stub().returns(false)).it("displays error when no device keys", async () => {
-            try {
+        sdkMock
+            .stub(Utils, "isFileReadable", sinon.stub().returns(false))
+            .do(async () => {
                 await (initializeSDK as any)(fileEncryptCommand);
-                expect.fail("Should fail when device keys cannot be read.");
-            } catch (e) {
-                expect(e.message).to.contain("No device keys found");
-            }
-        });
+            })
+            .catch((error) => {
+                expect(error.message).to.contain("No device keys found");
+            })
+            .it("displays error when no device keys");
 
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(false))
-            .it("fails if key file cannot be read", async () => {
-                try {
-                    await (initializeSDK as any)(fileEncryptCommand);
-                    expect.fail("Should fail when device keys are not parsable.");
-                } catch (e) {
-                    expect(e.message).to.contain("could not be successfully parsed");
-                }
-            });
+            .do(async () => {
+                await (initializeSDK as any)(fileEncryptCommand);
+            })
+            .catch((e) => {
+                expect(e.message).to.contain("could not be successfully parsed");
+            })
+            .it("fails if key file cannot be read");
 
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(true))
             .stub(fs, "accessSync", sinon.stub().throws(new Error("File is not readable")))
-            .it("fails if key file doesnt have read permissions", async () => {
-                try {
-                    await (initializeSDK as any)(fileEncryptCommand);
-                    expect.fail("Should fail when device keys are not parsable.");
-                } catch (e) {
-                    expect(e.message).to.contain("Failed to properly parse device keys");
-                }
-            });
+            .do(async () => {
+                await (initializeSDK as any)(fileEncryptCommand);
+            })
+            .catch((e) => {
+                expect(e.message).to.contain("Failed to properly parse device keys");
+            })
+            .it("fails if key file doesnt have read permissions");
 
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(true))
             .stub(fs, "accessSync", sinon.stub())
             .stub(fs, "readFileSync", sinon.stub().throws(new Error("Fail could not be read")))
-            .it("fails if readFileSync on device key file fails", async () => {
-                try {
-                    await (initializeSDK as any)(fileEncryptCommand);
-                    expect.fail("Should fail when device keys are not parsable.");
-                } catch (e) {
-                    expect(e.message).to.contain("Failed to properly parse device keys");
-                }
-            });
+            .do(async () => {
+                await (initializeSDK as any)(fileEncryptCommand);
+            })
+            .catch((e) => {
+                expect(e.message).to.contain("Failed to properly parse device keys");
+            })
+            .it("fails if readFileSync on device key file fails");
 
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(true))
             .stub(fs, "accessSync", sinon.stub())
             .stub(fs, "readFileSync", sinon.stub().returns("not JSON!"))
-            .it("fails if key file has invalid JSON", async () => {
-                try {
-                    await (initializeSDK as any)(fileEncryptCommand);
-                    expect.fail("Should fail when device keys are not parsable.");
-                } catch (e) {
-                    expect(e.message).to.contain("Failed to properly parse device keys");
-                }
-            });
+            .do(async () => {
+                await (initializeSDK as any)(fileEncryptCommand);
+            })
+            .catch((e) => {
+                expect(e.message).to.contain("Failed to properly parse device keys");
+            })
+            .it("fails if key file has invalid JSON");
     });
 
     describe("attempts to read key file from default location", () => {
@@ -148,14 +145,14 @@ describe("initializeSDK", () => {
         keyReadMock
             .stderr()
             .stub(IronNode, "initialize", sinon.stub().rejects(new Error("Init failed")))
-            .it("displays error messages from init", async (output) => {
-                try {
-                    await (initializeSDK as any)(fileEncryptCommand);
-                    expect.fail("Should throw error when SDK initialization fails.");
-                } catch (e) {
-                    expect(e).to.be.instanceOf(CLIError);
-                    expect(output.stderr).to.contain("Init failed");
-                }
+            .do(async () => {
+                await (initializeSDK as any)(fileEncryptCommand);
+            })
+            .catch((e) => {
+                expect(e).to.be.instanceOf(CLIError);
+            })
+            .it("displays error messages from init", (output) => {
+                expect(output.stderr).to.contain("Init failed");
             });
 
         keyReadMock
@@ -167,98 +164,92 @@ describe("initializeSDK", () => {
                     argv: [],
                     config: {home: "/path/to/home"},
                 };
-                try {
-                    await (initializeSDK as any)(logoutCommand);
-                    expect(output.stderr).to.equal("");
-                } catch (e) {
-                    expect.fail("Should not throw when user is logging out and SDK init fails.");
-                }
+                await (initializeSDK as any)(logoutCommand);
+                expect(output.stderr).to.equal("");
             });
     });
 
     describe("keyfile flag parsing", () => {
-        sdkMock.it("fails when -k with no value", async () => {
-            const customKeyFileCommand: any = {
-                Command: {id: "file:encrypt"},
-                argv: ["-k"],
-                config: {home: "/path/to/home"},
-            };
-
-            try {
+        sdkMock
+            .do(async () => {
+                const customKeyFileCommand: any = {
+                    Command: {id: "file:encrypt"},
+                    argv: ["-k"],
+                    config: {home: "/path/to/home"},
+                };
                 await (initializeSDK as any)(customKeyFileCommand);
-                expect.fail();
-            } catch (e) {
+            })
+            .catch((e) => {
                 expect(e).to.be.instanceOf(CLIError);
                 expect(e.message).to.contain("Flag --keyfile expects a value.");
-            }
-        });
+            })
+            .it("fails when -k with no value");
 
-        sdkMock.it("fails when --keyfile with no value", async () => {
-            const customKeyFileCommand: any = {
-                Command: {id: "file:encrypt"},
-                argv: ["--keyfile"],
-                config: {home: "/path/to/home"},
-            };
-            try {
+        sdkMock
+            .do(async () => {
+                const customKeyFileCommand: any = {
+                    Command: {id: "file:encrypt"},
+                    argv: ["--keyfile"],
+                    config: {home: "/path/to/home"},
+                };
                 await (initializeSDK as any)(customKeyFileCommand);
-                expect.fail();
-            } catch (e) {
+            })
+            .catch((e) => {
                 expect(e).to.be.instanceOf(CLIError);
                 expect(e.message).to.contain("Flag --keyfile expects a value.");
-            }
-        });
+            })
+            .it("fails when --keyfile with no value");
 
-        sdkMock.it("fails when --keyfile= with no value", async () => {
-            const customKeyFileCommand: any = {
-                Command: {id: "file:encrypt"},
-                argv: ["--keyfile="],
-                config: {home: "/path/to/home"},
-            };
-            try {
+        sdkMock
+            .do(async () => {
+                const customKeyFileCommand: any = {
+                    Command: {id: "file:encrypt"},
+                    argv: ["--keyfile="],
+                    config: {home: "/path/to/home"},
+                };
                 await (initializeSDK as any)(customKeyFileCommand);
-                expect.fail();
-            } catch (e) {
+            })
+            .catch((e) => {
                 expect(e).to.be.instanceOf(CLIError);
                 expect(e.message).to.contain("Flag --keyfile expects a value.");
-            }
-        });
+            })
+            .it("fails when --keyfile= with no value");
     });
 
     describe("custom key file location", () => {
-        sdkMock.stub(Utils, "isFileReadable", sinon.stub().returns(false)).it("throws error if custom key file cannot be read", async () => {
-            const customKeyFileCommand: any = {
-                Command: {id: "file:encrypt"},
-                argv: ["-k", "/path/to/custom/keyfile"],
-                config: {home: "/path/to/home"},
-            };
-
-            try {
+        sdkMock
+            .stub(Utils, "isFileReadable", sinon.stub().returns(false))
+            .do(async () => {
+                const customKeyFileCommand: any = {
+                    Command: {id: "file:encrypt"},
+                    argv: ["-k", "/path/to/custom/keyfile"],
+                    config: {home: "/path/to/home"},
+                };
                 await (initializeSDK as any)(customKeyFileCommand);
-                expect.fail();
-            } catch (e) {
+            })
+            .catch((e) => {
                 expect(e).to.be.instanceOf(CLIError);
                 expect(e.message).to.contain("either doesn't exist or cannot be read");
-            }
-        });
+            })
+            .it("throws error if custom key file cannot be read");
 
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(fs, "lstatSync", sinon.stub().returns({isFile: () => false}))
-            .it("throws error if custom key file cannot be read", async () => {
+            .do(async () => {
                 const customKeyFileCommand: any = {
                     Command: {id: "file:encrypt"},
                     argv: ["-flag1", "--flag2", "flag2Val", "--keyfile", "/path/to/custom/keyfile"],
                     config: {home: "/path/to/home"},
                 };
+                await (initializeSDK as any)(customKeyFileCommand);
+            })
+            .catch((e) => {
+                expect(e).to.be.instanceOf(CLIError);
+                expect(e.message).to.contain("does not appear to be a file");
+            })
+            .it("throws error if custom key file cannot be read");
 
-                try {
-                    await (initializeSDK as any)(customKeyFileCommand);
-                    expect.fail();
-                } catch (e) {
-                    expect(e).to.be.instanceOf(CLIError);
-                    expect(e.message).to.contain("does not appear to be a file");
-                }
-            });
         sdkMock
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(true))
@@ -283,17 +274,12 @@ describe("initializeSDK", () => {
                     config: {home: "/path/to/home"},
                 };
 
-                try {
-                    await (initializeSDK as any)(customKeyFileCommand);
-                    sinon.assert.calledWithExactly(fs.readFileSync as any, "/path/to/custom/keyfile", "utf8");
-                    sinon.assert.calledWithExactly(fs.accessSync as any, "/path/to/custom/keyfile", fs.constants.R_OK);
-                    sinon.assert.calledWithExactly(fs.lstatSync as any, "/path/to/custom/keyfile");
-                    sinon.assert.calledWithExactly(IronNode.initialize as any, "actID", "seg", "devPrivKey", "sigPrivKey");
-                    sinon.assert.calledWithExactly(SDK.set as any, "SDK Object");
-                } catch (e) {
-                    console.log(e);
-                    expect.fail("Should init successfully with readable custom key file.");
-                }
+                await (initializeSDK as any)(customKeyFileCommand);
+                sinon.assert.calledWithExactly(fs.readFileSync as any, "/path/to/custom/keyfile", "utf8");
+                sinon.assert.calledWithExactly(fs.accessSync as any, "/path/to/custom/keyfile", fs.constants.R_OK);
+                sinon.assert.calledWithExactly(fs.lstatSync as any, "/path/to/custom/keyfile");
+                sinon.assert.calledWithExactly(IronNode.initialize as any, "actID", "seg", "devPrivKey", "sigPrivKey");
+                sinon.assert.calledWithExactly(SDK.set as any, "SDK Object");
             });
     });
 });
