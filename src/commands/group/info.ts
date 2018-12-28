@@ -1,7 +1,8 @@
 import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
+import * as Table from "cli-table3";
 import {GroupMetaResponse, GroupDetailResponse} from "@ironcorelabs/ironnode";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
+import {buildCommandSampleText} from "../../lib/Utils";
 import {ironnode} from "../../lib/SDK";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {keyFile} from "../../lib/sharedFlags";
@@ -40,20 +41,21 @@ export default class Info extends Command {
      * user is an admin of the group.
      */
     buildGroupDetailTable(group: GroupMetaResponse | GroupDetailResponse) {
-        const tableHeader = ["Group", "Admin", "Member"];
-        if (this.canSeeGroupDetails(group)) {
-            tableHeader.push("Admins", "Members");
-        }
-        const table = createDisplayTable(tableHeader);
+        const table = new Table() as Table.VerticalTable;
 
         const check = chalk.green("✔");
         const nope = chalk.red("✖");
-        const fixedRows = [group.groupName, group.isAdmin ? check : nope, group.isMember ? check : nope];
+        table.push(
+            {[chalk.blue("Group")]: group.groupName},
+            {[chalk.blue("ID")]: group.groupID},
+            {[chalk.blue("Admin")]: group.isAdmin ? check : nope},
+            {[chalk.blue("Member")]: group.isMember ? check : nope},
+            {[chalk.blue("Created")]: new Date(group.created).toLocaleDateString()},
+            {[chalk.blue("Updated")]: new Date(group.updated).toLocaleDateString()}
+        );
 
         if (this.canSeeGroupDetails(group)) {
-            table.push([...fixedRows, group.groupAdmins.join("\n"), group.groupMembers.join("\n")]);
-        } else {
-            table.push(fixedRows);
+            table.push({[chalk.blue("Admins")]: group.groupAdmins.join("\n")}, {[chalk.blue("Members")]: group.groupMembers.join("\n")});
         }
         return table;
     }

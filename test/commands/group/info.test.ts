@@ -27,16 +27,20 @@ describe("groupInfo", () => {
                     isMember: true,
                     groupAdmins: ["bob@example.com", "john@example.com"],
                     groupMembers: ["mike@example.com"],
+                    created: "1985-04-12T23:20:50.52Z",
+                    updated: "1996-12-19T16:39:57-08:00",
                 });
                 return getMockedGroupInfoResponse(apiMock);
             })
             .it("displays expected group info", async (output) => {
                 await new Info(["myGroup"], null as any).run();
                 expect(output.stdout).to.contain("myGroup");
-                expect(output.stdout).not.to.contain("id1");
+                expect(output.stdout).to.contain("id1");
                 expect(output.stdout).to.contain("bob@example.com");
                 expect(output.stdout).to.contain("john@example.com");
                 expect(output.stdout).to.contain("mike@example.com");
+                expect(output.stdout).to.contain("4/12/1985");
+                expect(output.stdout).to.contain("12/19/1996");
                 sinon.assert.calledWithExactly(apiMock, "groupID");
             });
     });
@@ -50,6 +54,8 @@ describe("groupInfo", () => {
                     Promise.resolve({
                         groupName: "myGroup",
                         groupID: "id1",
+                        created: "1985-04-12T23:20:50.52Z",
+                        updated: "1996-12-19T16:39:57-08:00",
                         isAdmin: false,
                         isMember: false,
                         //This response is invalid based on the user not being an admin or member, but we're
@@ -62,10 +68,12 @@ describe("groupInfo", () => {
             .it("displays expected group info", async (output) => {
                 await new Info(["myGroup"], null as any).run();
                 expect(output.stdout).to.contain("myGroup");
-                expect(output.stdout).not.to.contain("id1");
+                expect(output.stdout).to.contain("id1");
                 expect(output.stdout).not.to.contain("bob@example.com");
                 expect(output.stdout).not.to.contain("john@example.com");
                 expect(output.stdout).not.to.contain("mike@example.com");
+                expect(output.stdout).to.contain("4/12/1985");
+                expect(output.stdout).to.contain("12/19/1996");
             });
     });
 
