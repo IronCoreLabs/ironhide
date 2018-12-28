@@ -28,7 +28,7 @@ describe("groupInfo", () => {
                     groupAdmins: ["bob@example.com", "john@example.com"],
                     groupMembers: ["mike@example.com"],
                     created: "1985-04-12T10:20:50.52Z",
-                    updated: "1996-12-19T16:39:57-08:00",
+                    updated: "1996-12-19T10:39:57-08:00",
                 });
                 return getMockedGroupInfoResponse(apiMock);
             })
@@ -55,7 +55,7 @@ describe("groupInfo", () => {
                         groupName: "myGroup",
                         groupID: "id1",
                         created: "1985-04-12T10:20:50.52Z",
-                        updated: "1996-12-19T16:39:57-08:00",
+                        updated: "1996-12-19T10:39:57-08:00",
                         isAdmin: false,
                         isMember: false,
                         //This response is invalid based on the user not being an admin or member, but we're
