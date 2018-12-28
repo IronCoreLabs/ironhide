@@ -109,9 +109,16 @@ async function getUsersGroupChoice(groupName: string, groups: GroupMetaResponse[
         const check = chalk.green("✔");
         const nope = chalk.red("✖");
         console.log(chalk.yellow(`\nMultiple groups found with the provided name '${groupName}', which one do you want to use?\n`));
-        const groupDetailsTable = createDisplayTable(["Option", "ID", "Admin", "Member"]);
+        const groupDetailsTable = createDisplayTable(["Option", "ID", "Admin", "Member", "Created", "Updated"]);
         groups.forEach((group, index) => {
-            groupDetailsTable.push([index + 1, group.groupID, group.isAdmin ? check : nope, group.isMember ? check : nope]);
+            groupDetailsTable.push([
+                index + 1,
+                group.groupID,
+                group.isAdmin ? check : nope,
+                group.isMember ? check : nope,
+                new Date(group.created).toLocaleDateString(),
+                new Date(group.updated).toLocaleDateString(),
+            ]);
         });
         console.log(groupDetailsTable.toString());
         getGroupChoice(groups.length)

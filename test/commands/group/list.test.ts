@@ -20,18 +20,36 @@ describe("groupList", () => {
                 getMockedGroupListResponse(
                     Promise.resolve({
                         result: [
-                            {groupID: "id1", groupName: "name1", isAdmin: true, isMember: false},
-                            {groupID: "id2", groupName: "name2", isAdmin: false, isMember: true},
+                            {
+                                groupID: "id1",
+                                groupName: "name1",
+                                isAdmin: true,
+                                isMember: false,
+                                created: "2015-04-12T23:20:50.52Z",
+                                updated: "2018-12-19T16:39:57-08:00",
+                            },
+                            {
+                                groupID: "id2",
+                                groupName: "name2",
+                                isAdmin: false,
+                                isMember: true,
+                                created: "2002-04-12T23:20:50.52Z",
+                                updated: "2003-12-19T16:39:57-08:00",
+                            },
                         ],
                     })
                 )
             )
             .it("displays expected group info", async (output) => {
                 await new List([], null as any).run();
-                expect(output.stdout).to.contain("id1");
-                expect(output.stdout).to.contain("id2");
+                expect(output.stdout).not.to.contain("id1");
+                expect(output.stdout).not.to.contain("id2");
                 expect(output.stdout).to.contain("name1");
                 expect(output.stdout).to.contain("name2");
+                expect(output.stdout).to.contain("4/12/2015");
+                expect(output.stdout).to.contain("12/19/2018");
+                expect(output.stdout).to.contain("4/12/2002");
+                expect(output.stdout).to.contain("12/19/2003");
             });
     });
 

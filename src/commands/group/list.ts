@@ -22,12 +22,18 @@ export default class List extends Command {
                 if (groups.result.length === 0) {
                     return this.log("You aren't currently an admin or member of any groups.");
                 }
-                const table = createDisplayTable(["Group Name", "Group ID", "Admin", "Member"]);
+                const table = createDisplayTable(["Group Name", "Admin", "Member", "Created", "Updated"]);
 
                 const check = chalk.green("✔");
                 const nope = chalk.red("✖");
                 groups.result.map((group) => {
-                    table.push([group.groupName, group.groupID, group.isAdmin ? check : nope, group.isMember ? check : nope]);
+                    table.push([
+                        group.groupName,
+                        group.isAdmin ? check : nope,
+                        group.isMember ? check : nope,
+                        new Date(group.created).toLocaleDateString(),
+                        new Date(group.updated).toLocaleDateString(),
+                    ]);
                 });
                 this.log(`\n${table.toString()}\n`);
             })
