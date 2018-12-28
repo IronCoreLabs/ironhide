@@ -25,7 +25,7 @@ describe("groupList", () => {
                                 groupName: "name1",
                                 isAdmin: true,
                                 isMember: false,
-                                created: "2015-04-12T23:20:50.52Z",
+                                created: "2015-04-12T10:20:50.52Z",
                                 updated: "2018-12-19T16:39:57-08:00",
                             },
                             {
@@ -33,7 +33,7 @@ describe("groupList", () => {
                                 groupName: "name2",
                                 isAdmin: false,
                                 isMember: true,
-                                created: "2002-04-12T23:20:50.52Z",
+                                created: "2002-04-12T10:20:50.52Z",
                                 updated: "2003-12-19T16:39:57-08:00",
                             },
                         ],

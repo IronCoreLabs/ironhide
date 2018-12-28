@@ -27,7 +27,7 @@ describe("groupInfo", () => {
                     isMember: true,
                     groupAdmins: ["bob@example.com", "john@example.com"],
                     groupMembers: ["mike@example.com"],
-                    created: "1985-04-12T23:20:50.52Z",
+                    created: "1985-04-12T10:20:50.52Z",
                     updated: "1996-12-19T16:39:57-08:00",
                 });
                 return getMockedGroupInfoResponse(apiMock);
@@ -54,7 +54,7 @@ describe("groupInfo", () => {
                     Promise.resolve({
                         groupName: "myGroup",
                         groupID: "id1",
-                        created: "1985-04-12T23:20:50.52Z",
+                        created: "1985-04-12T10:20:50.52Z",
                         updated: "1996-12-19T16:39:57-08:00",
                         isAdmin: false,
                         isMember: false,
