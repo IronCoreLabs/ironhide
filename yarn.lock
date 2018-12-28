@@ -109,10 +109,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@ironcorelabs/ironnode@0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@ironcorelabs/ironnode/-/ironnode-0.6.0.tgz#d098c2e326ffc28f9ece2c8ed66dd4f4860f9751"
-  integrity sha512-zF6D7QXaY/uNuhUWQQu71iazegN8INlBBIVYsByP1RZyZPhPRnti8L+kOpPYGZXpoll0Xhmnaa/mwH71QPNiRQ==
+"@ironcorelabs/ironnode@0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@ironcorelabs/ironnode/-/ironnode-0.6.1.tgz#c20b7c048a3f18886c36cad2c88710c351cee0bc"
+  integrity sha512-fi9d4lt12hQ7FgBDnRlFhOpPxYwYKPE34eqriusUaVlg8q7uWJRWWR5qaJr9iLfzVJBK8X9zPt9YLlBdxyi45Q==
   dependencies:
     "@ironcorelabs/recrypt-node-binding" "0.4.2"
     futurejs "2.0.0"

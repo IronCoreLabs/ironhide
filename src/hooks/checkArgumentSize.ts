@@ -10,7 +10,7 @@ const CONCURRENT_REQ_LIMIT = 75;
 /**
  * Before we run the command, check that the user didn't provide an excessive number of files which might cause rate limiting issues against our server.
  */
-const hook: Hook<"prerun"> = async ({argv, Command}) => {
+const hook: Hook<"prerun"> = ({argv, Command}) => {
     //Verify that we're running a file command and that the argument list is larger than we support at once.
     if (Command.id.startsWith("file:") && argv && argv.length > CONCURRENT_REQ_LIMIT) {
         throw new CLIError(

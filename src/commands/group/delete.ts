@@ -37,9 +37,8 @@ export default class Delete extends Command {
                 )
             );
         } catch (e) {
-            this.error(new Error("Was not able to retrieve information about the provided group."));
+            this.error(chalk.red("Was not able to retrieve information about the provided group."));
         }
-
         const groupConfirm = await cli.prompt(chalk.magenta("Please enter the group to delete again to confirm its deletion"));
         if (groupConfirm !== enteredGroupName) {
             throw new Error(`Group confirmation failed. Original group provided was '${enteredGroupName}' but confirmation value was '${groupConfirm}'.`);
@@ -65,7 +64,7 @@ export default class Delete extends Command {
             .then(() => this.log(chalk.green("Group successfully deleted!")))
             .catch((e) => {
                 this.log(e.message);
-                this.log(chalk.red("Group delete request failed."));
+                this.error(chalk.red("Group delete request failed."));
             });
     }
 }

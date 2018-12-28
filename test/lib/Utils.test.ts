@@ -2,10 +2,39 @@ import {expect, fancy} from "fancy-test";
 import * as fs from "fs";
 import * as Utils from "../../src/lib/Utils";
 import * as chai from "chai";
+import * as sinon from "sinon";
 import * as chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 
 describe("Utils", () => {
+    describe("isMultipleFileOperation", () => {
+        fancy.it("returns false when no array", () => {
+            expect(Utils.isMultipleFileOperation({} as any)).to.equal(false);
+            expect(Utils.isMultipleFileOperation({file: "stuff"} as any)).to.equal(false);
+            expect(Utils.isMultipleFileOperation({file: {}} as any)).to.equal(false);
+        });
+
+        fancy.it("returns true when value is array", () => {
+            expect(Utils.isMultipleFileOperation({file: []} as any)).to.equal(true);
+            expect(Utils.isMultipleFileOperation({file: ["file1"]} as any)).to.equal(true);
+        });
+    });
+
+    describe("isStdInFileOperation", () => {
+        fancy.it("returns false when falsy", () => {
+            expect(Utils.isStdInFileOperation({file: ["one"]} as any)).to.equal(false);
+            expect(Utils.isStdInFileOperation({file: "stuff"} as any)).to.equal(false);
+            expect(Utils.isStdInFileOperation({file: {}} as any)).to.equal(false);
+        });
+
+        fancy.it("returns true when value is truthy", () => {
+            expect(Utils.isStdInFileOperation({} as any)).to.equal(true);
+            expect(Utils.isStdInFileOperation({foo: "bar"} as any)).to.equal(true);
+            expect(Utils.isStdInFileOperation({file: false} as any)).to.equal(true);
+            expect(Utils.isStdInFileOperation({file: null} as any)).to.equal(true);
+        });
+    });
+
     describe("isError", () => {
         fancy.it("should return expected boolean for provided type", () => {
             expect(Utils.isError(new Error("test"))).to.equal(true);
@@ -81,6 +110,16 @@ describe("Utils", () => {
             const normalizedPath = Utils.normalizePathToFile("foo/bar/package.json");
             expect(normalizedPath.startsWith("/")).to.be.true;
             expect(normalizedPath.endsWith("/foo/bar/package.json")).to.be.true;
+        });
+    });
+
+    describe("deleteFile", () => {
+        fancy.it("checks access and then calls unlink", () => {
+            const accessSync = sinon.stub(fs, "accessSync");
+            const unlinkSync = sinon.stub(fs, "unlinkSync");
+            Utils.deleteFile("/foo/bar");
+            sinon.assert.calledWithExactly(accessSync, "/foo/bar", fs.constants.W_OK);
+            sinon.assert.calledWithExactly(unlinkSync, "/foo/bar");
         });
     });
 
