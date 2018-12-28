@@ -88,7 +88,7 @@ describe("initializeSDK", () => {
             .stub(Utils, "isFileReadable", sinon.stub().returns(true))
             .stub(Utils, "validateExistingKeys", sinon.stub().returns(true))
             .stub(fs, "accessSync", sinon.stub())
-            .stub(fs, "readFileSync", sinon.stub().throws(new Error("Fail could not be read")))
+            .stub(fs, "readFileSync", sinon.stub().throws(new Error("File could not be read")))
             .do(async () => {
                 await (initializeSDK as any)(fileEncryptCommand);
             })
