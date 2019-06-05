@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.4
+
++ Fixed a bug where the output file displayed on encrypt/decrypt operations was wrong if the `-o` option was used.
++ Updated all dependencies to their latest version.
+
 ## 0.5.3
 
 + Added created and updated times to output of `file:info`, `group:list`, and `group:info` commands.

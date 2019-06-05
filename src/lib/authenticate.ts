@@ -1,4 +1,4 @@
-import opn = require("opn");
+import open = require("open");
 import * as http from "http";
 import {CLIError} from "@oclif/errors";
 import * as url from "url";
@@ -141,7 +141,7 @@ export default async function authenticate() {
                 server.close(); //Don't leave server open on error
                 return reject(new Error(`Failed to startup local server to handle authentication workflow on port ${LOCAL_PORT}`));
             }
-            opn(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
+            open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
                 server.close(); //Don't leave server open on error
                 throw new CLIError("Failed to kick of authentication workflow. Please try again");
             });

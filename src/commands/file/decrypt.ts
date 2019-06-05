@@ -206,7 +206,7 @@ export default class Decrypt extends Command {
             } else {
                 //Write out the decrypted bytes to the file and display a success message
                 fs.writeFileSync(result.destinationFileOutput as string, result.decryptedContent);
-                const writtenResult = Utils.isStdInFileOperation(decryptOp) ? decryptOp.out : this.removeLastFileExtension(decryptOp.file);
+                const writtenResult = Utils.isStdInFileOperation(decryptOp) ? decryptOp.out : decryptOp.out || this.removeLastFileExtension(decryptOp.file);
                 this.log(chalk.green(`File successfully decrypted and written to ${writtenResult}.`));
             }
         });
