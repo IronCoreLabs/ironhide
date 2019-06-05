@@ -12,7 +12,7 @@ import {set} from "../lib/SDK";
  * dumped to the console. So to handle that we subscribe to that event and use the internal oclif error handling to print the error in the same
  * way that all other this.error calls happen.
  */
-process.on("unhandledRejection", (error) => handle(new CLIError(error)));
+process.on("unhandledRejection", (error: Error) => handle(new CLIError(error)));
 
 /**
  * Check the command being run and various flags to see if we shouldn't run SDK initialization prior to this command running.

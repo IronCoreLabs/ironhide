@@ -181,7 +181,7 @@ export default class Encrypt extends Command {
                 throw encryptionResult;
             }
             if (encryptOp.out !== "-") {
-                const writtenResult = Utils.isStdInFileOperation(encryptOp) ? encryptOp.out : `${encryptOp.file}.iron`;
+                const writtenResult = Utils.isStdInFileOperation(encryptOp) ? encryptOp.out : encryptOp.out || `${encryptOp.file}.iron`;
                 this.log(chalk.green(`Encrypted file successfully written to ${writtenResult}.`));
             }
         });
