@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.4
+## 0.5.5
 
 + Fixed a bug where the output file displayed on encrypt/decrypt operations was wrong if the `-o` option was used.
 + Updated all dependencies to their latest version.

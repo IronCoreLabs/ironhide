@@ -1,5 +1,6 @@
 *-debug.log
 *-error.log
+tsconfig.tsbuildinfo
 /.nyc_output
 /dist
 /lib
