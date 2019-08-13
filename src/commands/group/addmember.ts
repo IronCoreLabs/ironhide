@@ -1,10 +1,10 @@
+import {ErrorCodes, GroupUserEditResponse, SDKError} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import {GroupUserEditResponse, SDKError, ErrorCodes} from "@ironcorelabs/ironnode";
 import chalk from "chalk";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
-import {ironnode} from "../../lib/SDK";
 import * as GroupMaps from "../../lib/GroupMaps";
-import {userList, keyFile} from "../../lib/sharedFlags";
+import {ironnode} from "../../lib/SDK";
+import {keyFile, userList} from "../../lib/sharedFlags";
+import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
 
 /**
  * Group add member command. Takes a comma-separated list of email addresses and attempts to add them as members to the group.
@@ -32,11 +32,11 @@ export default class AddMember extends Command {
     buildResultTable(buildResults: GroupUserEditResponse) {
         const table = createDisplayTable(["User", "Result"]);
 
-        buildResults.succeeded.map((addedUser) => {
+        buildResults.succeeded.forEach((addedUser) => {
             table.push([addedUser, chalk.green("✔ Added as member")]);
         });
 
-        buildResults.failed.map((addedUser) => {
+        buildResults.failed.forEach((addedUser) => {
             table.push([addedUser.id, chalk.red(addedUser.error)]);
         });
         return table;

@@ -1,22 +1,24 @@
-import fancy, {expect} from "fancy-test";
-import * as crypto from "crypto";
 import * as chai from "chai";
-import * as sinon from "sinon";
 import * as chaiAsPromised from "chai-as-promised";
+import * as crypto from "crypto";
+import fancy, {expect} from "fancy-test";
+import * as http from "http";
+import * as sinon from "sinon";
 import authenticate from "../../src/lib/authenticate";
 chai.use(chaiAsPromised);
-import * as http from "http";
 
 describe("authenticate", () => {
     const mockDefaultServer = {
         listen: sinon.spy(),
         close: sinon.spy(),
+        on: sinon.spy(),
     };
 
     describe("rejects if local server cant be created", () => {
         const mockServer = {
             listen: sinon.spy(),
             close: sinon.spy(),
+            on: sinon.spy(),
         };
 
         fancy
@@ -24,7 +26,8 @@ describe("authenticate", () => {
             .it("fails if local server cannot be started", () => {
                 const promise = authenticate();
                 sinon.assert.calledWithExactly(mockServer.listen, sinon.match.number, sinon.match.func);
-                mockServer.listen.firstCall.args[1](new Error("failed to start server"), "foo", "bar", "baz");
+                sinon.assert.calledWithExactly(mockServer.on, sinon.match.string, sinon.match.func);
+                mockServer.on.firstCall.args[1](new Error("failed to start server"), "foo", "bar", "baz");
                 promise.catch(() => {
                     sinon.assert.calledWithExactly(mockServer.close);
                 });

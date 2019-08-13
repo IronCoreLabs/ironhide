@@ -1,9 +1,9 @@
-import {Command, flags as flagtype} from "@oclif/command";
 import {UserPublicKeyGetResponse} from "@ironcorelabs/ironnode";
+import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
 import {ironnode} from "../../lib/SDK";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
 import {keyFile} from "../../lib/sharedFlags";
+import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
 
 /**
  * User lookup command. Attempts to retrieve public keys for a list of users given their email addresses.
@@ -44,7 +44,7 @@ export default class Lookup extends Command {
 
     async run() {
         const {argv} = this.parse(Lookup);
-        ironnode()
+        return ironnode()
             .user.getPublicKey(argv)
             .then((userKeys) => {
                 this.log(`\n${this.buildUserKeyTable(userKeys).toString()}\n`);
