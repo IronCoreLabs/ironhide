@@ -1,10 +1,10 @@
-import {expect} from "@oclif/test";
 import {ErrorCodes} from "@ironcorelabs/ironnode";
+import {expect} from "@oclif/test";
 import * as sinon from "sinon";
 import AddAdmin from "../../../src/commands/group/addadmin";
+import * as GroupMaps from "../../../src/lib/GroupMaps";
 import * as SDK from "../../../src/lib/SDK";
 import hookBypass from "../hookBypass";
-import * as GroupMaps from "../../../src/lib/GroupMaps";
 
 function getMockedGroupAddAdminResponse(mock: any) {
     return {
@@ -25,7 +25,7 @@ describe("groupAddAdmin", () => {
                 const errorStub = sinon.stub(addAdminCommand, "error");
 
                 await addAdminCommand.run();
-                sinon.assert.calledWithExactly(errorStub, sinon.match("failed to make request"));
+                sinon.assert.calledWithMatch(errorStub, "failed to make request");
             });
 
         hookBypass
@@ -37,7 +37,7 @@ describe("groupAddAdmin", () => {
                 const errorStub = sinon.stub(addAdminCommand, "error");
 
                 await addAdminCommand.run();
-                sinon.assert.calledWithExactly(errorStub, sinon.match("You aren't an admin of the 'providedGroupName' group"));
+                sinon.assert.calledWithMatch(errorStub, "You aren't an admin of the 'providedGroupName' group");
             });
 
         hookBypass
@@ -49,7 +49,8 @@ describe("groupAddAdmin", () => {
                 const errorStub = sinon.stub(addAdminCommand, "error");
 
                 await addAdminCommand.run();
-                sinon.assert.calledWithExactly(errorStub, sinon.match("Unable to complete request to add admins"));
+
+                sinon.assert.calledWithMatch(errorStub, "Unable to complete request to add admins");
             });
     });
 

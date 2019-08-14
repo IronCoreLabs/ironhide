@@ -1,9 +1,9 @@
 import open = require("open");
-import * as http from "http";
 import {CLIError} from "@oclif/errors";
-import * as url from "url";
 import * as crypto from "crypto";
+import * as http from "http";
 import fetch from "node-fetch";
+import * as url from "url";
 
 interface Auth0TokenResponse {
     access_token: string;
@@ -136,15 +136,17 @@ export default async function authenticate() {
             }
         });
         //Startup the local server and once it's up and running, open up the users browser to Auth0 to start the login process
-        server.listen(LOCAL_PORT, (err: Error) => {
-            if (err) {
-                server.close(); //Don't leave server open on error
-                return reject(new Error(`Failed to startup local server to handle authentication workflow on port ${LOCAL_PORT}`));
-            }
+        server.listen(LOCAL_PORT, () => {
             open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
                 server.close(); //Don't leave server open on error
                 throw new CLIError("Failed to kick of authentication workflow. Please try again");
             });
+        });
+        server.on("error", (error) => {
+            if (error) {
+                server.close(); //Don't leave server open on error
+                return reject(new Error(`Failed to startup local server to handle authentication workflow on port ${LOCAL_PORT}`));
+            }
         });
     });
 }

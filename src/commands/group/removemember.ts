@@ -1,10 +1,10 @@
+import {ErrorCodes, GroupUserEditResponse, SDKError} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
-import {GroupUserEditResponse, SDKError, ErrorCodes} from "@ironcorelabs/ironnode";
-import {ironnode} from "../../lib/SDK";
-import {userList, keyFile} from "../../lib/sharedFlags";
 import * as GroupMaps from "../../lib/GroupMaps";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
+import {ironnode} from "../../lib/SDK";
+import {keyFile, userList} from "../../lib/sharedFlags";
+import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
 
 /**
  * Group remove member command. Takes a comma-separated list of emails as well as the group name and attempts to remove users as members from the group.
@@ -32,11 +32,11 @@ export default class RemoveMember extends Command {
     buildResultTable(buildResults: GroupUserEditResponse) {
         const table = createDisplayTable(["User", "Result"]);
 
-        buildResults.succeeded.map((removedUser) => {
+        buildResults.succeeded.forEach((removedUser) => {
             table.push([removedUser, chalk.green("✔ Removed as member")]);
         });
 
-        buildResults.failed.map((removedUser) => {
+        buildResults.failed.forEach((removedUser) => {
             table.push([removedUser.id, chalk.red(removedUser.error)]);
         });
 
@@ -47,7 +47,7 @@ export default class RemoveMember extends Command {
         const {args, flags} = this.parse(RemoveMember);
         const groupID = await GroupMaps.getGroupIDFromName(args.group);
 
-        ironnode()
+        return ironnode()
             .group.removeMembers(groupID, flags.users as string[])
             .then((removeResult) => {
                 this.log(`\n${this.buildResultTable(removeResult).toString()}\n`);

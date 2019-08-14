@@ -1,10 +1,10 @@
-import {Command, flags as flagtype} from "@oclif/command";
 import {GroupDetailResponse} from "@ironcorelabs/ironnode";
+import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
 import cli from "cli-ux";
+import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
-import * as GroupMaps from "../../lib/GroupMaps";
 
 export default class Delete extends Command {
     static description = "Delete a group given its name or ID. Once deleted all files encrypted to only the group will no longer be able to be decrypted.";
@@ -59,7 +59,7 @@ export default class Delete extends Command {
         } catch (e) {
             return this.error(chalk.red(e.message));
         }
-        ironnode()
+        return ironnode()
             .group.deleteGroup(groupID)
             .then(() => this.log(chalk.green("Group successfully deleted!")))
             .catch((e) => {

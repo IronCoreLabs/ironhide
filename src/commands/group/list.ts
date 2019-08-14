@@ -1,8 +1,8 @@
 import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
 import {ironnode} from "../../lib/SDK";
-import {createDisplayTable} from "../../lib/Utils";
 import {keyFile} from "../../lib/sharedFlags";
+import {createDisplayTable} from "../../lib/Utils";
 
 /**
  * Group list command. Retrieves all groups that the user is a part of and displays them in a table to the console.
@@ -16,7 +16,7 @@ export default class List extends Command {
 
     async run() {
         this.parse(List);
-        ironnode()
+        return ironnode()
             .group.list()
             .then((groups) => {
                 if (groups.result.length === 0) {
@@ -26,7 +26,7 @@ export default class List extends Command {
 
                 const check = chalk.green("✔");
                 const nope = chalk.red("✖");
-                groups.result.map((group) => {
+                groups.result.forEach((group) => {
                     table.push([
                         group.groupName,
                         group.isAdmin ? check : nope,

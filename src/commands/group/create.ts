@@ -1,10 +1,10 @@
+import {ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import {SDKError, ErrorCodes} from "@ironcorelabs/ironnode";
 import chalk from "chalk";
-import {ironnode} from "../../lib/SDK";
 import * as GroupMaps from "../../lib/GroupMaps";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
+import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
+import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
 
 /**
  * Group create command. Creates a new group with the user provided ID. Auto adds the creator of the group as a member and an admin.
@@ -50,7 +50,7 @@ export default class Create extends Command {
         }
         await this.checkGroupExists(args.group);
 
-        ironnode()
+        return ironnode()
             .group.create({groupName: args.group})
             .then((group) => {
                 const table = createDisplayTable(["Group Name", "Group ID", "Admin", "Member"]);

@@ -3,6 +3,8 @@ IronHide
 
 Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.
 
+Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-better-team-encryption-8950117dc6f0)
+
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Fironhide.svg)](https://www.npmjs.com/package/@ironcorelabs/ironhide)
 [![Build Status](https://travis-ci.org/IronCoreLabs/ironhide.svg?branch=master)](https://travis-ci.org/IronCoreLabs/ironhide)
 
@@ -40,10 +42,10 @@ At that point, he will no longer be able to decrypt the `secrets.json.iron` file
 
 ## Supported Platforms
 
-|           | Node 8 | Node 9  | Node 10 | Node 11 |
-| --------- | ------ | ------- | ------- | ------- |
-| Linux x64 |    ✓   |    ✓    |    ✓    |    ✓    |
-| OSX x64   |    ✓   |    ✓    |    ✓    |    ✓    |
+|           | Node 8 | Node 10 | Node 12 |
+| --------- | ------ | ------- | ------- |
+| Linux x64 |    ✓   |    ✓    |    ✓    |
+| OSX x64   |    ✓   |    ✓    |    ✓    |
 
 ## Overview
 

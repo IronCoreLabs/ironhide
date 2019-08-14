@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0
+
++ Added support for Node 12, removed support for Node 9 and 11.
++ Update all dependencies.
+
 ## 0.5.5
 
 + Fixed a bug where the output file displayed on encrypt/decrypt operations was wrong if the `-o` option was used.

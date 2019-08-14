@@ -1,10 +1,10 @@
+import {ErrorCodes, GroupUserEditResponse, SDKError} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import {GroupUserEditResponse, SDKError, ErrorCodes} from "@ironcorelabs/ironnode";
 import chalk from "chalk";
-import {createDisplayTable, buildCommandSampleText} from "../../lib/Utils";
-import {ironnode} from "../../lib/SDK";
 import * as GroupMaps from "../../lib/GroupMaps";
-import {userList, keyFile} from "../../lib/sharedFlags";
+import {ironnode} from "../../lib/SDK";
+import {keyFile, userList} from "../../lib/sharedFlags";
+import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
 
 /**
  * Group add admin command. Takes a comma-separated list of emails as admins as well as the group name and attempts to add
@@ -34,11 +34,11 @@ export default class AddAdmin extends Command {
     buildResultTable(buildResults: GroupUserEditResponse) {
         const table = createDisplayTable(["User", "Result"]);
 
-        buildResults.succeeded.map((addedUser) => {
+        buildResults.succeeded.forEach((addedUser) => {
             table.push([addedUser, chalk.green("✔ Added as admin")]);
         });
 
-        buildResults.failed.map((addedUser) => {
+        buildResults.failed.forEach((addedUser) => {
             table.push([addedUser.id, chalk.red(addedUser.error)]);
         });
         return table;
@@ -48,7 +48,7 @@ export default class AddAdmin extends Command {
         const {args, flags} = this.parse(AddAdmin);
         const groupID = await GroupMaps.getGroupIDFromName(args.group);
 
-        ironnode()
+        return ironnode()
             .group.addAdmins(groupID, flags.users as string[])
             .then((addResult) => {
                 this.log(`\n${this.buildResultTable(addResult).toString()}\n`);

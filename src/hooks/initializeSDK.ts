@@ -1,9 +1,9 @@
+import {DeviceDetails, initialize} from "@ironcorelabs/ironnode";
 import {Hook, IConfig} from "@oclif/config";
-import {handle, CLIError} from "@oclif/errors";
+import {CLIError, handle} from "@oclif/errors";
 import * as fs from "fs";
-import {initialize, DeviceDetails} from "@ironcorelabs/ironnode";
-import {validateExistingKeys, normalizePathToFile, isFileReadable} from "../lib/Utils";
 import {set} from "../lib/SDK";
+import {isFileReadable, normalizePathToFile, validateExistingKeys} from "../lib/Utils";
 
 /**
  * All errors that occur during various oclif commands use this.error() to report the error. This ends up throwing a new error which has
@@ -12,7 +12,7 @@ import {set} from "../lib/SDK";
  * dumped to the console. So to handle that we subscribe to that event and use the internal oclif error handling to print the error in the same
  * way that all other this.error calls happen.
  */
-process.on("unhandledRejection", (error: Error) => handle(new CLIError(error)));
+process.on("unhandledRejection", (_, promise) => promise.catch((e) => handle(new CLIError(e))));
 
 /**
  * Check the command being run and various flags to see if we shouldn't run SDK initialization prior to this command running.
