@@ -12,7 +12,7 @@ import {isFileReadable, normalizePathToFile, validateExistingKeys} from "../lib/
  * dumped to the console. So to handle that we subscribe to that event and use the internal oclif error handling to print the error in the same
  * way that all other this.error calls happen.
  */
-process.on("unhandledRejection", (reason): void => handle(new CLIError(reason as Error)));
+process.on("unhandledRejection", (_, promise) => promise.catch((e) => handle(new CLIError(e))));
 
 /**
  * Check the command being run and various flags to see if we shouldn't run SDK initialization prior to this command running.
