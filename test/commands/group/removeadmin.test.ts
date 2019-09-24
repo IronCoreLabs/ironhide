@@ -1,10 +1,10 @@
-import {expect} from "@oclif/test";
 import {ErrorCodes} from "@ironcorelabs/ironnode";
+import {expect} from "@oclif/test";
 import * as sinon from "sinon";
 import RemoveAdmin from "../../../src/commands/group/removeadmin";
+import * as GroupMaps from "../../../src/lib/GroupMaps";
 import * as SDK from "../../../src/lib/SDK";
 import hookBypass from "../hookBypass";
-import * as GroupMaps from "../../../src/lib/GroupMaps";
 
 function getMockedGroupRemoveAdminResponse(mock: any) {
     return {
@@ -54,13 +54,18 @@ describe("groupRemoveAdmin", () => {
                 return getMockedGroupRemoveAdminResponse(apiMock);
             })
             .it("removes admins and displays results", async (output) => {
-                await new RemoveAdmin(["-u", "bob@example.com,mike@example.com,john@example.com", "providedGroupName"], null as any).run();
+                const removeAdminCommand = new RemoveAdmin(["-u", "bob@example.com,mike@example.com,john@example.com", "providedGroupName"], null as any);
+                const errorStub = sinon.stub(removeAdminCommand, "error");
+
+                await removeAdminCommand.run();
+
                 expect(output.stdout.match(/Removed as admin/g)).to.have.length(2);
                 expect(output.stdout).to.contain("bob@example.com");
                 expect(output.stdout).to.contain("mike@example.com");
                 expect(output.stdout).to.contain("john@example.com");
                 expect(output.stdout).to.contain("mocked error");
                 sinon.assert.calledWithExactly(apiMock, "lookupGroupID", ["bob@example.com", "mike@example.com", "john@example.com"]);
+                sinon.assert.calledWithExactly(errorStub, sinon.match("Failed to remove 1 admin(s)"));
             });
     });
 });

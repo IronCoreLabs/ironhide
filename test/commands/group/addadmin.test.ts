@@ -67,13 +67,18 @@ describe("groupAddAdmin", () => {
                 return getMockedGroupAddAdminResponse(apiMock);
             })
             .it("adds admins and displays results", async (output) => {
-                await new AddAdmin(["-u", "bob@example.com,mike@example.com,john@example.com", "providedGroupName"], null as any).run();
+                const addAdminCommand = new AddAdmin(["-u", "bob@example.com,mike@example.com,john@example.com", "providedGroupName"], null as any);
+                const errorStub = sinon.stub(addAdminCommand, "error");
+
+                await addAdminCommand.run();
+
                 expect(output.stdout.match(/Added as admin/g)).to.have.length(2);
                 expect(output.stdout).to.contain("bob@example.com");
                 expect(output.stdout).to.contain("mike@example.com");
                 expect(output.stdout).to.contain("john@example.com");
                 expect(output.stdout).to.contain("mocked error");
                 sinon.assert.calledWithExactly(apiMock, "lookupGroupID", ["bob@example.com", "mike@example.com", "john@example.com"]);
+                sinon.assert.calledWithMatch(errorStub, "Failed to add 1 admin(s).");
             });
     });
 });

@@ -50,6 +50,9 @@ export default class AddMember extends Command {
             .group.addMembers(groupID, flags.users as string[])
             .then((addResult) => {
                 this.log(`\n${this.buildResultTable(addResult).toString()}\n`);
+                if (addResult.failed.length > 0) {
+                    this.error(`Failed to add ${addResult.failed.length} member(s).`);
+                }
             })
             .catch((e: SDKError) => {
                 if (e.code === ErrorCodes.GROUP_ADD_MEMBER_NOT_ADMIN_FAILURE) {

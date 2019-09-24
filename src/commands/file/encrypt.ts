@@ -1,10 +1,10 @@
-import {Command, flags as flagtype} from "@oclif/command";
 import {DocumentAccessList, DocumentIDNameResponse} from "@ironcorelabs/ironnode";
-import * as fs from "fs";
+import {Command, flags as flagtype} from "@oclif/command";
 import chalk from "chalk";
+import * as fs from "fs";
+import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
-import * as GroupMaps from "../../lib/GroupMaps";
 import * as Utils from "../../lib/Utils";
 
 type EncryptResult = Utils.ErrorOr<DocumentIDNameResponse>;
@@ -163,7 +163,7 @@ export default class Encrypt extends Command {
                 this.log(chalk.green(`\n${successfulCount} file(s) successfully encrypted.`));
             }
             if (failureCount > 0) {
-                this.log(chalk.red(`\n${failureCount} file(s) failed to be encrypted.`));
+                this.error(chalk.red(`\n${failureCount} file(s) failed to be encrypted.`));
             }
         });
     }

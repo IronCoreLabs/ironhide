@@ -51,6 +51,9 @@ export default class RemoveMember extends Command {
             .group.removeMembers(groupID, flags.users as string[])
             .then((removeResult) => {
                 this.log(`\n${this.buildResultTable(removeResult).toString()}\n`);
+                if (removeResult.failed.length > 0) {
+                    this.error(`Failed to remove ${removeResult.failed.length} member(s).`);
+                }
             })
             .catch((e: SDKError) => {
                 if (e.code === ErrorCodes.GROUP_REMOVE_MEMBERS_REQUEST_FAILURE) {
