@@ -52,6 +52,9 @@ export default class AddAdmin extends Command {
             .group.addAdmins(groupID, flags.users as string[])
             .then((addResult) => {
                 this.log(`\n${this.buildResultTable(addResult).toString()}\n`);
+                if (addResult.failed.length > 0) {
+                    this.error(`Failed to add ${addResult.failed.length} admin(s).`);
+                }
             })
             .catch((e: SDKError) => {
                 if (e.code === ErrorCodes.GROUP_ADD_ADMINS_NOT_ADMIN_FAILURE) {

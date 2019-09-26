@@ -9,9 +9,10 @@ import {isFileReadable, normalizePathToFile, validateExistingKeys} from "../lib/
  * All errors that occur during various oclif commands use this.error() to report the error. This ends up throwing a new error which has
  * some nice formatting. However, sometimes we want to call this.error() from within the catch() block of a Promise when things fail. Because
  * this ends up throwing another error, we trigger the Node Unhandled Promise Rejection error issue and a bunch of unnecessary content gets
- * dumped to the console. So to handle that we subscribe to that event and use the internal oclif error handling to print the error in the same
- * way that all other this.error calls happen.
+ * dumped to the console. So to handle that we subscribe to these events and use the internal oclif error handling to print the error in the same
+ * way that all other this.error calls happen. This also causes the Node process to exit, but with a non-zero exit code.
  */
+process.on("rejectionHandled", () => null);
 process.on("unhandledRejection", (_, promise) => promise.catch((e) => handle(new CLIError(e))));
 
 /**

@@ -51,6 +51,9 @@ export default class RemoveAdmin extends Command {
             .group.removeAdmins(groupID, flags.users as string[])
             .then((removeResult) => {
                 this.log(`\n${this.buildResultTable(removeResult).toString()}\n`);
+                if (removeResult.failed.length > 0) {
+                    this.error(`Failed to remove ${removeResult.failed.length} admin(s).`);
+                }
             })
             .catch((e: SDKError) => {
                 if (e.code === ErrorCodes.GROUP_REMOVE_ADMINS_REQUEST_FAILURE) {

@@ -1,8 +1,8 @@
-import {Command, flags as flagtype} from "@oclif/command";
 import {ErrorCodes} from "@ironcorelabs/ironnode";
+import {Command, flags as flagtype} from "@oclif/command";
+import chalk from "chalk";
 import * as fs from "fs";
 import {extname} from "path";
-import chalk from "chalk";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import * as Utils from "../../lib/Utils";
@@ -186,7 +186,7 @@ export default class Decrypt extends Command {
                 this.log(chalk.green(`\n${successfulCount} file(s) successfully decrypted.`));
             }
             if (failureCount > 0) {
-                this.log(chalk.red(`\n${failureCount} file(s) failed to be decrypted.`));
+                this.error(chalk.red(`\n${failureCount} file(s) failed to be decrypted.`));
             }
         });
     }
