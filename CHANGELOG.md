@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1
+
++ Exit with non-zero exit code when encrypting/decrypting multiple files and not all of them succeed
++ Exit with non-zero exit code when adding/removing admins or members from a group and some fail
+
 ## 0.6.0
 
 + Added support for Node 12, removed support for Node 9 and 11.
