@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
++ Upgrade to latest IronNode release.
+
 ## 0.6.1
 
 + Exit with non-zero exit code when encrypting/decrypting multiple files and not all of them succeed
