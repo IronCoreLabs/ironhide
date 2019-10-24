@@ -132,19 +132,19 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@ironcorelabs/ironnode@0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@ironcorelabs/ironnode/-/ironnode-0.7.0.tgz#e3e0b49c7c4bbc74c7c5c45b7f35ea482c18d0b3"
-  integrity sha512-xIHofLZjv+NoF4pOJXt9qrwrE+pbb/9Hwt1Hdh3TqyWdFWyJHU7Sn/Q2gXKXilcaT4m+q8vDV+fXAF6U/C2IIQ==
+"@ironcorelabs/ironnode@0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@ironcorelabs/ironnode/-/ironnode-0.7.3.tgz#7b315a3424270c127ffc15174879978090fa03bb"
+  integrity sha512-mDbUXoGj7y7+xa10VFLc2CXmLyu7pKIQpUHFkdzu2mwcfP4xYAM/Pian9oo7n2KKu+pPLpU96SN89BdiKmvRcg==
   dependencies:
-    "@ironcorelabs/recrypt-node-binding" "0.5.1"
+    "@ironcorelabs/recrypt-node-binding" "0.6.1"
     futurejs "2.1.1"
     node-fetch "2.6.0"
 
-"@ironcorelabs/recrypt-node-binding@0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@ironcorelabs/recrypt-node-binding/-/recrypt-node-binding-0.5.1.tgz#0c208e334e9bc2b0397823705cc0259f422b4a95"
-  integrity sha512-ynnAb5ignt+RVTqOVVdBZxmwqNBS0JwnhMIsaqrcaMrsDiELFA1RyvaFF8jfCRAdMHSfstQbKTFKKxCKqyFZqQ==
+"@ironcorelabs/recrypt-node-binding@0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@ironcorelabs/recrypt-node-binding/-/recrypt-node-binding-0.6.1.tgz#1c7e4be1c3b74376a93b79409d2bd17b148bab37"
+  integrity sha512-MDiWXSwlgadL9tOwWKWBmoRTNbspavexYfKrZWanEbUZ99GoZwLPDYnfdKXYJzZqFh8p486/WVcxrvqIpj25ZQ==
   dependencies:
     node-pre-gyp "^0.13.0"
 
