@@ -12,9 +12,14 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 ## Installation
 
-`npm install -g --unsafe-perm @ironcorelabs/ironhide`
+`npm install -g @ironcorelabs/ironhide`
 
 This installs IronHide as a global package on your system and adds `ironhide` as an executable to your path.
+
+### Install troubleshooting
+
+If the install doesn't work due to an `EACCES: permission denied, mkdir ...` error, try adding `--unsafe-perm` to the install
+command.
 
 ## Example Usage
 
