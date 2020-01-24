@@ -16,6 +16,11 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 This installs IronHide as a global package on your system and adds `ironhide` as an executable to your path.
 
+### Install troubleshooting
+
+If the install doesn't work due to an `EACCES: permission denied, mkdir ...` error, try adding `--unsafe-perm` to the install
+command.
+
 ## Example Usage
 
 The following example shows how to create a new IronHide group, encrypt files to the group, and then add other users as members of the group, so they have access to decrypt the files.
