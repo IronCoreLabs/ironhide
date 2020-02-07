@@ -1,14 +1,14 @@
+import * as IronNode from "@ironcorelabs/ironnode";
 import {Command} from "@oclif/command";
-import cli from "cli-ux";
 import chalk from "chalk";
-import {dirname} from "path";
+import cli from "cli-ux";
 import * as fs from "fs";
 import * as os from "os";
-import * as IronNode from "@ironcorelabs/ironnode";
-import {validateExistingKeys} from "../lib/Utils";
+import {dirname} from "path";
 import authenticate from "../lib/authenticate";
 import * as Logger from "../lib/Logger";
 import * as messages from "../lib/messages";
+import {validateExistingKeys} from "../lib/Utils";
 
 export default class Login extends Command {
     public static aliases = ["init"];
@@ -71,6 +71,10 @@ export default class Login extends Command {
         try {
             deviceKeys = await IronNode.User.generateDeviceKeys(auth0Jwt, password, {deviceName});
         } catch (e) {
+            if (e.message.includes("was an invalid authorization token")) {
+                this.log(chalk.red("Auth token from Auth0 has timed out. Please retry logging."));
+                return this.exit(-1);
+            }
             this.log(chalk.red("Provided passphrase was invalid. Please try again."));
             return this.generateExistingUserDeviceKeys(auth0Jwt);
         }
@@ -169,9 +173,7 @@ export default class Login extends Command {
         if (validateExistingKeys(this.configFileHome)) {
             return this.log(
                 chalk.red(
-                    `This device is already authorized and using keys at ${
-                        this.configFileHome
-                    }. Run 'ironhide logout' to delete these keys and deauthorize this device.`
+                    `This device is already authorized and using keys at ${this.configFileHome}. Run 'ironhide logout' to delete these keys and deauthorize this device.`
                 )
             );
         }
