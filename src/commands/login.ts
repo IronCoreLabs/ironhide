@@ -72,7 +72,7 @@ export default class Login extends Command {
             deviceKeys = await IronNode.User.generateDeviceKeys(auth0Jwt, password, {deviceName});
         } catch (e) {
             if (e.message.includes("was an invalid authorization token")) {
-                this.log(chalk.red("Auth token from Auth0 has timed out. Please retry logging."));
+                this.log(chalk.red("Auth token from Auth0 has timed out. Please try logging in again."));
                 return this.exit(-1);
             }
             this.log(chalk.red("Provided passphrase was invalid. Please try again."));
