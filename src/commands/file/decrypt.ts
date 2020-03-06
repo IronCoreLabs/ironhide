@@ -1,11 +1,11 @@
 import {ErrorCodes} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import * as fs from "fs";
 import {extname} from "path";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import * as Utils from "../../lib/Utils";
+import chalk = require("chalk");
 
 type DecryptFileResult = Utils.ErrorOr<{
     decryptedContent: Buffer;

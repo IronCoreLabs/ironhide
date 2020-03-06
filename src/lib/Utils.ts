@@ -1,9 +1,9 @@
-import * as fs from "fs";
-import {dirname, normalize, join, sep, basename} from "path";
-import * as Table from "cli-table3";
 import {DeviceDetails, DocumentAccessList, DocumentAccessResponse} from "@ironcorelabs/ironnode";
-import chalk from "chalk";
+import * as Table from "cli-table3";
+import * as fs from "fs";
+import {basename, dirname, join, normalize, sep} from "path";
 import {GroupsByID} from "./GroupMaps";
+import chalk = require("chalk");
 
 export type ErrorOr<R> = R | Error;
 interface ProcessFileBase {

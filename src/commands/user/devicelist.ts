@@ -1,9 +1,9 @@
-import {Command, flags as flagtype} from "@oclif/command";
 import {UserDeviceListResponse} from "@ironcorelabs/ironnode";
-import chalk from "chalk";
+import {Command, flags as flagtype} from "@oclif/command";
 import {ironnode} from "../../lib/SDK";
-import {createDisplayTable} from "../../lib/Utils";
 import {keyFile} from "../../lib/sharedFlags";
+import {createDisplayTable} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * User device list command. Gets a list of a users devices and displays their ID, name, timestamps, and whether the device is their current device.

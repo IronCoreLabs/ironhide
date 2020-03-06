@@ -137,7 +137,7 @@ export default async function authenticate() {
         });
         //Startup the local server and once it's up and running, open up the users browser to Auth0 to start the login process
         server.listen(LOCAL_PORT, () => {
-            open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
+            open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state), {url: true}).catch(() => {
                 server.close(); //Don't leave server open on error
                 throw new CLIError("Failed to kick of authentication workflow. Please try again");
             });

@@ -1,10 +1,10 @@
 import {ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * Group create command. Creates a new group with the user provided ID. Auto adds the creator of the group as a member and an admin.

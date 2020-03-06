@@ -1,8 +1,8 @@
 import {Command} from "@oclif/command";
-import chalk from "chalk";
 import cli from "cli-ux";
 import * as fs from "fs";
 import {ironnode} from "../lib/SDK";
+import chalk = require("chalk");
 
 /**
  * Logout command. Confirms that the user wants to delete their local keys and if so, removes the public keys from the identity DB and

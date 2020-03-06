@@ -1,9 +1,9 @@
 import {UserPublicKeyGetResponse} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * User lookup command. Attempts to retrieve public keys for a list of users given their email addresses.

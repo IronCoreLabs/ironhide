@@ -1,20 +1,20 @@
-import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
-import * as fs from "fs";
 import {DocumentAccessList, DocumentAccessResponse, ErrorCodes} from "@ironcorelabs/ironnode";
-import {ironnode} from "../../lib/SDK";
+import {Command, flags as flagtype} from "@oclif/command";
+import * as fs from "fs";
 import * as GroupMaps from "../../lib/GroupMaps";
+import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {
-    ErrorOr,
-    isError,
-    convertUserAndGroupToAccessList,
-    normalizePathToFile,
-    createDisplayTable,
-    fileAccessResponseToTableRow,
-    checkSourceFilePermissions,
     buildCommandSampleText,
+    checkSourceFilePermissions,
+    convertUserAndGroupToAccessList,
+    createDisplayTable,
+    ErrorOr,
+    fileAccessResponseToTableRow,
+    isError,
+    normalizePathToFile,
 } from "../../lib/Utils";
+import chalk = require("chalk");
 
 type FileGrantResponse = ErrorOr<{
     source: string;

@@ -1,11 +1,11 @@
+import {GroupDetailResponse, GroupMetaResponse} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import * as Table from "cli-table3";
-import {GroupMetaResponse, GroupDetailResponse} from "@ironcorelabs/ironnode";
-import {buildCommandSampleText} from "../../lib/Utils";
-import {ironnode} from "../../lib/SDK";
 import * as GroupMaps from "../../lib/GroupMaps";
+import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
+import {buildCommandSampleText} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * Group info command. Retrieves a group given its name or ID and displays information about the group including the
