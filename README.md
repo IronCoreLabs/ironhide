@@ -3,7 +3,7 @@ IronHide
 
 Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.
 
-Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-better-team-encryption-8950117dc6f0)
+Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-better-team-encryption-8950117dc6f0).
 
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Fironhide.svg)](https://www.npmjs.com/package/@ironcorelabs/ironhide)
 [![Build Status](https://travis-ci.org/IronCoreLabs/ironhide.svg?branch=master)](https://travis-ci.org/IronCoreLabs/ironhide)
@@ -18,8 +18,7 @@ This installs IronHide as a global package on your system and adds `ironhide` as
 
 ### Install troubleshooting
 
-If the install doesn't work due to an `EACCES: permission denied, mkdir ...` error, try adding `--unsafe-perm` to the install
-command.
+If the install doesn't work due to an `EACCES: permission denied, mkdir ...` error, try adding `--unsafe-perm` to the install command.
 
 ## Example Usage
 
@@ -47,10 +46,12 @@ At that point, he will no longer be able to decrypt the `secrets.json.iron` file
 
 ## Supported Platforms
 
-|           | Node 8 | Node 10 | Node 12 |
-| --------- | ------ | ------- | ------- |
-| Linux x64 |    ✓   |    ✓    |    ✓    |
-| OSX x64   |    ✓   |    ✓    |    ✓    |
+|                     | Node 10 | Node 12 |
+| ------------------- | ------- | ------- |
+| Linux x64 glibc     | ✓       | ✓       |
+| Linux x64 musl-libc | ✓       | ✓       |
+| OSX x64             | ✓       | ✓       |
+| Windows x64         | ✓       | ✓       |
 
 ## Overview
 

@@ -3,6 +3,7 @@
 ## 0.7.0
 
 + **Breaking Change**: Removed Node 8 support
++ Added support for running on Windows
 + Added new command (`ironhide user:changepassphrase`) to allow users to change their current private key escrow passphrase
 + Updated dependencies
 
