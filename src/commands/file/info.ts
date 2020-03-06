@@ -1,12 +1,12 @@
+import {DocumentMetaResponse, ErrorCodes} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import {ErrorCodes, DocumentMetaResponse} from "@ironcorelabs/ironnode";
 import * as fs from "fs";
 import {basename} from "path";
-import chalk from "chalk";
-import {keyFile} from "../../lib/sharedFlags";
 import * as GroupMaps from "../../lib/GroupMaps";
-import {ErrorOr, isError, normalizePathToFile, createDisplayTable, checkSourceFilePermissions, buildCommandSampleText} from "../../lib/Utils";
 import {ironnode} from "../../lib/SDK";
+import {keyFile} from "../../lib/sharedFlags";
+import {buildCommandSampleText, checkSourceFilePermissions, createDisplayTable, ErrorOr, isError, normalizePathToFile} from "../../lib/Utils";
+import chalk = require("chalk");
 
 type FileMetaResult = ErrorOr<{
     source: string;

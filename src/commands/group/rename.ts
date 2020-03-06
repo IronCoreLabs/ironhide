@@ -1,9 +1,9 @@
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {buildCommandSampleText} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * Change the name of a group given its existing name or ID and a new name to update it to.

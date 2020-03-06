@@ -1,10 +1,10 @@
 import {GroupDetailResponse} from "@ironcorelabs/ironnode";
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import cli from "cli-ux";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
+import chalk = require("chalk");
 
 export default class Delete extends Command {
     static description = "Delete a group given its name or ID. Once deleted all files encrypted to only the group will no longer be able to be decrypted.";
@@ -31,9 +31,7 @@ export default class Delete extends Command {
             group = (await ironnode().group.get(groupID)) as GroupDetailResponse;
             this.log(
                 chalk.yellowBright(
-                    `\nWarning! Deleting a group will cause all documents encrypted to only that group to no longer be decryptable! The group you are trying to delete has ${
-                        group.groupAdmins.length
-                    } admin(s) and ${group.groupMembers.length} member(s).\n`
+                    `\nWarning! Deleting a group will cause all documents encrypted to only that group to no longer be decryptable! The group you are trying to delete has ${group.groupAdmins.length} admin(s) and ${group.groupMembers.length} member(s).\n`
                 )
             );
         } catch (e) {

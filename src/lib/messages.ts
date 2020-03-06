@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk = require("chalk");
 
 /**
  * Text that gets displayed when user runs ironhide login

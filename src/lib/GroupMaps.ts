@@ -1,9 +1,9 @@
 import {GroupMetaResponse} from "@ironcorelabs/ironnode";
 import {CLIError} from "@oclif/errors";
-import chalk from "chalk";
 import cli from "cli-ux";
 import {ironnode} from "./SDK";
 import {createDisplayTable} from "./Utils";
+import chalk = require("chalk");
 
 export interface GroupsByName {
     [groupIndex: string]: GroupMetaResponse | GroupMetaResponse[];

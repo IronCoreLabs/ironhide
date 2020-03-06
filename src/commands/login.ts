@@ -1,6 +1,5 @@
 import * as IronNode from "@ironcorelabs/ironnode";
 import {Command} from "@oclif/command";
-import chalk from "chalk";
 import cli from "cli-ux";
 import * as fs from "fs";
 import * as os from "os";
@@ -9,6 +8,7 @@ import authenticate from "../lib/authenticate";
 import * as Logger from "../lib/Logger";
 import * as messages from "../lib/messages";
 import {validateExistingKeys} from "../lib/Utils";
+import chalk = require("chalk");
 
 export default class Login extends Command {
     public static aliases = ["init"];

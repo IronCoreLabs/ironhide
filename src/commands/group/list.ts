@@ -1,8 +1,8 @@
 import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {createDisplayTable} from "../../lib/Utils";
+import chalk = require("chalk");
 
 /**
  * Group list command. Retrieves all groups that the user is a part of and displays them in a table to the console.

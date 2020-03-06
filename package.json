@@ -1,17 +1,18 @@
 {
     "name": "@ironcorelabs/ironhide",
     "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
-    "version": "0.6.2",
+    "version": "0.7.0",
     "author": "IronCore Labs",
     "repository": "https://github.com/IronCoreLabs/ironhide",
     "homepage": "https://github.com/IronCoreLabs/ironhide",
     "license": "MIT",
     "engines": {
-        "node": ">=8.0.0"
+        "node": ">=10.0.0"
     },
     "os": [
         "darwin",
-        "linux"
+        "linux",
+        "win32"
     ],
     "cpu": [
         "x64"
@@ -34,40 +35,40 @@
         "checkcov": "nyc check-coverage --lines 80 --functions 80 --branches 70"
     },
     "dependencies": {
-        "@ironcorelabs/ironnode": "0.7.3",
-        "@oclif/command": "1.5.18",
-        "@oclif/config": "1.13.2",
-        "@oclif/plugin-help": "2.2.0",
-        "@oclif/plugin-not-found": "1.2.2",
+        "@ironcorelabs/ironnode": "0.8.0",
+        "@oclif/command": "1.5.19",
+        "@oclif/config": "1.14.0",
+        "@oclif/plugin-help": "2.2.3",
+        "@oclif/plugin-not-found": "1.2.3",
         "@oclif/plugin-warn-if-update-available": "1.7.0",
-        "chalk": "2.4.2",
+        "chalk": "3.0.0",
         "cli-table3": "0.5.1",
         "node-fetch": "2.6.0",
-        "open": "6.4.0",
-        "tslib": "1.10.0",
-        "wrap-ansi": "6.0.0"
+        "open": "7.0.2",
+        "tslib": "1.11.1",
+        "wrap-ansi": "6.2.0"
     },
     "devDependencies": {
         "@oclif/dev-cli": "^1",
         "@oclif/test": "^1",
         "@oclif/tslint": "^3",
-        "@types/chai": "^4.2.0",
+        "@types/chai": "^4.2.10",
         "@types/chai-as-promised": "^7.1.2",
-        "@types/mocha": "^5",
-        "@types/node": "^12.7.1",
-        "@types/node-fetch": "^2.5.0",
+        "@types/mocha": "^7",
+        "@types/node": "^13",
+        "@types/node-fetch": "^2.5.5",
         "@types/wrap-ansi": "^3.0.0",
         "chai": "^4",
         "chai-as-promised": "^7.1.1",
-        "globby": "^10",
-        "mocha": "^6",
-        "nock": "^10.0.6",
-        "nyc": "^14",
-        "sinon": "^7.4.1",
+        "globby": "^11",
+        "mocha": "^7",
+        "nock": "^12.0.2",
+        "nyc": "^15",
+        "sinon": "^9.0.0",
         "ts-node": "^8",
         "tslint": "^5",
         "tslint-no-unused-expression-chai": "^0.1.4",
-        "typescript": "^3.5.3",
+        "typescript": "^3.8.3",
         "typestrict": "^1.0.2"
     },
     "oclif": {
@@ -109,5 +110,14 @@
         "bracketSpacing": false,
         "jsxBracketSameLine": true,
         "arrowParens": "always"
+    },
+    "mocha": {
+        "recursive": true,
+        "reporter": "spec",
+        "timeout": 5000,
+        "watchExtensions": [
+            "ts"
+        ],
+        "require": "ts-node/register"
     }
 }

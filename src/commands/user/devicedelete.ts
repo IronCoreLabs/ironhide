@@ -1,9 +1,9 @@
-import {Command, flags as flagtype} from "@oclif/command";
-import chalk from "chalk";
 import {UserDeviceListResponse} from "@ironcorelabs/ironnode";
+import {Command, flags as flagtype} from "@oclif/command";
 import {ironnode} from "../../lib/SDK";
-import {ErrorOr, isError, buildCommandSampleText} from "../../lib/Utils";
 import {keyFile} from "../../lib/sharedFlags";
+import {buildCommandSampleText, ErrorOr, isError} from "../../lib/Utils";
+import chalk = require("chalk");
 
 type DeviceDeleteResult = ErrorOr<{id: number}>;
 
