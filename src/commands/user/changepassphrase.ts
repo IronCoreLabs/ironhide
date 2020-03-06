@@ -29,10 +29,6 @@ export default class ChangePassphrase extends Command {
             return this.exit(0); //User command-C'd so just bail out
         }
 
-        console.log(`CURRENT: ${currentPassphrase}`);
-        console.log(`New: ${newPassphrase}`);
-        console.log(`Confirm: ${confirmNewPassphrase}`);
-
         if (confirmNewPassphrase !== newPassphrase) {
             return this.error(chalk.red("New passphrase and confirm passphrase do not match!"));
         }
