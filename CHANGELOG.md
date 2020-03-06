@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
++ **Breaking Change**: Removed Node 8 support
++ Added new command (`ironhide user:changepassphrase`) to allow users to change their current private key escrow passphrase
++ Updated dependencies
+
 ## 0.6.2
 
 + Upgrade to latest IronNode release.
