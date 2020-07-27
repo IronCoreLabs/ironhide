@@ -41,7 +41,7 @@ export default class Info extends Command {
      * user is an admin of the group.
      */
     buildGroupDetailTable(group: GroupMetaResponse | GroupDetailResponse) {
-        const table = new Table() as Table.VerticalTable;
+        const table = new Table() as Table.GenericTable<Table.VerticalTableRow>;
 
         const check = chalk.green("✔");
         const nope = chalk.red("✖");
