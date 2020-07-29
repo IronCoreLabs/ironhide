@@ -1,7 +1,7 @@
 {
     "name": "@ironcorelabs/ironhide",
     "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "author": "IronCore Labs",
     "repository": "https://github.com/IronCoreLabs/ironhide",
     "homepage": "https://github.com/IronCoreLabs/ironhide",
