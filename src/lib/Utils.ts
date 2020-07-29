@@ -146,7 +146,7 @@ export function convertUserAndGroupToAccessList(providedUserIDs: string[] | unde
 export function createDisplayTable(columns: string[]) {
     return new Table({
         head: columns.map((columnLabel) => chalk.blue(columnLabel)),
-    }) as Table.HorizontalTable;
+    }) as Table.GenericTable<Table.HorizontalTableRow>;
 }
 
 /**

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
++ Updated dependencies
+
 ## 0.7.0
 
 + **Breaking Change**: Removed Node 8 support
