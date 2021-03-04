@@ -6,7 +6,7 @@ Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, bu
 Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-better-team-encryption-8950117dc6f0).
 
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Fironhide.svg)](https://www.npmjs.com/package/@ironcorelabs/ironhide)
-[![Build Status](https://travis-ci.org/IronCoreLabs/ironhide.svg?branch=master)](https://travis-ci.org/IronCoreLabs/ironhide)
+[![Build Status](https://travis-ci.org/IronCoreLabs/ironhide.svg?branch=main)](https://travis-ci.org/IronCoreLabs/ironhide)
 
 ![](https://media.giphy.com/media/uZDTYzxdYzmbS/giphy.gif)
 

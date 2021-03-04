@@ -3,7 +3,7 @@ node_js:
     - "10"
 branches:
     only:
-        - master
+        - main
 notifications:
     email:
         on_success: change
