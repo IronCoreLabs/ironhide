@@ -1,0 +1,27 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+jobs:
+    test:
+        strategy:
+            matrix:
+                # should always reflect the support matrix in the readme
+                node-version: [10.x, 12.x]
+        runs-on: ubuntu-18.04
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install modules
+              run: yarn
+            - name: Run tests
+              run: yarn test --exclude test/lib/Logger.test.ts
+            - name: Check coverage
+              run: yarn run checkcov
