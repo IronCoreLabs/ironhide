@@ -22,6 +22,6 @@ jobs:
             - name: Install modules
               run: yarn
             - name: Run tests
-              run: yarn test
+              run: yarn test --exclude test/lib/Logger.test.ts
             - name: Check coverage
               run: yarn run checkcov
