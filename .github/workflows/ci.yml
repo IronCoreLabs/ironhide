@@ -24,4 +24,4 @@ jobs:
             - name: Run tests
               run: yarn test
             - name: Check coverage
-            - run: yarn run checkcov
+              run: yarn run checkcov
