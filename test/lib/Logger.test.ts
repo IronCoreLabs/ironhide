@@ -5,7 +5,7 @@ describe("Logger", () => {
     describe("info", () => {
         fancy.stdout().it("converts objects to strings and logs message to stdout", (output) => {
             Logger.info({foo: "bar"});
-            expect(output.stdout).to.contain("{ foo: 'bar' }\n");
+            expect(output.stdout.replace("\n", "")).to.contain("{ foo: 'bar' }");
         });
 
         fancy.stdout().it("adds newlines for long strings", (output) => {
