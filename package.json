@@ -43,7 +43,7 @@
         "@oclif/plugin-warn-if-update-available": "1.7.0",
         "chalk": "4.1.0",
         "cli-table3": "0.6.0",
-        "node-fetch": "2.6.1",
+        "node-fetch": "3.1.1",
         "open": "7.1.0",
         "tslib": "1.11.1",
         "wrap-ansi": "7.0.0"
