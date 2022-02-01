@@ -46,11 +46,12 @@ At that point, he will no longer be able to decrypt the `secrets.json.iron` file
 
 ## Supported Platforms
 
-|                     | Node 10 | Node 12 |
+|                     | Node 14 | Node 16 |
 | ------------------- | ------- | ------- |
 | Linux x64 glibc     | ✓       | ✓       |
 | Linux x64 musl-libc | ✓       | ✓       |
 | OSX x64             | ✓       | ✓       |
+| OSX arm64           | ✓       | ✓       |
 | Windows x64         | ✓       | ✓       |
 
 ## Overview
@@ -109,4 +110,4 @@ IronHide is built using the [IronCore Labs IronNode SDK](https://github.com/Iron
 
 IronHide is licensed under the [GNU Affero General Public License](LICENSE). We also offer commercial licenses - [email](mailto:info@ironcorelabs.com) for more information.
 
-Copyright (c)  2018-present  IronCore Labs, Inc. All rights reserved.
+Copyright (c)  2022  IronCore Labs, Inc. All rights reserved.

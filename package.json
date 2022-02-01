@@ -1,13 +1,13 @@
 {
     "name": "@ironcorelabs/ironhide",
     "description": "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.",
-    "version": "0.7.1",
+    "version": "0.8.0",
     "author": "IronCore Labs",
     "repository": "https://github.com/IronCoreLabs/ironhide",
     "homepage": "https://github.com/IronCoreLabs/ironhide",
     "license": "MIT",
     "engines": {
-        "node": ">=10.0.0"
+        "node": ">=14.0.0"
     },
     "os": [
         "darwin",
@@ -15,7 +15,8 @@
         "win32"
     ],
     "cpu": [
-        "x64"
+        "x64",
+        "arm64"
     ],
     "bin": {
         "ironhide": "./bin/run"
@@ -35,7 +36,7 @@
         "checkcov": "nyc check-coverage --lines 80 --functions 80 --branches 70"
     },
     "dependencies": {
-        "@ironcorelabs/ironnode": "0.8.1",
+        "@ironcorelabs/ironnode": "0.9.1",
         "@oclif/command": "1.7.0",
         "@oclif/config": "1.16.0",
         "@oclif/plugin-help": "2.2.3",
@@ -43,7 +44,7 @@
         "@oclif/plugin-warn-if-update-available": "1.7.0",
         "chalk": "4.1.0",
         "cli-table3": "0.6.0",
-        "node-fetch": "2.6.1",
+        "node-fetch": "2.6.7",
         "open": "7.1.0",
         "tslib": "1.11.1",
         "wrap-ansi": "7.0.0"
