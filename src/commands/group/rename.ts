@@ -1,4 +1,4 @@
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
@@ -23,7 +23,7 @@ export default class Rename extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [buildCommandSampleText("group:rename myGroup newGroup")];
@@ -35,7 +35,7 @@ export default class Rename extends Command {
         let doesGroupExist: boolean = false;
         try {
             doesGroupExist = await GroupMaps.doesGroupNameAlreadyExist(groupName);
-        } catch (e) {
+        } catch (e: any) {
             this.log(e);
             this.error(chalk.red("Unable to make group rename request."));
         }
@@ -46,7 +46,7 @@ export default class Rename extends Command {
     }
 
     async run() {
-        const {args} = this.parse(Rename);
+        const {args} = await this.parse(Rename);
         if (args.newGroupName.includes(",") || args.newGroupName.includes("^")) {
             return this.error("Group names cannot contain commas or carets.");
         }

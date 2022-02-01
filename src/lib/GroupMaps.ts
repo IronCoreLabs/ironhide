@@ -1,6 +1,6 @@
 import {GroupMetaResponse} from "@ironcorelabs/ironnode";
 import {CLIError} from "@oclif/errors";
-import cli from "cli-ux";
+import {CliUx} from "@oclif/core";
 import {ironnode} from "./SDK";
 import {createDisplayTable} from "./Utils";
 import chalk = require("chalk");
@@ -22,21 +22,17 @@ let groupsByIndexCache = {
 /**
  * Check if the provided group ID is actually a fixed ID value.
  */
-function isGroupID(providedGroupValue: string) {
-    return providedGroupValue.startsWith(GROUP_ID_PREFIX);
-}
+const isGroupID = (providedGroupValue: string) => providedGroupValue.startsWith(GROUP_ID_PREFIX);
 
 /**
  * Typeguard to check whether the provided group-by-name value is an array of groups or a single group.
  */
-function isMultipleGroups(groupList: GroupMetaResponse | GroupMetaResponse[]): groupList is GroupMetaResponse[] {
-    return Array.isArray(groupList);
-}
+const isMultipleGroups = (groupList: GroupMetaResponse | GroupMetaResponse[]): groupList is GroupMetaResponse[] => Array.isArray(groupList);
 
 /**
  * Convert a list of groups from the SDK response into a map from the provided index (name or ID) to the group details.
  */
-function createGroupMapByIndex(groupResult: GroupMetaResponse[]) {
+const createGroupMapByIndex = (groupResult: GroupMetaResponse[]) => {
     const groupsByIndex = {
         groupsByName: {} as GroupsByName,
         groupsByID: {} as GroupsByID,
@@ -60,13 +56,13 @@ function createGroupMapByIndex(groupResult: GroupMetaResponse[]) {
         }
         return maps;
     }, groupsByIndex);
-}
+};
 
 /**
  * Get a list of the users groups and create maps from the results to groups keyed by ID and groups keyed by name in the local cache
  * so we can store them for later.
  */
-function populateUsersGroups(): Promise<[GroupsByName, GroupsByID]> {
+const populateUsersGroups = (): Promise<[GroupsByName, GroupsByID]> => {
     if (hasRequestedGroups) {
         return Promise.resolve([groupsByIndexCache.groupsByName, groupsByIndexCache.groupsByID] as [GroupsByName, GroupsByID]);
     }
@@ -77,17 +73,17 @@ function populateUsersGroups(): Promise<[GroupsByName, GroupsByID]> {
             hasRequestedGroups = true;
             return [groupsByIndexCache.groupsByName, groupsByIndexCache.groupsByID] as [GroupsByName, GroupsByID];
         });
-}
+};
 
 /**
  * Get a value from the user in a prompt and make sure they entered a valid number for a choice of which group
  * to select.
  */
-async function getGroupChoice(size: number): Promise<number> {
-    let choice: string = "1";
+const getGroupChoice = async (size: number): Promise<number> => {
+    let choice = "1";
     try {
         const questionRange = chalk.gray(`(1 - ${size})`);
-        choice = await cli.prompt(`${chalk.magenta("Enter a choice")} ${questionRange}`);
+        choice = (await CliUx.ux.prompt(`${chalk.magenta("Enter a choice")} ${questionRange}`)) as string;
     } catch (_) {
         //User exited out, so bail
         process.exit(0);
@@ -98,14 +94,14 @@ async function getGroupChoice(size: number): Promise<number> {
     }
     console.log(chalk.red("Invalid option, please try again."));
     return getGroupChoice(size);
-}
+};
 
 /**
  * Given a list of groups with duplicate names, get the underlying ID of the group the user wants to use for this
  * operation.
  */
-async function getUsersGroupChoice(groupName: string, groups: GroupMetaResponse[]): Promise<string> {
-    return new Promise((resolve: (groupID: string) => void) => {
+const getUsersGroupChoice = async (groupName: string, groups: GroupMetaResponse[]): Promise<string> =>
+    new Promise((resolve: (groupID: string) => void) => {
         const check = chalk.green("✔");
         const nope = chalk.red("✖");
         console.log(chalk.yellow(`\nMultiple groups found with the provided name '${groupName}', which one do you want to use?\n`));
@@ -125,23 +121,22 @@ async function getUsersGroupChoice(groupName: string, groups: GroupMetaResponse[
             .then((groupIndexChoice) => resolve(groups[groupIndexChoice].groupID))
             .catch(() => process.exit(-1));
     });
-}
 
 /**
  * Clear group list cache. Used only within unit tests.
  */
-export function clearCache() {
+export const clearCache = () => {
     hasRequestedGroups = false;
     groupsByIndexCache = {
         groupsByName: {},
         groupsByID: {},
     };
-}
+};
 
 /**
  * Get a map from group ID to group information for all the groups the user is a part of.
  */
-export async function getGroupMaps(): Promise<[GroupsByName, GroupsByID]> {
+export const getGroupMaps = async (): Promise<[GroupsByName, GroupsByID]> => {
     let groupsByID: GroupsByID;
     let groupsByName: GroupsByName;
     try {
@@ -151,13 +146,13 @@ export async function getGroupMaps(): Promise<[GroupsByName, GroupsByID]> {
         throw new CLIError("Unable to make request to lookup group information.");
     }
     return [groupsByName, groupsByID];
-}
+};
 
 /**
  * Take a list of group names and map them to a list of group IDs. If any name provided can't be mapped to a name
  * it will come back unmodified.
  */
-export async function convertGroupNamesToIDs(groupNames: string[] | undefined, groupsByName: GroupsByName) {
+export const convertGroupNamesToIDs = async (groupNames: string[] | undefined, groupsByName: GroupsByName) => {
     if (!groupNames || !groupNames.length) {
         return Promise.resolve([]);
     }
@@ -186,13 +181,13 @@ export async function convertGroupNamesToIDs(groupNames: string[] | undefined, g
     }, Promise.resolve([] as string[]));
 
     return resolvedNames;
-}
+};
 
 /**
  * Given a group name, lookup the groups that the user is a part of and attempt to get the ID of
  * the group. Will return null if user isn't a member or admin of any group with the provided name.
  */
-export async function getGroupIDFromName(groupName: string) {
+export const getGroupIDFromName = async (groupName: string) => {
     if (isGroupID(groupName)) {
         return Promise.resolve(groupName.substring(GROUP_ID_PREFIX.length));
     }
@@ -210,13 +205,9 @@ export async function getGroupIDFromName(groupName: string) {
         return getUsersGroupChoice(groupName, groupAtIndex);
     }
     return Promise.resolve(groupAtIndex.groupID);
-}
+};
 
 /**
  * Given a group name, see if the user is already part of a group with the same name.
  */
-export function doesGroupNameAlreadyExist(groupName: string) {
-    return populateUsersGroups().then(([groupsByName]) => {
-        return groupsByName[groupName] !== undefined;
-    });
-}
+export const doesGroupNameAlreadyExist = (groupName: string) => populateUsersGroups().then(([groupsByName]) => groupsByName[groupName] !== undefined);

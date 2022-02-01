@@ -7,7 +7,7 @@
     "homepage": "https://github.com/IronCoreLabs/ironhide",
     "license": "MIT",
     "engines": {
-        "node": ">=10.0.0"
+        "node": ">=14.0.0"
     },
     "os": [
         "darwin",
@@ -15,7 +15,8 @@
         "win32"
     ],
     "cpu": [
-        "x64"
+        "x64",
+        "arm64"
     ],
     "bin": {
         "ironhide": "./bin/run"
@@ -25,53 +26,68 @@
         "/lib",
         "oclif.manifest.json"
     ],
+    "main": "index.js",
     "scripts": {
         "postpack": "rm -f oclif.manifest.json",
-        "prepack": "yarn test && rm -rf lib && rm -rf tsconfig.tsbuildinfo && tsc -b && oclif-dev manifest",
-        "lint": "tslint -p \"tsconfig.json\" -e \"test/**\" \"src/**/*.ts\"",
+        "prepack": "yarn test && rm -rf lib && rm -rf tsconfig.tsbuildinfo && tsc -b && oclif manifest",
+        "lint": "eslint -c .eslintrc.js src/**/*.ts",
         "unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
         "test": "yarn run lint && yarn run unit",
         "start": "node bin/run",
         "checkcov": "nyc check-coverage --lines 80 --functions 80 --branches 70"
     },
     "dependencies": {
-        "@ironcorelabs/ironnode": "0.8.1",
-        "@oclif/command": "1.7.0",
-        "@oclif/config": "1.16.0",
-        "@oclif/plugin-help": "2.2.3",
-        "@oclif/plugin-not-found": "1.2.4",
-        "@oclif/plugin-warn-if-update-available": "1.7.0",
+        "@ironcorelabs/ironnode": "0.9.1",
+        "@oclif/core": "^1.3.0",
+        "@oclif/errors": "^1.3.5",
+        "@oclif/plugin-help": "5.1.10",
+        "@oclif/plugin-not-found": "2.3.1",
+        "@oclif/plugin-warn-if-update-available": "2.0.4",
         "chalk": "4.1.0",
-        "cli-table3": "0.6.0",
-        "node-fetch": "2.6.1",
-        "open": "7.1.0",
-        "tslib": "1.11.1",
-        "wrap-ansi": "7.0.0"
+        "cli-table3": "0.6.1",
+        "node-fetch": "3.2.0",
+        "open": "8.4.0",
+        "tslib": "2.3.1",
+        "wrap-ansi": "8.0.1"
     },
     "devDependencies": {
-        "@oclif/dev-cli": "^1",
-        "@oclif/test": "^1",
-        "@oclif/tslint": "^3",
-        "@types/chai": "^4.2.10",
+        "@oclif/test": "^2",
+        "@types/chai": "^4.3.0",
         "@types/chai-as-promised": "^7.1.3",
-        "@types/mocha": "^7",
-        "@types/node": "^13",
-        "@types/node-fetch": "^2.5.5",
-        "@types/wrap-ansi": "^3.0.0",
+        "@types/mocha": "^9",
+        "@types/node": "^16",
+        "@types/wrap-ansi": "^8.0.1",
+        "@typescript-eslint/eslint-plugin": "^5.10.2",
+        "@typescript-eslint/eslint-plugin-tslint": "^5.10.2",
+        "@typescript-eslint/parser": "^5.10.2",
         "chai": "^4",
         "chai-as-promised": "^7.1.1",
-        "globby": "^11",
-        "mocha": "^7",
-        "nock": "^12.0.2",
+        "eslint": "^8.8.0",
+        "eslint-plugin-import": "^2.25.4",
+        "eslint-plugin-jsdoc": "^37.7.0",
+        "eslint-plugin-oclif": "^0.1.0",
+        "eslint-plugin-prefer-arrow": "^1.2.3",
+        "eslint-plugin-sonarjs": "^0.11.0",
+        "eslint-plugin-unicorn": "^40.1.0",
+        "globby": "^13",
+        "mocha": "^9",
+        "nock": "^13.2.2",
         "nyc": "^15",
-        "sinon": "^9.0.2",
-        "ts-node": "^8",
-        "tslint": "^5",
-        "tslint-no-unused-expression-chai": "^0.1.4",
-        "typescript": "^3.9.7",
-        "typestrict": "^1.0.2"
+        "oclif": "^2.4.2",
+        "sinon": "^13",
+        "sonarjs": "^1.0.0",
+        "source-map-support": "^0.5.21",
+        "ts-node": "^10",
+        "typescript": "^4.5.5"
     },
     "oclif": {
+        "additionalHelpFlags": [
+            "-h"
+        ],
+        "additionalVersionFlags": [
+            "-v"
+        ],
+        "topicSeparator": " ",
         "commands": "./lib/commands",
         "hooks": {
             "prerun": [

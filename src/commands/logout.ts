@@ -1,5 +1,4 @@
-import {Command} from "@oclif/command";
-import cli from "cli-ux";
+import {Command, CliUx} from "@oclif/core";
 import * as fs from "fs";
 import {ironnode} from "../lib/SDK";
 import chalk = require("chalk");
@@ -13,9 +12,9 @@ export default class Logout extends Command {
         "Logout of ironhide and delete any local private keys. Those keys will also be deauthorized so they can no longer decrypt your data.";
 
     async run() {
-        this.parse(Logout);
+        await this.parse(Logout);
         const deviceKeysLocation = `${this.config.home}/.iron/keys`;
-        const doDelete = await cli.confirm(`${chalk.magenta("Really deauthorize this device and remove local private keys?")} ${chalk.gray("[y/n]")}`);
+        const doDelete = await CliUx.ux.confirm(`${chalk.magenta("Really deauthorize this device and remove local private keys?")} ${chalk.gray("[y/n]")}`);
         if (!doDelete) {
             return this.exit(0);
         }
@@ -32,8 +31,8 @@ export default class Logout extends Command {
             fs.accessSync(deviceKeysLocation, fs.constants.W_OK);
             fs.unlinkSync(deviceKeysLocation);
             this.log(chalk.green("You have been logged out. Use 'ironhide login' to log back in and authorize this device again."));
-        } catch (e) {
-            this.log(e);
+        } catch (e: unknown) {
+            this.log(chalk.red((e as Error).message));
             this.error(chalk.red(`Failed to remove local device keys as the key file ('${deviceKeysLocation}') could not be deleted.`));
         }
     }

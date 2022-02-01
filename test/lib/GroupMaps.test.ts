@@ -1,6 +1,6 @@
 import {expect, fancy} from "fancy-test";
+import {CliUx} from "@oclif/core";
 import * as chai from "chai";
-import cli from "cli-ux";
 import * as GroupMaps from "../../src/lib/GroupMaps";
 import * as SDK from "../../src/lib/SDK";
 import * as chaiAsPromised from "chai-as-promised";
@@ -77,7 +77,7 @@ describe("GroupMaps", () => {
 
         fancy
             .stdout()
-            .stub(cli, "prompt", () => (message: string) => Promise.resolve("1"))
+            .stub(CliUx.ux, "prompt", () => (message: string) => Promise.resolve("1"))
             .it("resolves duplicate groups with prompts", () => {
                 const groupsByName = {
                     group1: {groupID: "1"},
@@ -114,7 +114,7 @@ describe("GroupMaps", () => {
         describe("multiple group resolution", () => {
             validGroupMapTest
                 .stdout()
-                .stub(cli, "prompt", () => (message: string) => {
+                .stub(CliUx.ux, "prompt", () => (message: string) => {
                     //Log the message we invoked with so we can assert about it's value below in the stdout output
                     console.log(message);
                     return Promise.resolve("1");

@@ -1,6 +1,6 @@
 import {ErrorCodes} from "@ironcorelabs/ironnode";
 import {expect} from "@oclif/test";
-import cli from "cli-ux";
+import {CliUx} from "@oclif/core";
 import * as sinon from "sinon";
 import ChangePassphrase from "../../../src/commands/user/changepassphrase";
 import * as SDK from "../../../src/lib/SDK";
@@ -9,14 +9,8 @@ import hookBypass from "../hookBypass";
 describe("changepassphrase", () => {
     describe("fails if the users confirm passphrase doesnt match the original", () => {
         hookBypass
-            .stub(cli, "prompt", () => {
-                return sinon.stub().callsFake(() =>
-                    Promise.resolve(
-                        Math.random()
-                            .toString(36)
-                            .substring(2, 15)
-                    )
-                );
+            .stub(CliUx.ux, "prompt", () => {
+                return sinon.stub().callsFake(() => Promise.resolve(Math.random().toString(36).substring(2, 15)));
             })
             .it("displays expected error", async () => {
                 const changePassphraseCommand = new ChangePassphrase([], null as any);
@@ -34,7 +28,7 @@ describe("changepassphrase", () => {
             .stub(SDK, "ironnode", () => ({
                 user: {changePassword: () => Promise.resolve()},
             }))
-            .stub(cli, "prompt", () => {
+            .stub(CliUx.ux, "prompt", () => {
                 return sinon.stub().callsFake(() => Promise.resolve("passphrase"));
             })
             .it("displays expected error", async () => {
@@ -53,7 +47,7 @@ describe("changepassphrase", () => {
             .stub(SDK, "ironnode", () => ({
                 user: {changePassword: () => Promise.reject({code: ErrorCodes.USER_PASSCODE_CHANGE_FAILURE})},
             }))
-            .stub(cli, "prompt", () => {
+            .stub(CliUx.ux, "prompt", () => {
                 return sinon.stub().callsFake(() => Promise.resolve("passphrase"));
             })
             .it("displays expected error", async () => {
@@ -72,7 +66,7 @@ describe("changepassphrase", () => {
             .stub(SDK, "ironnode", () => ({
                 user: {changePassword: () => Promise.reject(new Error("forced error"))},
             }))
-            .stub(cli, "prompt", () => {
+            .stub(CliUx.ux, "prompt", () => {
                 return sinon.stub().callsFake(() => Promise.resolve("passphrase"));
             })
             .it("displays expected error", async () => {

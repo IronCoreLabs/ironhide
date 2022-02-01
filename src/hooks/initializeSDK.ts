@@ -1,5 +1,5 @@
 import {DeviceDetails, initialize} from "@ironcorelabs/ironnode";
-import {Hook, IConfig} from "@oclif/config";
+import {Hook, Interfaces} from "@oclif/core";
 import {CLIError, handle} from "@oclif/errors";
 import * as fs from "fs";
 import {set} from "../lib/SDK";
@@ -13,14 +13,14 @@ import {isFileReadable, normalizePathToFile, validateExistingKeys} from "../lib/
  * way that all other this.error calls happen. This also causes the Node process to exit, but with a non-zero exit code.
  */
 process.on("rejectionHandled", () => null);
-process.on("unhandledRejection", (_, promise) => promise.catch((e) => handle(new CLIError(e))));
+process.on("unhandledRejection", (_, promise) => {
+    promise.catch((e: any) => handle(new CLIError(e as Error)));
+});
 
 /**
  * Check the command being run and various flags to see if we shouldn't run SDK initialization prior to this command running.
  */
-function shouldBailOnSdkInit(commandID: string, args: string[]) {
-    return commandID === "login" || args.includes("-h") || args.includes("--help");
-}
+const shouldBailOnSdkInit = (commandID: string, args: string[]) => commandID === "login" || args.includes("-h") || args.includes("--help");
 
 /**
  * Parse -k/--keyfile flag to support multiple ways to provide this flag. Supports:
@@ -30,7 +30,7 @@ function shouldBailOnSdkInit(commandID: string, args: string[]) {
  * Note that for the last one the user will have to provide a normalized path to the file as bash et al won't auto expand the result. So if
  * the user tries to run `--keyfile=~/.iron/keys` it won't work since the `~/` won't expand properly.
  */
-function getKeyFileFlagValue(args: string[]) {
+const getKeyFileFlagValue = (args: string[]) => {
     //Support both -k and --keyfile as flags where the argument is provided after a space (-k path | --keyfile path)
     if (args.includes("-k") || args.includes("--keyfile")) {
         const keyFlagIndex = args.indexOf("-k") > -1 ? args.indexOf("-k") : args.indexOf("--keyfile");
@@ -52,13 +52,13 @@ function getKeyFileFlagValue(args: string[]) {
         }
     });
     return keyfileArgument;
-}
+};
 
 /**
  * Return a fully qualified path to the device key file to use for this operation. Defaults to the expected key directory unless
  * the user provides a `-k` option at which point we take the argument
  */
-function getConfigFilePath(config: IConfig, args: string[]) {
+const getConfigFilePath = (config: Interfaces.Config, args: string[]) => {
     const customKeyFileLocation = getKeyFileFlagValue(args);
     if (!customKeyFileLocation) {
         return `${config.home}/.iron/keys`;
@@ -72,16 +72,16 @@ function getConfigFilePath(config: IConfig, args: string[]) {
         throw new CLIError(`Value provided for keyfile '${customKeyFileLocation}' does not appear to be a file.`);
     }
     return fullKeyFilePath;
-}
+};
 
 /**
  * Read the device keys file from disk. Throws if the file is not accessible.
  */
-function readDeviceKeys(configPath: string): DeviceDetails {
+const readDeviceKeys = (configPath: string): DeviceDetails => {
     fs.accessSync(configPath, fs.constants.R_OK);
-    const config: DeviceDetails = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    const config = JSON.parse(fs.readFileSync(configPath, "utf8")) as DeviceDetails;
     return config;
-}
+};
 
 /**
  * oclif prerun hook that is responsible for looking up local device keys and initializing the IronNode SDK from those keys and storing
@@ -100,7 +100,7 @@ const hook: Hook<"prerun"> = async ({argv, Command, config}) => {
     if (!validateExistingKeys(configFilePath)) {
         throw new CLIError(`Device key file at '${configFilePath}' could not be successfully parsed or isn't in the expected format.`);
     }
-    let deviceKeys: any;
+    let deviceKeys: DeviceDetails;
     try {
         deviceKeys = readDeviceKeys(configFilePath);
     } catch (e) {
@@ -109,12 +109,14 @@ const hook: Hook<"prerun"> = async ({argv, Command, config}) => {
     try {
         const SDK = await initialize(deviceKeys.accountID, deviceKeys.segmentID, deviceKeys.deviceKeys.privateKey, deviceKeys.signingKeys.privateKey);
         set(SDK);
-    } catch (e) {
+    } catch (e: any) {
         //If init fails, throw an error unless the user is currently running the logout operation. Running the logout operation shouldn't fail to try and delete
         //the users local keys even if can't init can't be run. The logout command currently checks whether the SDK init completed before trying to delete the
         //device keys from the server.
         if (Command.id !== "logout") {
-            console.error(e.message);
+            if ((e as Error).message) {
+                console.error((e as Error).message);
+            }
             throw new CLIError("Failed to authenticate. Try logging out and logging back in again to generate a new set of keys.");
         }
     }

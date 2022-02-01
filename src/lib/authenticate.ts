@@ -22,37 +22,33 @@ const AUTH0_TOKEN_ENDPOINT = `${AUTH0_DOMAIN}/oauth/token`;
 /**
  * Verify that the token value we got from Auth0 contains our namespaced uid assertion.
  */
-function verifyJwtSubject(jwt: string) {
+const verifyJwtSubject = (jwt: string) => {
     const [, payload] = jwt.split(".");
-    const assertions = JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
+    const assertions = JSON.parse(Buffer.from(payload, "base64").toString("utf8")) as {"http://ironcore/uid"?: string};
     if (!assertions["http://ironcore/uid"]) {
         throw new Error("Auth0 token did not include email. Are you sure you approved the right permissions on login?");
     }
-}
+};
 
 /**
  * Build up the URL that we'll open the users browser to and append the provided challenge and state tokens.
  */
-function buildAuth0AuthorizeEndpoint(challenge: string, state: string) {
+const buildAuth0AuthorizeEndpoint = (challenge: string, state: string) => {
     return `${AUTH0_AUTHORIZE_ENDPOINT}&code_challenge=${challenge}&state=${state}`;
-}
+};
 
 /**
  * Convert the provided bytes into a url safe base64 string.
  */
-function base64URLEncode(bytes: Buffer) {
-    return bytes
-        .toString("base64")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, "");
-}
+const base64URLEncode = (bytes: Buffer) => {
+    return bytes.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+};
 
 /**
  * Build up request details to be able to convert an Auth0 auth code into a JWT token. Takes the code recieved from the initial
  * login workflow as well as the original random bytes we generated to validate this request.
  */
-function buildAuth0TokenEndpoint(authorizationCode: string, verifier: string) {
+const buildAuth0TokenEndpoint = (authorizationCode: string, verifier: string) => {
     return {
         url: AUTH0_TOKEN_ENDPOINT,
         options: {
@@ -67,7 +63,7 @@ function buildAuth0TokenEndpoint(authorizationCode: string, verifier: string) {
             }),
         },
     };
-}
+};
 
 /**
  * Generate the three tokens we need to complete the Auth0 login flow.
@@ -76,53 +72,61 @@ function buildAuth0TokenEndpoint(authorizationCode: string, verifier: string) {
  * + State: More random bytes that are used to prevent CSRF
  * Read more here: https://auth0.com/docs/api-auth/tutorials/authorization-code-grant-pkce
  */
-function getAuthTokens() {
+const getAuthTokens = () => {
     const verifier = base64URLEncode(crypto.randomBytes(32));
-    const challenge = base64URLEncode(
-        crypto
-            .createHash("sha256")
-            .update(verifier)
-            .digest()
-    );
+    const challenge = base64URLEncode(crypto.createHash("sha256").update(verifier).digest());
 
     return {
         verifier,
         challenge,
         state: crypto.randomBytes(32).toString("hex"),
     };
-}
+};
 
 /**
  * Take the authorization code and verifier and send it back to Auth0 to exchange it for
  * a ID token which is the JWT we need to initialize the IronNode SDK.
  */
-function getJwtFromAuthorizationCode(authCode: string, verifierToken: string): Promise<Auth0TokenResponse> {
+const getJwtFromAuthorizationCode = async (authCode: string, verifierToken: string): Promise<Auth0TokenResponse> => {
     const requestDetails = buildAuth0TokenEndpoint(authCode, verifierToken);
-    return fetch(requestDetails.url, requestDetails.options).then((resp) => resp.json());
-}
+    const resp = await fetch(requestDetails.url, requestDetails.options);
+    return (await resp.json()) as Auth0TokenResponse;
+};
 
 /**
  * Kick off the authorization flow. Starts up a local Node server that can be used as a redirect point to get an Auth0 authorization code
  * and also opens up the users browser to point to Auth0 for them to pick a service to authenticate with. Resolves with
  */
-export default async function authenticate() {
+const authenticate = async () => {
     const authFlowTokens = getAuthTokens();
     return new Promise<string>((resolve, reject) => {
-        const server = http.createServer(async (request, response) => {
+        const server = http.createServer();
+
+        //Startup the local server and once it's up and running, open up the users browser to Auth0 to start the login process
+        server.listen(LOCAL_PORT, () => {
+            open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state)).catch(() => {
+                server.close(); //Don't leave server open on error
+                throw new CLIError("Failed to kick of authentication workflow. Please try again");
+            });
+        });
+
+        // Node seems fine with taking an async function here, ignoring.
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        server.on("request", async (request, response) => {
             const {pathname, query} = url.parse(request.url as string, true);
             //We only need to support a single endpoint, otherwise show a 404
             if (pathname !== "/authorize") {
                 response.statusCode = 404;
-                return response.end("Not Found");
+                response.end("Not Found");
             }
             //Check that we got a code and that the state variable is the same to prevent CSRF
             if (typeof query.code !== "string" || query.state !== authFlowTokens.state) {
                 response.statusCode = 403;
-                return response.end("Error with authorization token. Please try again.");
+                response.end("Error with authorization token. Please try again.");
             }
             try {
                 //Now that we have a token, exchange it for a JWT
-                const auth0Tokens = await getJwtFromAuthorizationCode(query.code, authFlowTokens.verifier);
+                const auth0Tokens = await getJwtFromAuthorizationCode(query.code as string, authFlowTokens.verifier);
                 verifyJwtSubject(auth0Tokens.id_token);
                 response.statusCode = 302;
                 response.setHeader("Location", "https://github.com/IronCoreLabs/ironhide/wiki/Authentication-Successful!");
@@ -132,16 +136,10 @@ export default async function authenticate() {
                 resolve(auth0Tokens.id_token);
             } catch (e) {
                 server.close(); //Don't leave server open on error
-                return reject(e);
+                throw e;
             }
         });
-        //Startup the local server and once it's up and running, open up the users browser to Auth0 to start the login process
-        server.listen(LOCAL_PORT, () => {
-            open(buildAuth0AuthorizeEndpoint(authFlowTokens.challenge, authFlowTokens.state), {url: true}).catch(() => {
-                server.close(); //Don't leave server open on error
-                throw new CLIError("Failed to kick of authentication workflow. Please try again");
-            });
-        });
+
         server.on("error", (error) => {
             if (error) {
                 server.close(); //Don't leave server open on error
@@ -149,4 +147,6 @@ export default async function authenticate() {
             }
         });
     });
-}
+};
+
+export default authenticate;

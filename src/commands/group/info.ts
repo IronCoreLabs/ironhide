@@ -1,5 +1,5 @@
 import {GroupDetailResponse, GroupMetaResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import * as Table from "cli-table3";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
@@ -21,7 +21,7 @@ export default class Info extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [
@@ -61,7 +61,7 @@ export default class Info extends Command {
     }
 
     async run() {
-        const {args} = this.parse(Info);
+        const {args} = await this.parse(Info);
         const groupID = await GroupMaps.getGroupIDFromName(args.group);
 
         try {

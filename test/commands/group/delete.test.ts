@@ -1,5 +1,5 @@
 import {expect} from "@oclif/test";
-import cli from "cli-ux";
+import {CliUx} from "@oclif/core";
 import * as sinon from "sinon";
 import Delete from "../../../src/commands/group/delete";
 import * as SDK from "../../../src/lib/SDK";
@@ -35,7 +35,7 @@ describe("groupDelete", () => {
             .stdout()
             .stub(GroupMaps, "getGroupIDFromName", () => Promise.resolve("mockedGroupID"))
             .stub(GroupMaps, "getGroupMaps", () => Promise.resolve([[], {mockedGroupID: {isAdmin: true}}]))
-            .stub(cli, "prompt", () => (message: string) => Promise.resolve("groupName"))
+            .stub(CliUx.ux, "prompt", () => (message: string) => Promise.resolve("groupName"))
             .stub(SDK, "ironnode", () => {
                 const getMock = () => Promise.reject(new Error("Failed to get group"));
                 return getMockedGroupDeleteResponse(() => Promise.resolve(null), getMock);
@@ -52,7 +52,7 @@ describe("groupDelete", () => {
     describe("fails when confirmation value did not match original group name", () => {
         hookBypass
             .stdout()
-            .stub(cli, "prompt", () => (message: string) => Promise.resolve("nonMatchingName"))
+            .stub(CliUx.ux, "prompt", () => (message: string) => Promise.resolve("nonMatchingName"))
             .stub(GroupMaps, "getGroupIDFromName", () => Promise.resolve("mockedGroupID"))
             .stub(GroupMaps, "getGroupMaps", () => Promise.resolve([[], {mockedGroupID: {isAdmin: true}}]))
             .stub(SDK, "ironnode", () => {
@@ -76,7 +76,7 @@ describe("groupDelete", () => {
     describe("request failure handling when SDK throws", () => {
         hookBypass
             .stdout()
-            .stub(cli, "prompt", () => (message: string) => Promise.resolve("groupName"))
+            .stub(CliUx.ux, "prompt", () => (message: string) => Promise.resolve("groupName"))
             .stub(GroupMaps, "getGroupIDFromName", () => Promise.resolve("mockedGroupID"))
             .stub(GroupMaps, "getGroupMaps", () => Promise.resolve([[], {mockedGroupID: {isAdmin: true}}]))
             .stub(SDK, "ironnode", () => {
@@ -102,7 +102,7 @@ describe("groupDelete", () => {
         let deleteMock: any;
         hookBypass
             .stdout()
-            .stub(cli, "prompt", () => (message: string) => Promise.resolve("groupName"))
+            .stub(CliUx.ux, "prompt", () => (message: string) => Promise.resolve("groupName"))
             .stub(GroupMaps, "getGroupIDFromName", () => Promise.resolve("mockedGroupID"))
             .stub(GroupMaps, "getGroupMaps", () => Promise.resolve([[], {mockedGroupID: {isAdmin: true}}]))
             .stub(SDK, "ironnode", () => {

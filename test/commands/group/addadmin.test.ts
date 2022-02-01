@@ -6,7 +6,7 @@ import * as GroupMaps from "../../../src/lib/GroupMaps";
 import * as SDK from "../../../src/lib/SDK";
 import hookBypass from "../hookBypass";
 
-function getMockedGroupAddAdminResponse(mock: any) {
+function getMockedGroupAddAdminResponse<T>(mock: Promise<T> | sinon.SinonSpy) {
     return {
         group: {
             addAdmins: typeof mock === "function" ? mock : () => mock,
@@ -55,7 +55,7 @@ describe("groupAddAdmin", () => {
     });
 
     describe("makes request to API to remove admins and displays removal results", () => {
-        let apiMock: any;
+        let apiMock: sinon.SinonSpy;
         hookBypass
             .stdout()
             .stub(GroupMaps, "getGroupIDFromName", () => Promise.resolve("lookupGroupID"))

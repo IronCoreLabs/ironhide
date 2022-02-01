@@ -1,5 +1,5 @@
 import {UserDeviceListResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {createDisplayTable} from "../../lib/Utils";
@@ -12,7 +12,7 @@ export default class DeviceList extends Command {
     static aliases = ["user:deviceList"];
     static description = "List all of the devices authorized to decrypt your data.";
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
 
@@ -31,7 +31,7 @@ export default class DeviceList extends Command {
     }
 
     async run() {
-        this.parse(DeviceList);
+        await this.parse(DeviceList);
         try {
             const devices = await ironnode().user.listDevices();
             this.log(`\n${this.buildUserKeyTable(devices).toString()}\n`);

@@ -1,4 +1,4 @@
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {createDisplayTable} from "../../lib/Utils";
@@ -10,12 +10,12 @@ import chalk = require("chalk");
 export default class List extends Command {
     static description = "Display a list of all the groups of which you're either an admin or member.";
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
 
     async run() {
-        this.parse(List);
+        await this.parse(List);
         return ironnode()
             .group.list()
             .then((groups) => {

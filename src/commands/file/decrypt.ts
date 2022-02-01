@@ -1,5 +1,5 @@
-import {ErrorCodes} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
+import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import {extname} from "path";
 import {ironnode} from "../../lib/SDK";
@@ -28,19 +28,19 @@ export default class Decrypt extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
-        out: flagtype.string({
+        out: Flags.string({
             char: "o",
             description:
                 "Filename where decrypted file will be written. Only allowed if a single file is being decrypted. Use '-o -' to write decrypted file content to stdout.",
         }),
-        stdin: flagtype.boolean({
+        stdin: Flags.boolean({
             char: "s",
             description: "Read data to decrypt from stdin. If used, no source files should be provided as arguments and you must use the -o flag.",
             dependsOn: ["out"],
         }),
-        delete: flagtype.boolean({
+        delete: Flags.boolean({
             char: "d",
             description: "Delete the input file after successful decrypt",
             exclusive: ["stdin"],
@@ -127,7 +127,10 @@ export default class Decrypt extends Command {
                 return ironnode().document.decryptBytes(documentID, encryptedBytes);
             })
             .catch((e) => {
-                throw new Error(e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE ? `Failed to decrypt. Input doesn't appear to be encrypted.` : e.message);
+                if (e instanceof SDKError && e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE) {
+                    throw new Error(`Failed to decrypt. Input doesn't appear to be encrypted.`);
+                }
+                throw e;
             });
     }
 
@@ -136,7 +139,7 @@ export default class Decrypt extends Command {
      * to decrypt the file and write the result to the output file. If no output file is provided we take the same path as the
      * input file and strip off it's last extension.
      */
-    getFileDecryptPromise(decryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp): Promise<DecryptFileResult> {
+    getFileDecryptPromise(decryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp): Promise<DecryptFileResult | Error> {
         let destinationFileOutput: string | undefined;
         // tslint:disable-next-line
         if (decryptOp.out) {
@@ -161,7 +164,7 @@ export default class Decrypt extends Command {
                     destinationFileOutput,
                 };
             })
-            .catch((e) => e);
+            .catch((e: unknown) => e as Error);
     }
 
     /**
@@ -229,23 +232,20 @@ export default class Decrypt extends Command {
     }
 
     async run() {
-        const {argv, args, flags} = this.parse(Decrypt);
+        const {argv, args, flags} = await this.parse(Decrypt);
         this.checkFlagsAndArguments(argv, flags.stdin, flags.out);
-        let decryptOp: Utils.ProcessOp;
-        if (flags.stdin) {
-            decryptOp = {out: flags.out as string} as Utils.ProcessStdinOp;
-        } else {
-            decryptOp = {
-                file: argv.length > 1 ? argv : (args.files as string),
-                out: flags.out,
-                deleteSource: flags.delete,
-            } as Utils.ProcessFileOp;
-        }
+        const decryptOp = flags.stdin
+            ? ({out: flags.out as string} as Utils.ProcessStdinOp)
+            : ({
+                  file: argv.length > 1 ? argv : (args.files as string),
+                  out: flags.out,
+                  deleteSource: flags.delete,
+              } as Utils.ProcessFileOp);
 
         try {
-            Utils.isMultipleFileOperation(decryptOp) ? await this.decryptMultipleFiles(decryptOp) : await this.decryptSingleFile(decryptOp);
-        } catch (e) {
-            this.error(chalk.red(e.message));
+            await (Utils.isMultipleFileOperation(decryptOp) ? this.decryptMultipleFiles(decryptOp) : this.decryptSingleFile(decryptOp));
+        } catch (e: unknown) {
+            this.error(chalk.red((e as Error).message));
         }
     }
 }

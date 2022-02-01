@@ -1,5 +1,5 @@
 import {UserDeviceListResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {buildCommandSampleText, ErrorOr, isError} from "../../lib/Utils";
@@ -24,7 +24,7 @@ export default class DeviceDelete extends Command {
     ];
     static strict = false;
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [buildCommandSampleText(`user:devicedelete 293 5559 312`)];
@@ -60,10 +60,10 @@ export default class DeviceDelete extends Command {
     }
 
     async run() {
-        const {argv} = this.parse(DeviceDelete);
+        const {argv} = await this.parse(DeviceDelete);
         try {
             await this.checkDeletionOfCurrentDevice(argv);
-        } catch (e) {
+        } catch (e: any) {
             return this.error(chalk.red(e.message));
         }
 

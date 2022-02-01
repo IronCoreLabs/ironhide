@@ -1,5 +1,5 @@
-import {DocumentAccessList, DocumentAccessResponse, ErrorCodes} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {DocumentAccessList, DocumentAccessResponse, ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
+import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
@@ -35,17 +35,17 @@ export default class Grant extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
-        users: flagtype.option({
+        users: Flags.option({
             char: "u",
             description: "Grant access to the file(s) to a comma-separated list of user emails.",
-            parse: (list) => list.split(","),
+            parse: (list) => Promise.resolve(list.split(",")),
         }),
-        groups: flagtype.option({
+        groups: Flags.option({
             char: "g",
             description: "Grant access to the file(s) to a comma-separated list of groups.",
-            parse: (list) => list.split(","),
+            parse: (list) => Promise.resolve(list.split(",")),
         }),
     };
     static examples = [
@@ -79,17 +79,15 @@ export default class Grant extends Command {
                 source: sourceFile,
                 shares: shareResults,
             }))
-            .catch((e) => {
-                return new Error(
-                    e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE
-                        ? `Failed to revoke '${sourceFile}'. File doesn't appear to be an ironhide encrypted file.`
-                        : e.message
-                );
-            });
+            .catch((e) =>
+                e instanceof SDKError && e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE
+                    ? new Error(`Failed to revoke '${sourceFile}'. File doesn't appear to be an ironhide encrypted file.`)
+                    : (e as Error)
+            );
     }
 
     async run() {
-        const {argv, flags} = this.parse(Grant);
+        const {argv, flags} = await this.parse(Grant);
 
         if (!flags.groups && !flags.users) {
             this.error(chalk.red("You must provide at least one user or group."));
@@ -116,6 +114,6 @@ export default class Grant extends Command {
                     this.log(resultTable.toString());
                 }
             })
-            .catch((e) => this.error(e.message));
+            .catch((e) => this.error((e as Error).message));
     }
 }

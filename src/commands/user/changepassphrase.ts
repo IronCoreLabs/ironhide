@@ -1,6 +1,5 @@
 import {ErrorCodes} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
-import cli from "cli-ux";
+import {Command, Flags, CliUx} from "@oclif/core";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import chalk = require("chalk");
@@ -12,19 +11,19 @@ export default class ChangePassphrase extends Command {
     static aliases = ["user:changePassphrase"];
     static description = "Update your private key escrow passphrase.";
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
 
     async run() {
-        this.parse(ChangePassphrase);
+        await this.parse(ChangePassphrase);
         let currentPassphrase: string;
         let newPassphrase: string;
         let confirmNewPassphrase: string;
         try {
-            currentPassphrase = await cli.prompt(chalk.magenta("Current Passphrase"), {type: "hide"});
-            newPassphrase = await cli.prompt(chalk.magenta("New Passphrase"), {type: "hide"});
-            confirmNewPassphrase = await cli.prompt(chalk.magenta("Confirm New Passphrase"), {type: "hide"});
+            currentPassphrase = await CliUx.ux.prompt(chalk.magenta("Current Passphrase"), {type: "hide"});
+            newPassphrase = await CliUx.ux.prompt(chalk.magenta("New Passphrase"), {type: "hide"});
+            confirmNewPassphrase = await CliUx.ux.prompt(chalk.magenta("Confirm New Passphrase"), {type: "hide"});
         } catch (e) {
             return this.exit(0); //User command-C'd so just bail out
         }

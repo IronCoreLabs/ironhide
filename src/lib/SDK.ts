@@ -7,10 +7,8 @@ import {SDK} from "@ironcorelabs/ironnode";
 
 let sdkReference: SDK;
 
-export function set(sdk: SDK) {
+export const set = (sdk: SDK) => {
     sdkReference = sdk;
-}
+};
 
-export function ironnode() {
-    return sdkReference;
-}
+export const ironnode = () => sdkReference;

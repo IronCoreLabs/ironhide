@@ -1,5 +1,5 @@
-import {DocumentMetaResponse, ErrorCodes} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {DocumentMetaResponse, ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
+import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import {basename} from "path";
 import * as GroupMaps from "../../lib/GroupMaps";
@@ -28,7 +28,7 @@ export default class Info extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [buildCommandSampleText("file:info path/to/file"), buildCommandSampleText("file:info *.iron")];
@@ -37,7 +37,7 @@ export default class Info extends Command {
      * Return a Promise to handle getting the meta information for a single file given it's relative path. Returns a result
      * structure that represents a success or error response.
      */
-    getFileMetaPromise(filePath: string): Promise<FileMetaResult> {
+    getFileMetaPromise(filePath: string): Promise<FileMetaResult | Error> {
         const sourceFile = normalizePathToFile(filePath);
 
         return checkSourceFilePermissions(sourceFile)
@@ -52,13 +52,11 @@ export default class Info extends Command {
                 source: sourceFile,
                 metadata: documentMeta,
             }))
-            .catch((e) => {
-                return new Error(
-                    e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE
-                        ? `Failed to parse '${sourceFile}'. File doesn't appear to be an encrypted file.`
-                        : e.message
-                );
-            });
+            .catch((e) =>
+                e instanceof SDKError && e.code === ErrorCodes.DOCUMENT_HEADER_PARSE_FAILURE
+                    ? new Error(`Failed to parse '${sourceFile}'. File doesn't appear to be an encrypted file.`)
+                    : (e as Error)
+            );
     }
 
     /**
@@ -84,7 +82,7 @@ export default class Info extends Command {
     }
 
     async run() {
-        const {argv} = this.parse(Info);
+        const {argv} = await this.parse(Info);
         const metaOps = argv.map((file) => this.getFileMetaPromise(file));
         Promise.all(metaOps)
             .then((fileMeta) => {

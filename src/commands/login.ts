@@ -1,6 +1,5 @@
 import * as IronNode from "@ironcorelabs/ironnode";
-import {Command} from "@oclif/command";
-import cli from "cli-ux";
+import {Command, CliUx} from "@oclif/core";
 import * as fs from "fs";
 import * as os from "os";
 import {dirname} from "path";
@@ -37,7 +36,7 @@ export default class Login extends Command {
             try {
                 fs.accessSync(homeDirectory, fs.constants.W_OK);
                 fs.mkdirSync(ironDirectory);
-            } catch (_) {
+            } catch (__) {
                 return false;
             }
         }
@@ -60,18 +59,18 @@ export default class Login extends Command {
         let password: string;
         let deviceName: string;
         try {
-            password = await cli.prompt(chalk.magenta("Device Authorization Passphrase"), {type: "hide"});
-            deviceName = await cli.prompt(chalk.magenta("Name for this device"), {
+            password = (await CliUx.ux.prompt(chalk.magenta("Device Authorization Passphrase"), {type: "hide"})) as string;
+            deviceName = (await CliUx.ux.prompt(chalk.magenta("Name for this device"), {
                 required: false,
                 default: this.defaultDeviceName,
-            });
+            })) as string;
         } catch (e) {
             return this.exit(0); //User command-C'd so just bail out
         }
         try {
             deviceKeys = await IronNode.User.generateDeviceKeys(auth0Jwt, password, {deviceName});
-        } catch (e) {
-            if (e.message.includes("was an invalid authorization token")) {
+        } catch (e: unknown) {
+            if ((e as Error).message.includes("was an invalid authorization token")) {
                 this.log(chalk.red("Auth token from Auth0 has timed out. Please try logging in again."));
                 return this.exit(-1);
             }
@@ -97,8 +96,8 @@ export default class Login extends Command {
         let deviceName: string = this.defaultDeviceName;
         let deviceKeys: IronNode.DeviceDetails;
         try {
-            password = await cli.prompt(chalk.magenta("Passphrase to Authorize New Devices"), {type: "hide"});
-            confirmPassword = await cli.prompt(chalk.magenta("Confirm Passphrase"), {type: "hide"});
+            password = (await CliUx.ux.prompt(chalk.magenta("Passphrase to Authorize New Devices"), {type: "hide"})) as string;
+            confirmPassword = (await CliUx.ux.prompt(chalk.magenta("Confirm Passphrase"), {type: "hide"})) as string;
         } catch (e) {
             return this.exit(0); //User command-C'd so just bail out
         }
@@ -113,10 +112,10 @@ export default class Login extends Command {
         }
         this.log(chalk.green("New account created successfully, now authorizing this device’s local encryption keys."));
         try {
-            deviceName = await cli.prompt(chalk.magenta(`Name for this device`), {
+            deviceName = (await CliUx.ux.prompt(chalk.magenta(`Name for this device`), {
                 required: false,
                 default: this.defaultDeviceName,
-            });
+            })) as string;
         } catch (e) {
             return this.exit(0); //User command-C'd so just bail out
         }
@@ -141,7 +140,7 @@ export default class Login extends Command {
     async loginUser(): Promise<void> {
         Logger.info(messages.loginIntro);
 
-        const cont = await cli.confirm(`\n${chalk.magenta("Continue?")} ${chalk.gray("[y/n]")}`);
+        const cont = await CliUx.ux.confirm(`\n${chalk.magenta("Continue?")} ${chalk.gray("[y/n]")}`);
         if (!cont) {
             return this.log("Ok, maybe next time! Bye!");
         }
@@ -150,8 +149,8 @@ export default class Login extends Command {
         try {
             auth0Token = await authenticate();
             userExists = await IronNode.User.verify(auth0Token);
-        } catch (e) {
-            this.log(chalk.red(e.message));
+        } catch (e: unknown) {
+            this.log(chalk.red((e as Error).message));
             return this.error(chalk.red("\nAuthentication failed, please try again."));
         }
         if (userExists) {
@@ -168,7 +167,7 @@ export default class Login extends Command {
      * Run the login command. Check to see if this device already has keys. If not kick off the login process.
      */
     async run() {
-        this.parse(Login);
+        await this.parse(Login);
         //Check if the user already has keys that they want to override
         if (validateExistingKeys(this.configFileHome)) {
             return this.log(

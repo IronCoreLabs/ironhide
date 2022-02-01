@@ -1,4 +1,4 @@
-import {Hook} from "@oclif/config";
+import {Hook} from "@oclif/core";
 import {CLIError} from "@oclif/errors";
 
 /**
@@ -17,6 +17,7 @@ const hook: Hook<"prerun"> = ({argv, Command}) => {
             `List of ${argv.length} files exceeds ${CONCURRENT_REQ_LIMIT} which is the maximum number of files that can be processed at one time.`
         );
     }
+    return Promise.resolve(undefined);
 };
 
 export default hook;

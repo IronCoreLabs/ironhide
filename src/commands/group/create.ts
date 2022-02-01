@@ -1,5 +1,5 @@
 import {ErrorCodes, SDKError} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
@@ -19,7 +19,7 @@ export default class Create extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [buildCommandSampleText("group:create myGroup", "Create a new group with the name 'myGroup'")];
@@ -32,7 +32,7 @@ export default class Create extends Command {
         let doesGroupExist: boolean = false;
         try {
             doesGroupExist = await GroupMaps.doesGroupNameAlreadyExist(groupName);
-        } catch (e) {
+        } catch (e: any) {
             this.log(e);
             this.error(chalk.red("Unable to make group create request."));
         }
@@ -43,7 +43,7 @@ export default class Create extends Command {
     }
 
     async run() {
-        const {args} = this.parse(Create);
+        const {args} = await this.parse(Create);
         const groupName = args.group as string;
         if (groupName.includes(",") || groupName.includes("^")) {
             return this.error("Group names cannot contain commas or carets.");

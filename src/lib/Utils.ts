@@ -25,73 +25,68 @@ export type ProcessOp = ProcessFileOp | ProcessStdinOp;
 /**
  * Type guard to determine if the file options we have represents a multiple file operation.
  */
-export function isMultipleFileOperation(fileProcessOp: ProcessOp): fileProcessOp is ProcessMultipleFileOp {
-    return Array.isArray((fileProcessOp as ProcessFileOp).file);
-}
+export const isMultipleFileOperation = (fileProcessOp: ProcessOp): fileProcessOp is ProcessMultipleFileOp =>
+    Array.isArray((fileProcessOp as ProcessFileOp).file);
 
 /**
  * Type guard to determine if the file options we have represent an operation from stdin.
  */
-export function isStdInFileOperation(fileProcessOp: ProcessOp): fileProcessOp is ProcessStdinOp {
-    return !(fileProcessOp as ProcessFileOp).file;
-}
+export const isStdInFileOperation = (fileProcessOp: ProcessOp): fileProcessOp is ProcessStdinOp => !(fileProcessOp as ProcessFileOp).file;
 
 /**
  * Type guard to determine of ErrorOr result is an Error instance.
  */
-export function isError<R>(result: ErrorOr<R>): result is Error {
-    return result instanceof Error;
-}
+export const isError = <R>(result: ErrorOr<R>): result is Error => result instanceof Error;
 
 /**
  * Returns whether or not the file provided both exists and is readable.
  */
-export function isFileReadable(path: string) {
+export const isFileReadable = (path: string) => {
     try {
         fs.accessSync(path, fs.constants.R_OK);
         return true;
     } catch (_) {
         return false;
     }
-}
+};
 
 /**
  * Check to see if the provided device key config file is parsable and formatted correctly.
  */
-export function validateExistingKeys(configPath: string) {
+export const validateExistingKeys = (configPath: string) => {
     try {
-        const config: DeviceDetails = JSON.parse(fs.readFileSync(configPath, "utf8"));
+        const config = JSON.parse(fs.readFileSync(configPath, "utf8")) as DeviceDetails;
         return config && config.accountID && config.segmentID && config.deviceKeys && config.signingKeys;
     } catch (e) {
         return false;
     }
-}
+};
 
 /**
  * Attempt to normalize and create a fully qualified path given either an existing fully qualified path
  * or a partial path. If the provided path starts with / it assumes it's already fully qualified, otherwise
  * it normalizes the path from the cwd.
  */
-export function normalizePathToFile(file: string) {
+export const normalizePathToFile = (file: string) => {
     if (file.startsWith(sep)) {
         return file;
     }
     return normalize(join(process.cwd(), file));
-}
+};
 
 /**
  * Attempt to delete the provided partial file path. Will throw an exception if the file isn't writable and cannot be deleted.
  */
-export function deleteFile(filePath: string) {
+export const deleteFile = (filePath: string) => {
     const sourceFile = normalizePathToFile(filePath);
     fs.accessSync(sourceFile, fs.constants.W_OK);
     fs.unlinkSync(sourceFile);
-}
+};
 
 /**
  * Validate that the provided file to encrypt is readable and is an actual file.
  */
-export function checkSourceFilePermissions(fileToEncrypt: string) {
+export const checkSourceFilePermissions = (fileToEncrypt: string) => {
     //Make sure we can read from the source file
     if (!isFileReadable(fileToEncrypt)) {
         return Promise.reject(new Error(`Provided path '${fileToEncrypt}' doesn't exist or is not readable.`));
@@ -103,12 +98,12 @@ export function checkSourceFilePermissions(fileToEncrypt: string) {
         return Promise.reject(new Error(`Provided path '${fileToEncrypt}' does not appear to be a file.`));
     }
     return Promise.resolve();
-}
+};
 
 /**
  * Check that the file path to write to doesn't already exist and the directory it will live in is writable.
  */
-export function checkDestinationFilePermissions(destinationFile: string) {
+export const checkDestinationFilePermissions = (destinationFile: string) => {
     //Make sure the destination file doesn't already exist
     if (fs.existsSync(destinationFile)) {
         return Promise.reject(new Error(`Output path '${destinationFile}' already exists.`));
@@ -121,12 +116,12 @@ export function checkDestinationFilePermissions(destinationFile: string) {
     } catch (_) {
         return Promise.reject(new Error(`Output path '${dirname(destinationFile)}' is not writable.`));
     }
-}
+};
 
 /**
  * Given an optional list of users and groups convert them into an object that the SDK takes for user and group shares.
  */
-export function convertUserAndGroupToAccessList(providedUserIDs: string[] | undefined, providedGroupIDs: string[] | undefined): DocumentAccessList {
+export const convertUserAndGroupToAccessList = (providedUserIDs: string[] | undefined, providedGroupIDs: string[] | undefined): DocumentAccessList => {
     let userShares: Array<{id: string}> = [];
     let groupShares: Array<{id: string}> = [];
 
@@ -137,22 +132,21 @@ export function convertUserAndGroupToAccessList(providedUserIDs: string[] | unde
         groupShares = providedGroupIDs.map((groupID) => ({id: groupID}));
     }
     return {users: userShares, groups: groupShares};
-}
+};
 
 /**
  * Creates a new CLI table from the provided columns. Centralized method to return the proper type as well as change
  * the table headers from their default of red (bad!) to blue (nice!).
  */
-export function createDisplayTable(columns: string[]) {
-    return new Table({
+export const createDisplayTable = (columns: string[]) =>
+    new Table({
         head: columns.map((columnLabel) => chalk.blue(columnLabel)),
     }) as Table.GenericTable<Table.HorizontalTableRow>;
-}
 
 /**
  * Convert a grant/revoke response object into a CLI table for which displays the list of successes and failures
  */
-export function fileAccessResponseToTableRow(fileSource: string, accessResult: DocumentAccessResponse, groupsByID: GroupsByID) {
+export const fileAccessResponseToTableRow = (fileSource: string, accessResult: DocumentAccessResponse, groupsByID: GroupsByID) => {
     const {succeeded, failed} = accessResult;
 
     const successfulIDToDisplay = ({id, type}: {id: string; type: "user" | "group"}) => {
@@ -171,14 +165,14 @@ export function fileAccessResponseToTableRow(fileSource: string, accessResult: D
     };
 
     return [basename(fileSource), chalk.green(succeeded.map(successfulIDToDisplay).join("\n")), chalk.red(failed.map(failedIDToDisplay).join("\n"))];
-}
+};
 
 /**
  * Build up example command text which support for providing an optional description of the example. All examples are prefixed with a `$ ironhide` to avoid
  * duplication of that for each command.
  */
-export function buildCommandSampleText(example: string, description?: string, showPrefix: boolean = true) {
+export const buildCommandSampleText = (example: string, description?: string, showPrefix = true) => {
     const descText = description ? `\n${chalk.gray(description)} \n ` : "";
     const commandPrefix = showPrefix ? chalk.green("ironhide") : "";
     return `${descText} ${chalk.magenta("$")} ${commandPrefix} ${example}`;
-}
+};

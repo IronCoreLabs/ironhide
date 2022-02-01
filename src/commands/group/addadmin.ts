@@ -1,5 +1,5 @@
 import {ErrorCodes, GroupUserEditResponse, SDKError} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile, userList} from "../../lib/sharedFlags";
@@ -22,7 +22,7 @@ export default class AddAdmin extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
         users: userList("Add admin permissions to the comma-separated list of user emails.")(),
     };
@@ -45,7 +45,7 @@ export default class AddAdmin extends Command {
     }
 
     async run() {
-        const {args, flags} = this.parse(AddAdmin);
+        const {args, flags} = await this.parse(AddAdmin);
         const groupID = await GroupMaps.getGroupIDFromName(args.group);
 
         return ironnode()

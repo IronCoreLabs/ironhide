@@ -1,5 +1,5 @@
 import {UserPublicKeyGetResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
 import {buildCommandSampleText, createDisplayTable} from "../../lib/Utils";
@@ -19,7 +19,7 @@ export default class Lookup extends Command {
     ];
     static strict = false; //This command supports unlimited arguments
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
     static examples = [buildCommandSampleText(`user:lookup test@example.com test2@example.com`)];
@@ -43,7 +43,7 @@ export default class Lookup extends Command {
     }
 
     async run() {
-        const {argv} = this.parse(Lookup);
+        const {argv} = await this.parse(Lookup);
         return ironnode()
             .user.getPublicKey(argv)
             .then((userKeys) => {

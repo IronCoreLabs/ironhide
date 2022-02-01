@@ -1,5 +1,5 @@
 import {DocumentAccessList, DocumentIDNameResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
+import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
@@ -28,29 +28,29 @@ export default class Encrypt extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
-        users: flagtype.option({
+        users: Flags.option({
             char: "u",
             description: "Encrypt the file(s) to a comma-separated list of user emails. Files are automatically encrypted to the logged-in user.",
-            parse: (list) => list.split(","),
+            parse: (list) => Promise.resolve(list.split(",")),
         }),
-        groups: flagtype.option({
+        groups: Flags.option({
             char: "g",
             description: "Encrypt the file(s) to a comma-separated list of groups.",
-            parse: (list) => list.split(","),
+            parse: (list) => Promise.resolve(list.split(",")),
         }),
-        out: flagtype.string({
+        out: Flags.string({
             char: "o",
             description:
                 "Filename where encrypted file will be written. Only allowed if a single file is being encrypted. Use '-o -' to write encrypted file content to stdout, but fair warning, the output is binary and not ASCII.",
         }),
-        stdin: flagtype.boolean({
+        stdin: Flags.boolean({
             char: "s",
             description: "Read data to encrypt from stdin. If used, no source files should be provided as arguments and you must use the '-o' flag.",
             dependsOn: ["out"],
         }),
-        delete: flagtype.boolean({
+        delete: Flags.boolean({
             char: "d",
             description: "Delete the unencrypted source file(s) after successful encryption.",
             exclusive: ["stdin"],
@@ -121,7 +121,7 @@ export default class Encrypt extends Command {
      * the encrypt operation. NOTE: The returned Promise from this method CANNOT fail as we let the caller decide how to handle failure. This
      * lets us prevent a complete failure when encrypting multiple files when one of them fails.
      */
-    getFileEncryptPromise(fileAccessList: DocumentAccessList, encryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp): Promise<EncryptResult> {
+    getFileEncryptPromise(fileAccessList: DocumentAccessList, encryptOp: Utils.ProcessSingleFileOp | Utils.ProcessStdinOp): Promise<EncryptResult | Error> {
         return this.getSourceAndDestinationStreams(encryptOp)
             .then(([sourceStream, destStream]) =>
                 ironnode().document.encryptStream(sourceStream as NodeJS.ReadStream, destStream as NodeJS.WriteStream, {accessList: fileAccessList})
@@ -136,7 +136,7 @@ export default class Encrypt extends Command {
                 }
                 return decryptResult;
             })
-            .catch((e) => e);
+            .catch((e) => e as Error);
     }
 
     /**
@@ -203,7 +203,7 @@ export default class Encrypt extends Command {
     }
 
     async run() {
-        const {argv, args, flags} = this.parse(Encrypt);
+        const {argv, args, flags} = await this.parse(Encrypt);
         this.checkFlagsAndArguments(argv, flags.out, flags.stdin);
         let requestedGroups: string[] = [];
         //Only lookup the users groups for mapping if they're sharing with a group
@@ -214,23 +214,18 @@ export default class Encrypt extends Command {
 
         const accessList = Utils.convertUserAndGroupToAccessList(flags.users, requestedGroups);
 
-        let encryptOp: Utils.ProcessOp;
-        if (flags.stdin) {
-            encryptOp = {out: flags.out as string} as Utils.ProcessStdinOp;
-        } else {
-            encryptOp = {
-                file: argv.length > 1 ? argv : (args.files as string),
-                out: flags.out,
-                deleteSource: flags.delete,
-            } as Utils.ProcessFileOp;
-        }
+        const encryptOp = flags.stdin
+            ? ({out: flags.out as string} as Utils.ProcessStdinOp)
+            : ({
+                  file: argv.length > 1 ? argv : (args.files as string),
+                  out: flags.out,
+                  deleteSource: flags.delete,
+              } as Utils.ProcessFileOp);
 
         try {
-            Utils.isMultipleFileOperation(encryptOp)
-                ? await this.encryptMultipleFiles(accessList, encryptOp)
-                : await this.encryptSingleFile(accessList, encryptOp);
+            await (Utils.isMultipleFileOperation(encryptOp) ? this.encryptMultipleFiles(accessList, encryptOp) : this.encryptSingleFile(accessList, encryptOp));
         } catch (e) {
-            this.error(chalk.red(e.message));
+            this.error(chalk.red((e as Error).message));
         }
     }
 }

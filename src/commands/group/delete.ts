@@ -1,6 +1,5 @@
 import {GroupDetailResponse} from "@ironcorelabs/ironnode";
-import {Command, flags as flagtype} from "@oclif/command";
-import cli from "cli-ux";
+import {Command, Flags, CliUx} from "@oclif/core";
 import * as GroupMaps from "../../lib/GroupMaps";
 import {ironnode} from "../../lib/SDK";
 import {keyFile} from "../../lib/sharedFlags";
@@ -16,7 +15,7 @@ export default class Delete extends Command {
         },
     ];
     static flags = {
-        help: flagtype.help({char: "h"}),
+        help: Flags.help({char: "h"}),
         keyfile: keyFile(),
     };
 
@@ -37,14 +36,14 @@ export default class Delete extends Command {
         } catch (e) {
             this.error(chalk.red("Was not able to retrieve information about the provided group."));
         }
-        const groupConfirm = await cli.prompt(chalk.magenta("Please enter the group to delete again to confirm its deletion"));
+        const groupConfirm = await CliUx.ux.prompt(chalk.magenta("Please enter the group to delete again to confirm its deletion"));
         if (groupConfirm !== enteredGroupName) {
             throw new Error(`Group confirmation failed. Original group provided was '${enteredGroupName}' but confirmation value was '${groupConfirm}'.`);
         }
     }
 
     async run() {
-        const {args} = this.parse(Delete);
+        const {args} = await this.parse(Delete);
 
         const groupID = await GroupMaps.getGroupIDFromName(args.group);
         const [, groupsByID] = await GroupMaps.getGroupMaps();
@@ -54,7 +53,7 @@ export default class Delete extends Command {
 
         try {
             await this.verifyGroupName(args.group, groupID);
-        } catch (e) {
+        } catch (e: any) {
             return this.error(chalk.red(e.message));
         }
         return ironnode()
