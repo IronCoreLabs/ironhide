@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+
++ **Breaking Change**: Removed Node 10 and 12 support.
++ Added Node 14 and 16 support.
++ Updated dependencies
+
 ## 0.7.1
 
 + Updated dependencies
