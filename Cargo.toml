@@ -5,7 +5,13 @@ authors = [ "IronCore Labs <info@ironcorelabs.com>" ]
 categories = [ "cryptography" ]
 description = "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale."
 documentation = "https://docs.rs/ironhide"
-edition = "2018"
+edition = "2021"
+homepage = "https://github.com/ironcorelabs/ironhide"
+include = [
+    ".cargo",
+    "**/*.rs",
+    "./Cargo.toml",
+]
 keywords = [
     "cryptography",
     "proxy-re-encryption",
@@ -16,6 +22,7 @@ keywords = [
     "encryption"
 ]
 license = "AGPL-3.0-only"
+license-file = "LICENSE"
 readme = "README.md"
 repository = "https://github.com/IronCoreLabs/ironhide"
 
