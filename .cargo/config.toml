@@ -1,0 +1,3 @@
+[build]
+# allow local_offset to work on *nix. Sound for us because we're single threaded
+rustflags = ["--cfg", "unsound_local_offset"]

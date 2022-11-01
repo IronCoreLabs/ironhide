@@ -1,0 +1,131 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+jobs:
+  test:
+    name: test
+    env:
+      CARGO: cargo
+      # When CARGO is set to CROSS, this is set to `--target matrix.target`.
+      TARGET_FLAGS:
+      # When CARGO is set to CROSS, TARGET_DIR includes matrix.target.
+      TARGET_DIR: ./target
+      # Emit backtraces on panics.
+      RUST_BACKTRACE: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build:
+        # We test ironhide on a pinned version of Rust, along with the moving
+        # targets of 'stable' and 'beta' for good measure.
+        # We release off our pinned version, so we test all of those as well
+        - pinned
+        - pinned-musl
+        - pinned-32
+        - pinned-arm
+        - stable
+        - beta
+        - nightly
+        - macos
+        - win-msvc
+        - win-gnu
+        include:
+        - build: pinned
+          os: ubuntu-22.04
+        - build: pinned-musl
+          os: ubuntu-22.04
+          target: x86_64-unknown-linux-musl
+        - build: pinned-32
+          os: ubuntu-22.04
+          target: i686-unknown-linux-gnu
+        - build: pinned-arm
+          os: ubuntu-22.04
+          target: arm-unknown-linux-gnueabihf
+        - build: stable
+          os: ubuntu-22.04
+          rust: stable
+        - build: beta
+          os: ubuntu-22.04
+          rust: beta
+        - build: nightly
+          os: ubuntu-22.04
+          rust: nightly
+        - build: macos
+          os: macos-12
+        - build: win-msvc
+          os: windows-2022
+        - build: win-gnu
+          os: windows-2022
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # this will always install whatever is targeted by the rust-toolchain.toml file
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+
+    # if we're on windows building with gnu we need to do something special
+    - name: Install win-gnu toolchain
+      if: matrix.build == 'win-gnu'
+      shell: bash
+      run: |
+        rustup override set $(cat ./rust-toolchain.toml | grep channel | sed 's/channel = "//' | sed 's/"//')-x86_64-gnu
+
+    # if we're not using the rust channel defined by the rust-toolchain.toml file, install the changed as current
+    - name: Install alternate rust toolchain
+      if: matrix.rust != ''
+      run: |
+        rustup override set ${{ matrix.rust }}
+
+    - name: Use Cross
+      if: matrix.target != ''
+      run: |
+        cargo install cross
+        echo "CARGO=cross" >> $GITHUB_ENV
+        echo "TARGET_FLAGS=--target ${{ matrix.target }}" >> $GITHUB_ENV
+        echo "TARGET_DIR=./target/${{ matrix.target }}" >> $GITHUB_ENV
+
+    - name: Show command used for Cargo
+      run: |
+        echo "cargo command is: ${{ env.CARGO }}"
+        echo "target flag is: ${{ env.TARGET_FLAGS }}"
+
+    - name: Build ironhide
+      run: ${{ env.CARGO }} build --verbose --workspace ${{ env.TARGET_FLAGS }}
+
+    - name: Run tests
+      run: ${{ env.CARGO }} test --verbose --workspace ${{ env.TARGET_FLAGS }}
+
+  rustfmt:
+    name: rustfmt
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        components: rustfmt
+    - name: Check formatting
+      run: cargo fmt --all --check
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Check documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --no-deps --document-private-items --workspace

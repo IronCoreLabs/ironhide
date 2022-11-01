@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
++ **Breaking Change**: Moved from a Node application to a Rust binary. Initial package manager support exists for `cargo install`, homebrew, arch linux, nix, chocolatey, and ubuntu. Instructions to compile from source are in the README if your platform doesn't have package manager support or a prebuilt binary.
++ adds initial keyring support, see the README for details
++ command structure has changed from `ironhide logical-group:command` to `ironhide logical-group command`. See `ironhide -h` for details.
+
 ## 0.8.0
 
 + **Breaking Change**: Removed Node 10 and 12 support.
