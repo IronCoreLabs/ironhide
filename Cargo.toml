@@ -15,8 +15,6 @@ include = [
 keywords = [
     "cryptography",
     "proxy-re-encryption",
-    "PRE",
-    "ECC",
     "transform-encryption",
     "secrets",
     "encryption"
