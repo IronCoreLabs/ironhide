@@ -19,7 +19,7 @@
       in rec {
         # `nix build`
         packages = {
-          ironhide-rs = pkgs.rustPlatform.buildRustPackage {
+          ironhide = pkgs.rustPlatform.buildRustPackage {
             pname = cargoToml.package.name;
             version = cargoToml.package.version;
             src = ./.;
@@ -29,11 +29,11 @@
               ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
                  [ pkgs.darwin.apple_sdk.frameworks.Security ];
           };
+          default = packages.ironhide;
         };
-        defaultPackage = packages.ironhide-rs;
 
         # nix develop
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           buildInputs = with pkgs;
             [ rusttoolchain]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
