@@ -161,3 +161,18 @@ jobs:
         omitDraftDuringUpdate: true
         artifacts: ${{ env.ASSET }}
         artifactContentType: application/octet-stream
+
+  crates-release:
+    name: crates.io-release
+    needs: ['build-release']
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - run: cargo publish --token ${CRATES_TOKEN}
+        env:
+          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
