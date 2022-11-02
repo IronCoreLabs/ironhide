@@ -11,15 +11,21 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 ## Installation
 
+### Cargo
+
+```bash
+cargo install ironhide
+```
+
 ### Nix
 
 #### Shell
 
-```console
+```bash
 nix run 'https://github.com/IronCoreLabs/ironhide.git'
 ```
 
-### Install From Source
+### Source
 
 Requires that you have `rust` set up on your system.
 
