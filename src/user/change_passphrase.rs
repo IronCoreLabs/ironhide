@@ -11,7 +11,7 @@ use crate::util;
 /// Update your private key escrow passphrase.
 pub struct ChangePassphrase {
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long, max_values = 1)]
+    #[clap(parse(from_os_str), short, long)]
     keyfile: Option<PathBuf>,
 }
 

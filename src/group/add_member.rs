@@ -28,7 +28,7 @@ pub struct AddMember {
     group: Either<GroupName, GroupId>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long, max_values = 1)]
+    #[clap(parse(from_os_str), short, long)]
     keyfile: Option<PathBuf>,
     /// (required) Add member permissions to the comma-separated list of user emails.
     #[clap(parse(try_from_str = util::try_from_email), short, long, use_value_delimiter = true, require_value_delimiter = true, required = true, min_values = 1)]
