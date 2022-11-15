@@ -43,12 +43,12 @@ pub struct Decrypt {
     files: Vec<PathBuf>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long, max_values = 1)]
+    #[clap(parse(from_os_str), short, long)]
     keyfile: Option<PathBuf>,
     /// Filename where decrypted file will be written. Only allowed if a single file is
     /// being decrypted.
     /// Use '-o -' to write decrypted file content to stdout, but fair warning, the output is binary and not ASCII.
-    #[clap(parse(from_os_str), min_values = 1, short, long)]
+    #[clap(parse(from_os_str), short, long)]
     out: Option<PathBuf>,
     /// Read data to decrypt from stdin. If used, no source files should be provided as
     /// arguments and you must use the '-o' flag.
