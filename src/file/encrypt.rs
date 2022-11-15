@@ -60,7 +60,7 @@ pub struct Encrypt {
     /// Filename where encrypted file will be written. Only allowed if a single file is
     /// being encrypted.
     /// Use '-o -' to write encrypted file content to stdout, but fair warning, the output is binary and not ASCII.
-    #[clap(parse(from_os_str), max_values = 1, short, long)]
+    #[clap(parse(from_os_str), short, long)]
     out: Option<PathBuf>,
     /// Read data to encrypt from stdin. If used, no source files should be provided as
     /// arguments and you must use the '-o' flag.
