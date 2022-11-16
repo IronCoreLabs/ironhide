@@ -11,6 +11,7 @@ use std::convert::TryFrom;
 use std::fmt::Display;
 use std::fs;
 use std::path::PathBuf;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::{fs::File, path::Path};
 use time::format_description::FormatItem;
 use time::{format_description, UtcOffset};
@@ -165,7 +166,20 @@ pub fn println_paint(paint: yansi::Paint<String>) {
 
 // this can probably be made a lazy static
 pub fn local_offset() -> UtcOffset {
-    UtcOffset::current_local_offset().expect("Must be run on a system that has an OS time library.")
+    // this is _all_ a workaround until `UtcOffset::current_local_offset()` is sound again (see https://github.com/time-rs/time/issues/293)
+    // it _is_ sound in our use case (we're single threaded so we can't possibly setenv), but we're not able to set
+    // --cfg unsound_local_offset in all build environments, because [crates.io ignores .cargo/config.toml files](https://github.com/rust-lang/cargo/issues/6025) and
+    // [build.rs](https://doc.rust-lang.org/cargo/reference/build-scripts.html#cargorustc-cfgkeyvalue) scripts are run after dependencies are compiled.
+    // TODO: replace this entire block with `UtcOffset::current_local_offset()` once it's fixed
+    let tz = tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT);
+    let duration_since_epoch = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::default());
+    let default_local_time_type = tz::LocalTimeType::utc();
+    let local_time_type = tz
+        .find_local_time_type(duration_since_epoch.as_secs() as i64)
+        .unwrap_or(&default_local_time_type);
+    UtcOffset::from_whole_seconds(local_time_type.ut_offset()).unwrap_or(UtcOffset::UTC)
 }
 
 // this can definitely be made a lazy static
