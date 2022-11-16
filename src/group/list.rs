@@ -52,7 +52,7 @@ pub fn list_groups(sdk: &BlockingIronOxide) -> Result<(), String> {
                 cell!(Fw -> group.last_updated().
                                 to_offset(util::local_offset()).
                                 format(&util::time_format()).
-                                unwrap())
+                                unwrap()),
             ]));
         }
 

@@ -7,7 +7,7 @@ use prettytable::{color, Attr, Cell, Row};
 use std::collections::HashMap;
 use yansi::Paint;
 
-use crate::util::{println_paint, local_offset, time_format};
+use crate::util::{local_offset, println_paint, time_format};
 
 type GroupsByName = HashMap<GroupName, Vec<GroupMetaResult>>;
 type GroupsById = HashMap<GroupId, GroupMetaResult>;
