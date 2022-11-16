@@ -11,7 +11,7 @@ use std::convert::TryFrom;
 use std::fmt::Display;
 use std::fs;
 use std::path::PathBuf;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 use std::{fs::File, path::Path};
 use time::format_description::FormatItem;
 use time::{format_description, UtcOffset};
@@ -174,7 +174,7 @@ pub fn local_offset() -> UtcOffset {
     let tz = tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT);
     let duration_since_epoch = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap_or(Duration::default());
+        .unwrap_or_default();
     let default_local_time_type = tz::LocalTimeType::utc();
     let local_time_type = tz
         .find_local_time_type(duration_since_epoch.as_secs() as i64)
