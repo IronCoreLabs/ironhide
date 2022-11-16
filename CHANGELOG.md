@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.2
+
++ Resolve issue running binary when it is `cargo install`d. Previously returned an error 'Must be run on a system that has an OS time library.' when the group info and user device-list commands were invoked.
+
+## 1.0.1
+
++ Changed processing of the `-out` parameter so it could precede the list of files to be processed (for file encrypt and decrypt operations).
+
 ## 1.0.0
 
 + **Breaking Change**: Moved from a Node application to a Rust binary. Initial package manager support exists for `cargo install`, homebrew, arch linux, nix, chocolatey, and ubuntu. Instructions to compile from source are in the README if your platform doesn't have package manager support or a prebuilt binary.

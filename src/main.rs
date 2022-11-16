@@ -1,4 +1,5 @@
 use crate::{file::FileSubcommands, group::GroupSubcommands};
+use clap::crate_version;
 use clap::Parser;
 use derive_more::{Display, Error};
 use ironoxide::{blocking::BlockingIronOxide, prelude::*};
@@ -18,7 +19,7 @@ mod util;
 
 /// Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale.
 #[derive(Parser)]
-#[clap(version = "1.0.0", author = "IronCore Labs")]
+#[clap(version = crate_version!(), author = "IronCore Labs")]
 struct Ironhide {
     #[clap(subcommand)]
     subcmd: IronhideSubcommands,

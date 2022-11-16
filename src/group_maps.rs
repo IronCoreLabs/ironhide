@@ -7,7 +7,7 @@ use prettytable::{color, Attr, Cell, Row};
 use std::collections::HashMap;
 use yansi::Paint;
 
-use crate::util::println_paint;
+use crate::util::{local_offset, println_paint, time_format};
 
 type GroupsByName = HashMap<GroupName, Vec<GroupMetaResult>>;
 type GroupsById = HashMap<GroupId, GroupMetaResult>;
@@ -114,8 +114,8 @@ fn group_choice_table(groups: &[GroupMetaResult]) -> prettytable::Table {
             cell!(Fw -> group.id().id()),
             is_admin,
             is_member,
-            cell!(Fw -> group.created()),
-            cell!(Fw -> group.last_updated()),
+            cell!(Fw -> group.created().to_offset(local_offset()).format(&time_format()).unwrap()),
+            cell!(Fw -> group.last_updated().to_offset(local_offset()).format(&time_format()).unwrap()),
         ]));
     }
 
