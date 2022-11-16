@@ -108,8 +108,8 @@ fn build_result_table(
                 })
                 .collect::<Vec<_>>()
                 .join("\n"),
-            metadata.created(),
-            metadata.last_updated()
+            metadata.created().to_offset(util::local_offset()).format(&util::time_format()).unwrap(),
+            metadata.last_updated().to_offset(util::local_offset()).format(&util::time_format()).unwrap()
         ]);
     }
     table
