@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
++ create the `~/.iron` directory if it doesn't exist.
+
 ## 1.0.2
 
 + Resolve issue running binary when it is `cargo install`d. Previously returned an error 'Must be run on a system that has an OS time library.' when the group info and user device-list commands were invoked.
