@@ -162,20 +162,24 @@ pub fn println_paint(paint: yansi::Paint<String>) {
     }
 }
 
-pub fn time_format(ts: &time::OffsetDateTime) -> String {
+pub fn time_format(utc_ts: &time::OffsetDateTime) -> String {
     static LOCAL_TZ: Lazy<tz::TimeZoneRef<'static>> =
         Lazy::new(|| tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT));
-    if let Ok(ts) = tz::DateTime::from_total_nanoseconds(ts.unix_timestamp_nanos(), *LOCAL_TZ) {
-        let y = ts.year();
-        let m = ts.month();
-        let d = ts.month_day();
-        let h = ts.hour();
-        let i = ts.minute();
-        let s = ts.second();
-        let z = ts.local_time_type().time_zone_designation();
+    if let Ok(adjusted_local_time) =
+        tz::DateTime::from_total_nanoseconds(utc_ts.unix_timestamp_nanos(), *LOCAL_TZ)
+    {
+        let y = adjusted_local_time.year();
+        let m = adjusted_local_time.month();
+        let d = adjusted_local_time.month_day();
+        let h = adjusted_local_time.hour();
+        let i = adjusted_local_time.minute();
+        let s = adjusted_local_time.second();
+        let z = adjusted_local_time
+            .local_time_type()
+            .time_zone_designation();
         format!("{y:04}-{m:02}-{d:02} {h:02}:{i:02}:{s:02} ({z})")
     } else {
-        format!("{ts:?}")
+        format!("{utc_ts:?}")
     }
 }
 
