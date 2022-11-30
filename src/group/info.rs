@@ -46,15 +46,12 @@ fn build_table(result: Result<GetResult, IronOxideErr>) -> prettytable::Table {
     let mut table = table![];
     match result {
         Ok(get_result) => {
-            let created = get_result.created.to_offset(util::local_offset());
-            let updated = get_result.updated.to_offset(util::local_offset());
-
             table.add_row(row![Fbb->"Group", get_result.name]);
             table.add_row(row![Fbb->"ID", get_result.id]);
             table.add_row(create_row("Admin", get_result.is_admin));
             table.add_row(create_row("Member", get_result.is_member));
-            table.add_row(row![Fbb->"Created", created.format(&util::time_format()).unwrap()]);
-            table.add_row(row![Fbb->"Updated", updated.format(&util::time_format()).unwrap()]);
+            table.add_row(row![Fbb->"Created", util::time_format(&get_result.created)]);
+            table.add_row(row![Fbb->"Updated", util::time_format(&get_result.updated)]);
             table.add_row(row![Fbb->"Admins", get_result.admins.join("\n")]);
             table.add_row(row![Fbb->"Members", get_result.members.join("\n")]);
         }

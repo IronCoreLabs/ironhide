@@ -5,6 +5,7 @@ use fancy_regex::Regex;
 use ironoxide::prelude::*;
 use ironoxide::prelude::{GroupId, UserId, UserOrGroup};
 use itertools::{Either, Itertools};
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use serde_json::Error;
 use std::convert::TryFrom;
@@ -12,8 +13,6 @@ use std::fmt::Display;
 use std::fs;
 use std::path::PathBuf;
 use std::{fs::File, path::Path};
-use time::format_description::FormatItem;
-use time::{format_description, UtcOffset};
 use yansi::Paint;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -163,24 +162,21 @@ pub fn println_paint(paint: yansi::Paint<String>) {
     }
 }
 
-// this can probably be made a lazy static
-pub fn local_offset() -> UtcOffset {
-    // this is _all_ a workaround until `UtcOffset::current_local_offset()` is sound again (see https://github.com/time-rs/time/issues/293)
-    // it _is_ sound in our use case (we're single threaded so we can't possibly setenv), but we're not able to set
-    // --cfg unsound_local_offset in all build environments, because [crates.io ignores .cargo/config.toml files](https://github.com/rust-lang/cargo/issues/6025) and
-    // [build.rs](https://doc.rust-lang.org/cargo/reference/build-scripts.html#cargorustc-cfgkeyvalue) scripts are run after dependencies are compiled.
-    // TODO: replace this entire block with `UtcOffset::current_local_offset()` once it's fixed
-    tzdb::now::local()
-        .ok()
-        .and_then(|local_time| {
-            UtcOffset::from_whole_seconds(local_time.local_time_type().ut_offset()).ok()
-        })
-        .unwrap_or(UtcOffset::UTC)
-}
-
-// this can definitely be made a lazy static
-pub fn time_format() -> Vec<FormatItem<'static>> {
-    format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap()
+pub fn time_format(ts: &time::OffsetDateTime) -> String {
+    static LOCAL_TZ: Lazy<tz::TimeZoneRef<'static>> =
+        Lazy::new(|| tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT));
+    if let Ok(ts) = tz::DateTime::from_total_nanoseconds(ts.unix_timestamp_nanos(), *LOCAL_TZ) {
+        let y = ts.year();
+        let m = ts.month();
+        let d = ts.month_day();
+        let h = ts.hour();
+        let i = ts.minute();
+        let s = ts.second();
+        let z = ts.local_time_type().time_zone_designation();
+        format!("{y:04}-{m:02}-{d:02} {h:02}:{i:02}:{s:02} ({z})")
+    } else {
+        format!("{ts:?}")
+    }
 }
 
 pub fn group_already_known(sdk: &BlockingIronOxide, name: &GroupName) -> bool {
