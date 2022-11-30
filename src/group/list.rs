@@ -45,14 +45,8 @@ pub fn list_groups(sdk: &BlockingIronOxide) -> Result<(), String> {
                 is_admin,
                 is_member,
                 cell!(Fw -> group.id().id()),
-                cell!(Fw -> group.created().
-                                to_offset(util::local_offset()).
-                                format(&util::time_format()).
-                                unwrap()),
-                cell!(Fw -> group.last_updated().
-                                to_offset(util::local_offset()).
-                                format(&util::time_format()).
-                                unwrap()),
+                cell!(Fw -> util::time_format(group.created())),
+                cell!(Fw -> util::time_format(group.last_updated())),
             ]));
         }
 

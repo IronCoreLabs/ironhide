@@ -33,9 +33,13 @@ pub fn list_devices(sdk: &BlockingIronOxide) -> Result<(), String> {
         } else {
             ""
         };
-        let created_dt = device.created().to_offset(util::local_offset());
-        let updated_dt = device.last_updated().to_offset(util::local_offset());
-        table.add_row(row![device.id().id(), device_name, created_dt.format(&util::time_format()).unwrap(), updated_dt.format(&util::time_format()).unwrap(), Fgb->current_device]);
+        table.add_row(row![
+            device.id().id(),
+            device_name,
+            util::time_format(device.created()),
+            util::time_format(device.last_updated()),
+            Fgb->current_device,
+        ]);
     }
     table.printstd();
     Ok(())
