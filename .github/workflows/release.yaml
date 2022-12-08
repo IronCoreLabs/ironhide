@@ -162,6 +162,20 @@ jobs:
         artifacts: ${{ env.ASSET }}
         artifactContentType: application/octet-stream
 
+  finalize-release:
+    name: finalize-release
+    needs: [create-release, build-release]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Un-draft release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.create-release.outputs.ironhide_version }}
+          name: ${{ needs.create-release.outputs.ironhide_version }}
+          allowUpdates: true
+          draft: false
+
   crates-release:
     name: crates.io-release
     needs: ['build-release']
