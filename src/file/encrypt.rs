@@ -148,11 +148,10 @@ fn encrypt_file(
     file: Vec<u8>,
     delete: bool,
 ) -> Result<String, String> {
-    let (output, output_log) = validate_encrypt_output_path(out.clone(), infile)?;
     let (groups_by_name, _) = get_group_maps(sdk);
     let group_ids = convert_group_names_to_ids(groups, &groups_by_name);
     let users_or_groups = util::collect_users_and_groups(users, &group_ids);
-    encrypt_bytes_to_file(sdk, &file, &users_or_groups, output)?;
+    let output_log = encrypt_bytes_to_file(sdk, &file, &users_or_groups, out, infile)?;
     if delete {
         match infile {
             Some(infile) => {
@@ -261,15 +260,17 @@ fn encrypt_bytes_to_file(
     sdk: &BlockingIronOxide,
     file: &[u8],
     users_or_groups: &[UserOrGroup],
-    mut output_writer: Box<dyn Write>,
-) -> Result<(), String> {
+    outfile: &Option<PathBuf>,
+    infile: Option<&PathBuf>,
+) -> Result<String, String> {
     let grants = ExplicitGrant::new(true, users_or_groups);
     let opts = DocumentEncryptOpts::new(None, None, EitherOrBoth::Left(grants));
     let encrypt_result = sdk.document_encrypt(file.to_vec(), &opts)?;
+    let (mut output_writer, output_log) = validate_encrypt_output_path(outfile.clone(), infile)?;
 
     output_writer
         .write_all(encrypt_result.encrypted_data())
         .map_err(|e| format!("Couldn't write encrypted file: {e}"))?;
 
-    Ok(())
+    Ok(output_log)
 }

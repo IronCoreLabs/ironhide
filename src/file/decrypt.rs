@@ -84,8 +84,7 @@ pub fn decrypt_files(
             Ok(_) => {
                 // safe to unwrap here because `stdin` always has to have `out` set.
                 let out_path = out.unwrap();
-                let (out_writer, _) = get_writer_and_path(out_path)?;
-                decrypt_file(sdk, encrypted_document, out_writer, delete, None)?;
+                decrypt_file(sdk, encrypted_document, &out_path, delete, None)?;
             }
             Err(e) => util::println_paint(Paint::red(format!("Error reading stdin: {}", e))),
         }
@@ -118,9 +117,9 @@ pub fn decrypt_files(
                         ))?
                         .into(),
                 );
-                let (out_writer, out_logged_path) = get_writer_and_path(out_path)?;
-                decrypt_file(sdk, encrypted_document, out_writer, delete, Some(path))?;
+                decrypt_file(sdk, encrypted_document, &out_path, delete, Some(path))?;
                 if files.len() == 1 {
+                    let out_logged_path = get_output_logged_path(out_path)?;
                     util::println_paint(Paint::green(format!(
                         "File successfully decrypted and written to {}",
                         out_logged_path
@@ -135,7 +134,7 @@ pub fn decrypt_files(
     Ok(())
 }
 
-fn get_writer_and_path(out_path: PathBuf) -> Result<(Box<dyn Write>, String), String> {
+fn get_output_writer(out_path: PathBuf) -> Result<Box<dyn Write>, String> {
     let out_writer: Box<dyn Write> = if out_path == PathBuf::from("-") {
         Box::new(io::stdout())
     } else {
@@ -152,6 +151,10 @@ fn get_writer_and_path(out_path: PathBuf) -> Result<(Box<dyn Write>, String), St
             })
             .map(Box::new)?
     };
+    Ok(out_writer)
+}
+
+fn get_output_logged_path(out_path: PathBuf) -> Result<String, String> {
     let out_logged_path = if out_path == PathBuf::from("-") {
         "stdout"
     } else {
@@ -160,13 +163,13 @@ fn get_writer_and_path(out_path: PathBuf) -> Result<(Box<dyn Write>, String), St
             out_path.display()
         ))?
     };
-    Ok((out_writer, out_logged_path.to_string()))
+    Ok(out_logged_path.to_string())
 }
 
 fn decrypt_file(
     sdk: &BlockingIronOxide,
     encrypted_document: Vec<u8>,
-    mut decrypted_writer: Box<dyn Write>,
+    out_path: &PathBuf,
     delete: bool,
     input_path: Option<&PathBuf>,
 ) -> Result<(), String> {
@@ -174,6 +177,7 @@ fn decrypt_file(
         .document_decrypt(&encrypted_document)
         .map_err(|e| format!("Failed to decrypt encrypted document: {e}"))?;
     let decrypted_document = decrypt_result.decrypted_data();
+    let mut decrypted_writer = get_output_writer(out_path.clone())?;
     decrypted_writer
         .write_all(decrypted_document)
         .map_err(|e| format!("Failed to write decrypted document: {e}"))?;
