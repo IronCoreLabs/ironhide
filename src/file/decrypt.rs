@@ -117,7 +117,13 @@ pub fn decrypt_files(
                         ))?
                         .into(),
                 );
-                decrypt_file(sdk, encrypted_document, Some(path), out_path.clone(), delete)?;
+                decrypt_file(
+                    sdk,
+                    encrypted_document,
+                    Some(path),
+                    out_path.clone(),
+                    delete,
+                )?;
                 if files.len() == 1 {
                     let out_logged_path = get_output_logged_path(out_path)?;
                     util::println_paint(Paint::green(format!(
