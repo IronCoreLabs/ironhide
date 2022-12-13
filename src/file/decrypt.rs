@@ -4,6 +4,7 @@ use ironoxide::prelude::BlockingIronOxide;
 use std::{
     fs::{self, File, OpenOptions},
     io::{self, Read, Write},
+    path::Path,
     path::PathBuf,
 };
 use yansi::Paint;
@@ -110,14 +111,16 @@ pub fn decrypt_files(
                         path.display()
                     )
                 })?;
-                let out_path = out.clone().unwrap_or(
-                    path.file_stem()
-                        .ok_or(format!(
+                let in_parent = path.parent().ok_or(format!(
+                    "Failed to find parent of input path {}.",
+                    path.display()
+                ))?;
+                let out_path =
+                    out.clone()
+                        .unwrap_or(in_parent.join(Path::new(path.file_stem().ok_or(format!(
                             "Failed to extract default output file name from input path {}.",
                             path.display()
-                        ))?
-                        .into(),
-                );
+                        ))?)));
                 let (out_writer, out_logged_path) = get_writer_and_path(out_path)?;
                 decrypt_file(sdk, encrypted_document, out_writer, delete, Some(path))?;
                 if files.len() == 1 {
