@@ -84,7 +84,7 @@ pub fn decrypt_files(
             Ok(_) => {
                 // safe to unwrap here because `stdin` always has to have `out` set.
                 let out_path = out.unwrap();
-                decrypt_file(sdk, encrypted_document, &out_path, delete, None)?;
+                decrypt_file(sdk, encrypted_document, None, out_path.clone(), delete)?;
             }
             Err(e) => util::println_paint(Paint::red(format!("Error reading stdin: {}", e))),
         }
@@ -117,7 +117,7 @@ pub fn decrypt_files(
                         ))?
                         .into(),
                 );
-                decrypt_file(sdk, encrypted_document, &out_path, delete, Some(path))?;
+                decrypt_file(sdk, encrypted_document, Some(path), out_path.clone(), delete)?;
                 if files.len() == 1 {
                     let out_logged_path = get_output_logged_path(out_path)?;
                     util::println_paint(Paint::green(format!(
@@ -169,15 +169,15 @@ fn get_output_logged_path(out_path: PathBuf) -> Result<String, String> {
 fn decrypt_file(
     sdk: &BlockingIronOxide,
     encrypted_document: Vec<u8>,
-    out_path: &PathBuf,
-    delete: bool,
     input_path: Option<&PathBuf>,
+    out_path: PathBuf,
+    delete: bool,
 ) -> Result<(), String> {
     let decrypt_result = sdk
         .document_decrypt(&encrypted_document)
         .map_err(|e| format!("Failed to decrypt encrypted document: {e}"))?;
     let decrypted_document = decrypt_result.decrypted_data();
-    let mut decrypted_writer = get_output_writer(out_path.clone())?;
+    let mut decrypted_writer = get_output_writer(out_path)?;
     decrypted_writer
         .write_all(decrypted_document)
         .map_err(|e| format!("Failed to write decrypted document: {e}"))?;
