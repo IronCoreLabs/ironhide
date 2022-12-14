@@ -271,7 +271,7 @@ pub fn is_group_id(group_identifier: &str) -> bool {
 }
 
 // Run an action closure across all files and print messages for the successes and failures.
-pub fn act_on_all_files<F>(files: &[PathBuf], action: F, action_verb: &str)
+pub fn act_on_all_files<F>(files: &[PathBuf], action: F, action_verb: &str) -> Result<(), String>
 where
     F: FnMut(&PathBuf) -> Result<(), String>,
 {
@@ -280,7 +280,7 @@ where
         println_paint(Paint::green(format!(
             "{} files successfully {action_verb}.",
             successes.len()
-        )));
+        )))
     }
     if !failures.is_empty() {
         println_paint(Paint::red(format!(
@@ -288,6 +288,9 @@ where
             failures.len(),
             failures
         )));
+        Err(format!("Not all file operations were successful."))
+    } else {
+        Ok(())
     }
 }
 

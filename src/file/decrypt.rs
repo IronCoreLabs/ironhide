@@ -137,7 +137,7 @@ pub fn decrypt_files(
                 Ok(())
             },
             "decrypted",
-        )
+        )?;
     }
 
     Ok(())
