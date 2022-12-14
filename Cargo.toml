@@ -1,8 +1,8 @@
 [package]
 name = "ironhide"
 version = "1.0.4"
-authors = [ "IronCore Labs <info@ironcorelabs.com>" ]
-categories = [ "cryptography" ]
+authors = ["IronCore Labs <info@ironcorelabs.com>"]
+categories = ["cryptography"]
 description = "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale."
 documentation = "https://docs.rs/ironhide"
 edition = "2021"
@@ -22,7 +22,6 @@ keywords = [
 license = "AGPL-3.0-only"
 readme = "README.md"
 repository = "https://github.com/IronCoreLabs/ironhide"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -32,23 +31,24 @@ base64 = "~0.13"
 clap = { version = "~3.1.8", features = ["cargo", "derive", "suggestions"] }
 derive_more = "~0.99.6"
 dirs = "~4.0"
+fancy-regex = "~0.10"
 ironoxide = { version = "~2", features = [
     "blocking",
     "tls-rustls",
 ], default-features = false }
+
+# this needs to stay/be upated to ironoxide's version
+itertools = "0.10"
 keyring = "~1.2.0"
+once_cell = "~1.16"
 prettytable-rs = "~0.9"
 promptly = "~0.3"
-fancy-regex = "~0.10"
-once_cell = "~1.16"
 rpassword = "~7.1"
 serde = { version = "~1.0", features = ["derive"] }
 serde_json = "~1.0"
 textwrap = { version = "~0.16", features = ["terminal_size"] }
+# this needs to stay/be upated to ironoxide's version
+time = "0.3.6"
 tz-rs = { version = "~0.6.14", default-features = false }
 tzdb = { version = "~0.5.0", default-features = false }
 yansi = "~0.5"
-
-# these need to stay/be upated to ironoxide's versions
-itertools = "0.10"
-time = "0.3.6"
