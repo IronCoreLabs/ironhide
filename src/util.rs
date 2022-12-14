@@ -288,7 +288,7 @@ where
             failures.len(),
             failures
         )));
-        Err(format!("Not all file operations were successful."))
+        Err("Not all file operations were successful.".to_string())
     } else {
         Ok(())
     }
