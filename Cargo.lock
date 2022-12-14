@@ -1038,7 +1038,7 @@ checksum = "879d54834c8c76457ef4293a689b2a8c59b076067ad77b15efafbb05f92a592b"
 
 [[package]]
 name = "ironhide"
-version = "1.0.4"
+version = "1.0.5"
 dependencies = [
  "attohttpc",
  "atty",

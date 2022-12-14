@@ -1,8 +1,18 @@
 # Changelog
 
+## 1.0.5
+
++ Fix a bug where decryption outputs the file to the current directory
++ Fix a bug where an empty file is created when decryption fails
++ Return a non-zero status when one or more file operations fail 
+
+## 1.0.4
+
++ Improve the display of datetimes
+
 ## 1.0.3
 
-+ create the `~/.iron` directory if it doesn't exist.
++ Create the `~/.iron` directory if it doesn't exist.
 
 ## 1.0.2
 

@@ -133,7 +133,7 @@ pub fn encrypt_files(
                 Ok(())
             },
             "encrypted",
-        )
+        )?;
     }
 
     Ok(())

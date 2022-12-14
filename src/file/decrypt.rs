@@ -85,7 +85,7 @@ pub fn decrypt_files(
             Ok(_) => {
                 // safe to unwrap here because `stdin` always has to have `out` set.
                 let out_path = out.unwrap();
-                decrypt_file(sdk, encrypted_document, None, out_path.clone(), delete)?;
+                decrypt_file(sdk, encrypted_document, None, out_path, delete)?;
             }
             Err(e) => util::println_paint(Paint::red(format!("Error reading stdin: {}", e))),
         }
@@ -137,7 +137,7 @@ pub fn decrypt_files(
                 Ok(())
             },
             "decrypted",
-        )
+        )?;
     }
 
     Ok(())
