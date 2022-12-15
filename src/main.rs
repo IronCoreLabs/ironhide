@@ -150,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                         // as well as to the default file location
                         std::fs::create_dir_all(dirs::home_dir().unwrap().join(".iron"))?;
-                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), &user_id)?;
+                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), user_id)?;
                         std::fs::write(
                             dirs::home_dir().unwrap().join(".iron/keys"),
                             serde_json::to_string(&device_context)?.as_str(),
@@ -197,7 +197,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                         // as well as to the default file location
                         std::fs::create_dir_all(dirs::home_dir().unwrap().join(".iron"))?;
-                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), &user.id())?;
+                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), user.id())?;
                         std::fs::write(
                             dirs::home_dir().unwrap().join(".iron/keys"),
                             serde_json::to_string(&device_context)?.as_str(),
