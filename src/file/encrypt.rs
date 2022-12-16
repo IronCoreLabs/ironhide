@@ -117,7 +117,7 @@ pub fn encrypt_files(
         act_on_all_files(
             &files,
             |infile| -> Result<(), String> {
-                let file = fs::read(&infile).map_err(|e| {
+                let file = fs::read(infile).map_err(|e| {
                     format!(
                         "Provided path '{}' doesn't exist or is not readable: {e}",
                         infile.display()
@@ -155,7 +155,7 @@ fn encrypt_file(
     if delete {
         match infile {
             Some(infile) => {
-                if fs::remove_file(&infile).is_err() {
+                if fs::remove_file(infile).is_err() {
                     util::println_paint(Paint::yellow(format!(
                         "Unable to delete source file '{}' as it is not writable.",
                         &infile.display()

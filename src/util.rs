@@ -1,10 +1,10 @@
 use crate::group_maps::{convert_group_names_to_ids, get_group_maps};
 use crate::{group_maps, IronhideErr};
-use clap::lazy_static::lazy_static;
 use fancy_regex::Regex;
 use ironoxide::prelude::*;
 use ironoxide::prelude::{GroupId, UserId, UserOrGroup};
 use itertools::{Either, Itertools};
+use lazy_static::lazy_static;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use serde_json::Error;
@@ -65,7 +65,7 @@ pub fn initialize_sdk(keyfile: Option<&PathBuf>) -> Result<BlockingIronOxide, St
 
 pub fn initialize_sdk_from_file(device_path: &Path) -> Result<BlockingIronOxide, String> {
     if device_path.is_file() {
-        let device_context_file = File::open(&device_path).map_err(|e| {
+        let device_context_file = File::open(device_path).map_err(|e| {
             format!(
                 "Couldn't open device context at {}: {:?}",
                 device_path.to_str().unwrap(),
@@ -320,7 +320,7 @@ pub fn execute_permissioning_operation(
     let results = files
         .iter()
         .map(|infile| {
-            let file = fs::read(&infile).unwrap();
+            let file = fs::read(infile).unwrap();
             let file_name = infile.file_name().unwrap().to_string_lossy();
 
             let res = sdk

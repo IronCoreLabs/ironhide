@@ -97,7 +97,7 @@ pub fn decrypt_files(
         act_on_all_files(
             &files,
             |path: &PathBuf| -> Result<(), String> {
-                let mut file = File::open(&path).map_err(|e| {
+                let mut file = File::open(path).map_err(|e| {
                     format!(
                         "Provided path '{}' doesn't exist or is not readable: {e}",
                         path.display()
@@ -193,7 +193,7 @@ fn decrypt_file(
     if delete {
         match input_path {
             Some(infile) => {
-                if fs::remove_file(&infile).is_err() {
+                if fs::remove_file(infile).is_err() {
                     util::println_paint(Paint::yellow(format!(
                         "Unable to delete source file '{}' as it is not writable.",
                         &infile.display()

@@ -43,7 +43,7 @@ pub fn lookup_users(sdk: &BlockingIronOxide, user_lookup: &UserLookup) -> Result
                 match key_list.get(&user_id) {
                     Some(public_key) => table.add_row(row![
                                           Fg->user_id.id(),
-                                          Fg->base64::encode(&public_key.as_bytes())]),
+                                          Fg->base64::encode(public_key.as_bytes())]),
                     None => {
                         table.add_row(row![Fr->user_id.id(), Fr->"user has not generated keys yet"])
                     }
