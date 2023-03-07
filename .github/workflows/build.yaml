@@ -26,6 +26,7 @@ jobs:
         - pinned-musl
         - pinned-32
         - pinned-arm
+        - pinned-arm64
         - stable
         - beta
         - nightly
@@ -44,6 +45,8 @@ jobs:
         - build: pinned-arm
           os: ubuntu-22.04
           target: arm-unknown-linux-gnueabihf
+        - build: pinned-arm64
+          os: buildjet-4vcpu-ubuntu-2204-arm
         - build: stable
           os: ubuntu-22.04
           rust: stable
@@ -119,13 +122,13 @@ jobs:
     name: Docs
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-      - name: Check documentation
-        env:
-          RUSTDOCFLAGS: -D warnings
-        run: cargo doc --no-deps --document-private-items --workspace
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - name: Check documentation
+      env:
+        RUSTDOCFLAGS: -D warnings
+      run: cargo doc --no-deps --document-private-items --workspace

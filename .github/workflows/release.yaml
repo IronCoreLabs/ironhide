@@ -27,31 +27,31 @@ jobs:
     name: create-release
     runs-on: ubuntu-22.04
     # env:
-      # Set to force version number, e.g., when no tag exists.
-      # IRONHIDE_VERSION: TEST-0.0.0
+    # Set to force version number, e.g., when no tag exists.
+    # IRONHIDE_VERSION: TEST-0.0.0
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
       ironhide_version: ${{ env.IRONHIDE_VERSION }}
     steps:
-      - name: Get the release version from the tag
-        shell: bash
-        if: env.IRONHIDE_VERSION == ''
-        run: |
-          # Apparently, this is the right way to get a tag name. Really?
-          #
-          # See: https://github.community/t5/GitHub-Actions/How-to-get-just-the-tag-name/m-p/32167/highlight/true#M1027
-          echo "IRONHIDE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          echo "version is: ${{ env.IRONHIDE_VERSION }}"
-      - name: Create GitHub release
-        id: release
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.IRONHIDE_VERSION }}
-          name: ${{ env.IRONHIDE_VERSION }}
-          allowUpdates: true
-          draft: true
-          omitDraftDuringUpdate: true
+    - name: Get the release version from the tag
+      shell: bash
+      if: env.IRONHIDE_VERSION == ''
+      run: |
+        # Apparently, this is the right way to get a tag name. Really?
+        #
+        # See: https://github.community/t5/GitHub-Actions/How-to-get-just-the-tag-name/m-p/32167/highlight/true#M1027
+        echo "IRONHIDE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        echo "version is: ${{ env.IRONHIDE_VERSION }}"
+    - name: Create GitHub release
+      id: release
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.IRONHIDE_VERSION }}
+        name: ${{ env.IRONHIDE_VERSION }}
+        allowUpdates: true
+        draft: true
+        omitDraftDuringUpdate: true
 
   build-release:
     name: build-release
@@ -67,11 +67,14 @@ jobs:
       RUST_BACKTRACE: 1
     strategy:
       matrix:
-        build: [linux, linux-arm, macos, win-msvc, win-gnu]
+        build: [linux, linux-arm64, linux-arm, macos, win-msvc, win-gnu]
         include:
         - build: linux
           os: ubuntu-22.04
           target: x86_64-unknown-linux-musl
+        - build: linux-arm64
+          os: buildjet-4vcpu-ubuntu-2204-arm
+          target: aarch64-unknown-linux-gnu
         - build: linux-arm
           os: ubuntu-22.04
           target: arm-unknown-linux-gnueabihf
@@ -167,26 +170,26 @@ jobs:
     needs: [create-release, build-release]
     runs-on: ubuntu-22.04
     steps:
-      - name: Un-draft release
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.create-release.outputs.ironhide_version }}
-          name: ${{ needs.create-release.outputs.ironhide_version }}
-          allowUpdates: true
-          draft: false
+    - name: Un-draft release
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ needs.create-release.outputs.ironhide_version }}
+        name: ${{ needs.create-release.outputs.ironhide_version }}
+        allowUpdates: true
+        draft: false
 
   crates-release:
     name: crates.io-release
     needs: ['build-release']
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-      - run: cargo publish --token ${CRATES_TOKEN}
-        env:
-          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - run: cargo publish --token ${CRATES_TOKEN}
+      env:
+        CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
