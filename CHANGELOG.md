@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.7
+
++ Added arm64 macos to prebuilt release binaries
++ Dependency updates
+
+## 1.0.6
+
++ Added arm64 linux to prebuilt release binaries
+
 ## 1.0.5
 
 + Fix a bug where decryption outputs the file to the current directory
