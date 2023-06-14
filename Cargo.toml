@@ -1,6 +1,6 @@
 [package]
 name = "ironhide"
-version = "1.0.6"
+version = "1.0.7"
 authors = ["IronCore Labs <info@ironcorelabs.com>"]
 categories = ["cryptography"]
 description = "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale."
@@ -22,7 +22,6 @@ keywords = [
 license = "AGPL-3.0-only"
 readme = "README.md"
 repository = "https://github.com/IronCoreLabs/ironhide"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 attohttpc = { version = "~0.24", features = ["form", "json", "tls-rustls", "compress"], default-features = false }
