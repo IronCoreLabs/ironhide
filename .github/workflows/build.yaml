@@ -31,6 +31,7 @@ jobs:
         - beta
         - nightly
         - macos
+        - macos-arm64
         - win-msvc
         - win-gnu
         include:
@@ -58,7 +59,8 @@ jobs:
           rust: nightly
         - build: macos
           os: macos-12
-        - os: [self-hosted, macOS, ARM64]
+        - build: macos-arm64
+          os: [self-hosted, macOS, ARM64]
           target: aarch64-apple-darwin
         - build: win-msvc
           os: windows-2022
