@@ -58,6 +58,8 @@ jobs:
           rust: nightly
         - build: macos
           os: macos-12
+        - os: [self-hosted, macOS, ARM64]
+          target: aarch64-apple-darwin
         - build: win-msvc
           os: windows-2022
         - build: win-gnu
