@@ -82,7 +82,7 @@ jobs:
           os: macos-12
           target: x86_64-apple-darwin
         - build: macos-arm64
-          os: [self-hosted, macOS, ARM64]
+          os: macos-14
           target: aarch64-apple-darwin
         - build: win-msvc
           os: windows-2022
@@ -93,7 +93,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
@@ -188,7 +188,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
       with:
