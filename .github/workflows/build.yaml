@@ -63,7 +63,7 @@ jobs:
         - build: macos
           os: macos-12
         - build: macos-arm64
-          os: [self-hosted, macOS, ARM64]
+          os: macos-14
           target: aarch64-apple-darwin
         - build: win-msvc
           os: windows-2022
@@ -71,7 +71,7 @@ jobs:
           os: windows-2022
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # this will always install whatever is targeted by the rust-toolchain.toml file
     - name: Install Rust
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
       with:
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
       with:
