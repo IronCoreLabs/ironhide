@@ -41,7 +41,7 @@
         buildInputs = with pkgs;
           [rusttoolchain]
           ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
-          [pkgs.darwin.apple_sdk.frameworks.Security];
+          (with pkgs.darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
       };
     });
 }
