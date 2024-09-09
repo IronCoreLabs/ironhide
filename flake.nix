@@ -22,8 +22,6 @@
     flake-utils.lib.eachDefaultSystem (system: let
       overlays = [(import rust-overlay)];
       pkgs = import nixpkgs {inherit system overlays;};
-      rusttoolchain =
-        pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
       toolchainToml = builtins.fromTOML (builtins.readFile ./rust-toolchain.toml);
       cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
     in rec {
@@ -52,7 +50,7 @@
       # nix develop
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs;
-          [rusttoolchain]
+          [(pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)]
           ++ lib.optionals stdenv.isDarwin
           (with darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
       };
