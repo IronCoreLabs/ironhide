@@ -1,6 +1,6 @@
 [package]
 name = "ironhide"
-version = "1.0.7"
+version = "1.0.8"
 authors = ["IronCore Labs <info@ironcorelabs.com>"]
 categories = ["cryptography"]
 description = "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale."
