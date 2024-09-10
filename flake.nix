@@ -12,7 +12,6 @@
     nixpkgs,
     rust-overlay,
     flake-utils,
-    ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       overlays = [(import rust-overlay)];
@@ -23,16 +22,22 @@
     in rec {
       # `nix build`
       packages = {
-        ironhide = pkgs.rustPlatform.buildRustPackage {
-          pname = cargoToml.package.name;
-          version = cargoToml.package.version;
-          src = ./.;
-          cargoLock.lockFile = ./Cargo.lock;
-          nativeBuildInputs = with pkgs;
-            [rusttoolchain]
-            ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
-            (with pkgs.darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
-        };
+        ironhide =
+          (pkgs.makeRustPlatform {
+            cargo = rusttoolchain;
+            rustc = rusttoolchain;
+          })
+          .buildRustPackage {
+            # ironhide = pkgs.rustPlatform.buildRustPackage {
+            pname = cargoToml.package.name;
+            inherit (cargoToml.package) version;
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
+            nativeBuildInputs = with pkgs;
+              [rusttoolchain]
+              ++ lib.optionals stdenv.isDarwin
+              (with darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
+          };
         default = packages.ironhide;
       };
 
@@ -40,8 +45,8 @@
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs;
           [rusttoolchain]
-          ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
-          (with pkgs.darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
+          ++ lib.optionals stdenv.isDarwin
+          (with darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
       };
     });
 }
