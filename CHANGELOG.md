@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.9
+
++ Update to the nix flake
+
+## 1.0.8
+
++ Update to the nix flake
+
 ## 1.0.7
 
 + Added arm64 macos to prebuilt release binaries
@@ -13,7 +21,7 @@
 
 + Fix a bug where decryption outputs the file to the current directory
 + Fix a bug where an empty file is created when decryption fails
-+ Return a non-zero status when one or more file operations fail 
++ Return a non-zero status when one or more file operations fail
 
 ## 1.0.4
 
