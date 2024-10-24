@@ -33,7 +33,7 @@ jobs:
         - stable
         - beta
         - nightly
-        - macos
+        - macos-intel
         - macos-arm64
         - win-msvc
         - win-gnu
@@ -60,8 +60,9 @@ jobs:
         - build: nightly
           os: ubuntu-22.04
           rust: nightly
-        - build: macos
-          os: macos-12
+        - build: macos-intel
+          os: macos-13
+          target: x86_64-apple-darwin
         - build: macos-arm64
           os: macos-14
           target: aarch64-apple-darwin

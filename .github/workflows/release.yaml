@@ -67,7 +67,7 @@ jobs:
       RUST_BACKTRACE: 1
     strategy:
       matrix:
-        build: [linux, linux-arm64, linux-arm, macos, macos-arm64, win-msvc, win-gnu]
+        build: [linux, linux-arm64, linux-arm, macos-intel, macos-arm64, win-msvc, win-gnu]
         include:
         - build: linux
           os: ubuntu-22.04
@@ -78,8 +78,8 @@ jobs:
         - build: linux-arm
           os: ubuntu-22.04
           target: arm-unknown-linux-gnueabihf
-        - build: macos
-          os: macos-12
+        - build: macos-intel
+          os: macos-13
           target: x86_64-apple-darwin
         - build: macos-arm64
           os: macos-14
@@ -130,7 +130,7 @@ jobs:
       run: ${{ env.CARGO }} build --verbose --release ${{ env.TARGET_FLAGS }}
 
     - name: Strip release binary (linux and mac)
-      if: matrix.build == 'linux' || matrix.build == 'macos' || matrix.build == 'macos-arm64'
+      if: matrix.build == 'linux' || matrix.build == 'macos-intel' || matrix.build == 'macos-arm64'
       run: strip "target/${{ matrix.target }}/release/ironhide"
 
     - name: Strip release binary (arm)
