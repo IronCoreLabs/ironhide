@@ -149,7 +149,6 @@ fn get_output_writer(out_path: PathBuf) -> Result<Box<dyn Write>, String> {
     } else {
         OpenOptions::new()
             .create_new(true)
-            .write(true)
             .append(true)
             .open(out_path.clone())
             .map_err(|e| {

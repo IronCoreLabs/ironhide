@@ -1,5 +1,5 @@
 use crate::group_maps::{convert_group_names_to_ids, get_group_maps};
-use crate::util::{group_already_known, group_identifier_from_string, println_paint, GetKeyfile};
+use crate::util::{GetKeyfile, group_already_known, group_identifier_from_string, println_paint};
 use clap::Parser;
 use ironoxide::group::GroupName;
 use ironoxide::prelude::{BlockingIronOxide, GroupId};

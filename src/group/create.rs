@@ -1,4 +1,4 @@
-use crate::util::{group_already_known, println_paint, GetKeyfile};
+use crate::util::{GetKeyfile, group_already_known, println_paint};
 use clap::Parser;
 use ironoxide::group::GroupName;
 use ironoxide::prelude::BlockingIronOxide;

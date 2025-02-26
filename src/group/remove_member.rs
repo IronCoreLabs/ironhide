@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use ironoxide::{
+    IronOxideErr,
     group::GroupAccessEditResult,
     prelude::{BlockingIronOxide, GroupId, GroupName, UserId},
-    IronOxideErr,
 };
 use itertools::Either;
 

@@ -1,7 +1,7 @@
 use crate::util;
 use clap::Parser;
 use ironoxide::prelude::BlockingIronOxide;
-use prettytable::{color, Attr, Cell, Row};
+use prettytable::{Attr, Cell, Row, color};
 use std::path::PathBuf;
 
 #[derive(Parser)]

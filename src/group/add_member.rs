@@ -4,9 +4,9 @@ use crate::{
 };
 use clap::Parser;
 use ironoxide::{
+    IronOxideErr,
     group::GroupAccessEditResult,
     prelude::{BlockingIronOxide, GroupId, GroupName, UserId},
-    IronOxideErr,
 };
 use itertools::Either;
 use std::path::PathBuf;
