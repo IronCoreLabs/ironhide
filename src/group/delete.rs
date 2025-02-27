@@ -71,7 +71,11 @@ pub fn verify_group(
 
     match sdk.group_get_metadata(&group_id) {
         Ok(group_info) => {
-            util::println_paint(Paint::yellow(format!("\nWarning! Deleting a group will cause all documents encrypted to only that group to no longer be decryptable! The group you are trying to delete has {} admin(s) and {} member(s).", group_info.admin_list().unwrap_or(&vec![]).len(), group_info.member_list().unwrap_or(&vec![]).len())));
+            util::println_paint(Paint::yellow(format!(
+                "\nWarning! Deleting a group will cause all documents encrypted to only that group to no longer be decryptable! The group you are trying to delete has {} admin(s) and {} member(s).",
+                group_info.admin_list().unwrap_or(&vec![]).len(),
+                group_info.member_list().unwrap_or(&vec![]).len()
+            )));
             let group_confirmation: String = promptly::prompt(format!(
                 "{}",
                 Paint::magenta("Please enter the group identifier (without prefix) again to confirm its deletion ")
@@ -101,7 +105,10 @@ fn verify_group_confirmation(
     group_info: GroupGetResult,
 ) -> Result<GroupGetResult, String> {
     if expected_value != group_confirmation {
-        Err(format!("Group confirmation failed. Original group provided was '{}' but confirmation value was '{}'.", expected_value, group_confirmation))
+        Err(format!(
+            "Group confirmation failed. Original group provided was '{}' but confirmation value was '{}'.",
+            expected_value, group_confirmation
+        ))
     } else {
         Ok(group_info)
     }

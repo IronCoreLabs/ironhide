@@ -197,7 +197,6 @@ fn validate_encrypt_output_path(
                     Box::new(
                         OpenOptions::new()
                             .create_new(true)
-                            .write(true)
                             .append(true)
                             .open(desired_dir.clone())
                             .map_err(|e| {
@@ -216,7 +215,6 @@ fn validate_encrypt_output_path(
                     Box::new(
                         OpenOptions::new()
                             .create_new(true)
-                            .write(true)
                             .append(true)
                             .open(desired.clone())
                             .map_err(|e| {
@@ -238,7 +236,6 @@ fn validate_encrypt_output_path(
                     Box::new(
                         OpenOptions::new()
                             .create_new(true)
-                            .write(true)
                             .append(true)
                             .open(PathBuf::from(input_iron.clone()))
                             .map_err(|e| {

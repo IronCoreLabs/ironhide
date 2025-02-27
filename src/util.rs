@@ -1,5 +1,5 @@
 use crate::group_maps::{convert_group_names_to_ids, get_group_maps};
-use crate::{group_maps, IronhideErr};
+use crate::{IronhideErr, group_maps};
 use fancy_regex::Regex;
 use ironoxide::prelude::*;
 use ironoxide::prelude::{GroupId, UserId, UserOrGroup};
@@ -185,8 +185,7 @@ pub fn time_format(utc_ts: &time::OffsetDateTime) -> String {
 
 pub fn group_already_known(sdk: &BlockingIronOxide, name: &GroupName) -> bool {
     let (groups_by_name, _) = group_maps::get_group_maps(sdk);
-
-    groups_by_name.get(name).is_some()
+    groups_by_name.contains_key(name)
 }
 
 pub trait GetKeyfile {
@@ -433,15 +432,20 @@ mod tests {
 
     #[test]
     fn test_user_id_try_from_email() {
-        let tests =
-            vec![
+        let tests = vec![
             ("email@here.com", true),
             ("weirder-email@here.and.there.com", true),
             ("example@valid-----hyphens.com", true),
             ("example@valid-with-hyphens.com", true),
             (r#""test@test"@example.com"#, false),
-            ("a@atm.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", true),
-            ("a@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.atm", true),
+            (
+                "a@atm.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                true,
+            ),
+            (
+                "a@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.atm",
+                true,
+            ),
             (
                 "a@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbb.atm",
                 true,

@@ -115,7 +115,9 @@ fn poll_for_token(token_request: &Auth0TokenRequest, interval: Duration) -> Stri
                 std::process::exit(1);
             }
             ExpiredToken => {
-                println!("The token we were holding was expired, the login process took too long. Please try \"ironhide login\" again.");
+                println!(
+                    "The token we were holding was expired, the login process took too long. Please try \"ironhide login\" again."
+                );
                 std::process::exit(1);
             }
             SlowDown | AuthorizationPending => {

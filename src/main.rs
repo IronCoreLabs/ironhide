@@ -1,6 +1,6 @@
 use crate::{file::FileSubcommands, group::GroupSubcommands};
-use clap::crate_version;
 use clap::Parser;
+use clap::crate_version;
 use derive_more::{Display, Error};
 use ironoxide::{blocking::BlockingIronOxide, prelude::*};
 use promptly::prompt;
@@ -82,13 +82,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             util::println_paint(Paint::green(
                 "Welcome to the ironhide CLI tool!".to_string(),
             ));
-            util::console_pretty_println("This tool uses public key elliptic curve cryptography to encrypt sensitive data. It uses a flavor of proxy re-encryption called transform cryptography to delegate access so that multiple devices (laptops, phones, tablets) with their own private keys are able to decrypt files. It uses that same technique to allow encryption to a group and to delegate decryption rights to members of the group. There's a central service for managing public keys and delegation, but that service never sees your private keys, your data, or anything that would allow the service to decrypt your data or authorize others to do so. More details can be found on IronCore's website, https://docs.ironcorelabs.com.\n");
+            util::console_pretty_println(
+                "This tool uses public key elliptic curve cryptography to encrypt sensitive data. It uses a flavor of proxy re-encryption called transform cryptography to delegate access so that multiple devices (laptops, phones, tablets) with their own private keys are able to decrypt files. It uses that same technique to allow encryption to a group and to delegate decryption rights to members of the group. There's a central service for managing public keys and delegation, but that service never sees your private keys, your data, or anything that would allow the service to decrypt your data or authorize others to do so. More details can be found on IronCore's website, https://docs.ironcorelabs.com.\n",
+            );
 
             util::println_paint(Paint::green("FIRST TIME USERS".to_string()));
-            util::console_pretty_println("The first step is to authenticate with one of your existing Internet accounts so we can tie an identity to your public key and so that others can encrypt to you using your email address. When you continue, we'll open a browser window where you'll login. After you login, we'll locally generate a key pair for your user and another pair for the current device and we'll upload the public keys to the free IronCore service. Once you've logged in, come back here to finish setup.\n");
+            util::console_pretty_println(
+                "The first step is to authenticate with one of your existing Internet accounts so we can tie an identity to your public key and so that others can encrypt to you using your email address. When you continue, we'll open a browser window where you'll login. After you login, we'll locally generate a key pair for your user and another pair for the current device and we'll upload the public keys to the free IronCore service. Once you've logged in, come back here to finish setup.\n",
+            );
 
             util::println_paint(Paint::green("EXISTING USERS".to_string()));
-            util::console_pretty_println("If you already have an account, but this is not an authorized machine, you'll need to login as a first step. We'll launch a browser for you to login after you select continue. Once you've logged in, we'll locally generate a key pair for this device and then you'll take a final step to authorize this device.\n");
+            util::console_pretty_println(
+                "If you already have an account, but this is not an authorized machine, you'll need to login as a first step. We'll launch a browser for you to login after you select continue. Once you've logged in, we'll locally generate a key pair for this device and then you'll take a final step to authorize this device.\n",
+            );
 
             if prompt(format!(
                 "{} {}",
@@ -104,7 +110,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Some(user) => {
                         let user_id = user.account_id().id();
                         // generate device keys
-                        util::console_pretty_println("Welcome back! This device does not have a local key pair for your account. To authorize this device and allow it to decrypt files, you need to enter the passphrase you used when creating your account.\n");
+                        util::console_pretty_println(
+                            "Welcome back! This device does not have a local key pair for your account. To authorize this device and allow it to decrypt files, you need to enter the passphrase you used when creating your account.\n",
+                        );
                         let pass = rpassword::prompt_password(Paint::magenta(
                             "Device Authorization Passphrase: ".to_string(),
                         ))?;

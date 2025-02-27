@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use ironoxide::{prelude::BlockingIronOxide, IronOxideErr};
+use ironoxide::{IronOxideErr, prelude::BlockingIronOxide};
 use rpassword::prompt_password;
 use yansi::Paint;
 

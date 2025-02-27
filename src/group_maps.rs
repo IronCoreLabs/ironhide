@@ -3,7 +3,7 @@ use ironoxide::{
     prelude::BlockingIronOxide,
 };
 use itertools::Either;
-use prettytable::{color, Attr, Cell, Row};
+use prettytable::{Attr, Cell, Row, color};
 use std::collections::HashMap;
 use yansi::Paint;
 
