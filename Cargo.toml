@@ -20,7 +20,7 @@ readme = "README.md"
 repository = "https://github.com/IronCoreLabs/ironhide"
 
 [dependencies]
-attohttpc = { version = "0.29", features = [
+attohttpc = { version = "0.28", features = [
     "form",
     "json",
     "tls-rustls",
