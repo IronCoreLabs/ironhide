@@ -17,11 +17,11 @@ const EXAMPLES: &str = "EXAMPLES
 /// Display information about an encrypted file or list of files.
 pub struct Info {
     /// Path of file or files to display information for.
-    #[clap(parse(from_os_str), min_values = 1, required = true)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), num_args = 1.., required = true)]
     files: Vec<PathBuf>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 

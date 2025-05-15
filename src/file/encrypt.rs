@@ -4,7 +4,9 @@ use crate::{
 };
 use clap::Parser;
 use ironoxide::prelude::*;
+use itertools::Itertools;
 use itertools::{Either, EitherOrBoth};
+use prettytable::Row;
 use std::{
     convert::TryFrom,
     fs::{self, OpenOptions},
@@ -44,44 +46,52 @@ const EXAMPLES: &str = "EXAMPLES
 /// unchanged and the output uses the same filename with a '.iron' extension added.
 pub struct Encrypt {
     /// Delete the unencrypted source file(s) after successful encryption.
-    #[clap(short, long, takes_value = false)]
+    #[clap(short, long, num_args = 0)]
     delete: bool,
-    /// Path of file(s) to decrypt.
-    #[clap(parse(from_os_str), min_values = 1, required = true)]
+    /// Path of file(s) to encrypt.
+    #[clap(value_parser = clap::value_parser!(PathBuf), num_args = 1.., required = true)]
     files: Vec<PathBuf>,
     /// Encrypt the file(s) to the given groups. Multiple groups should be comma separated.
     /// Can refer to a group by ID or by name. Indicate IDs by prefixing with 'id^' e.g. 'id^groupID'.
-    #[clap(parse(try_from_str = util::group_identifier_from_string), short, long, use_value_delimiter = true, require_value_delimiter = true)]
+    #[clap(value_parser = util::group_identifier_from_string, short, long, use_value_delimiter = true, value_delimiter = ',')]
     groups: Vec<Either<GroupName, GroupId>>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
     /// Filename where encrypted file will be written. Only allowed if a single file is
     /// being encrypted.
     /// Use '-o -' to write encrypted file content to stdout, but fair warning, the output is binary and not ASCII.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     out: Option<PathBuf>,
     /// Read data to encrypt from stdin. If used, no source files should be provided as
     /// arguments and you must use the '-o' flag.
-    #[clap(
-        short,
-        long,
-        takes_value = false,
-        conflicts_with = "files",
-        requires = "out"
-    )]
+    #[clap(short, long, num_args = 0, conflicts_with = "files", requires = "out")]
     stdin: bool,
     /// Encrypt the file(s) to a comma-separated list of user emails. Files are
     /// automatically encrypted to the logged-in user.
-    #[clap(parse(try_from_str = ironoxide::user::UserId::try_from), short, long, use_value_delimiter = true, require_value_delimiter = true, required = false)]
+    #[clap(value_parser = parse_user_id, short, long, use_value_delimiter = true, value_delimiter = ',', required = false)]
     users: Vec<UserId>,
+}
+
+fn parse_user_id(s: &str) -> Result<UserId, IronOxideErr> {
+    UserId::try_from(s)
 }
 
 impl util::GetKeyfile for Encrypt {
     fn get_keyfile(&self) -> Option<&PathBuf> {
         self.keyfile.as_ref()
     }
+}
+
+fn display_group_name_and_id(meta: &GroupMetaResult) -> String {
+    format!(
+        "{} ({})",
+        meta.name()
+            .map(|n| n.name().as_str())
+            .unwrap_or_else(|| "NO_NAME"),
+        meta.id().id()
+    )
 }
 
 pub fn encrypt_files(
@@ -114,29 +124,57 @@ pub fn encrypt_files(
             "Cannot use '-o' flag with multiple files.".to_string(),
         ));
     } else {
-        act_on_all_files(
+        let result = act_on_all_files(
             &files,
-            |infile| -> Result<(), String> {
+            |infile| -> Result<EncryptResultWithResolved, String> {
                 let file = fs::read(infile).map_err(|e| {
                     format!(
                         "Provided path '{}' doesn't exist or is not readable: {e}",
                         infile.display()
                     )
                 })?;
-                let output_log =
+                let encrypt_result =
                     encrypt_file(&out, Some(infile), sdk, &groups, &users, file, delete)?;
                 if files.len() == 1 {
                     util::println_paint(Paint::green(format!(
-                        "Encrypted file successfully written to {output_log}."
+                        "Encrypted file successfully written to {}.",
+                        encrypt_result.output_log.clone()
                     )));
                 }
-                Ok(())
+                Ok(encrypt_result)
             },
             "encrypted",
-        )?;
+        )
+        .map_err(|(e, maybe_success)| {
+            maybe_success.map(|success| print_resolved_grants(success));
+            e
+        })?;
+        result.map(|encrypt_result| print_resolved_grants(encrypt_result));
     }
 
     Ok(())
+}
+
+fn print_resolved_grants(encrypt_result: EncryptResultWithResolved) {
+    util::println_paint(Paint::green(
+        "\nSuccessfully encrypted to the following users and groups:".to_string(),
+    ));
+    let zipped = encrypt_result
+        .resolved_users
+        .into_iter()
+        .zip_longest(encrypt_result.resolved_groups);
+    let mut table = table!([Fbb=>"Users", "Groups"]);
+    zipped.for_each(|either_or_both| {
+        let row = match either_or_both {
+            EitherOrBoth::Both(ref user, ref group) => {
+                (user.id(), display_group_name_and_id(group))
+            }
+            EitherOrBoth::Left(ref user) => (user.id(), "".to_string()),
+            EitherOrBoth::Right(ref group) => ("", display_group_name_and_id(group)),
+        };
+        table.add_row(Row::new(vec![cell!(Fw -> row.0), cell!(Fw -> row.1)]));
+    });
+    table.printstd();
 }
 
 fn encrypt_file(
@@ -147,11 +185,20 @@ fn encrypt_file(
     users: &[UserId],
     file: Vec<u8>,
     delete: bool,
-) -> Result<String, String> {
-    let (groups_by_name, _) = get_group_maps(sdk);
+) -> Result<EncryptResultWithResolved, String> {
+    let (groups_by_name, groups_by_id) = get_group_maps(sdk);
     let group_ids = convert_group_names_to_ids(groups, &groups_by_name);
     let users_or_groups = util::collect_users_and_groups(users, &group_ids);
-    let output_log = encrypt_bytes_to_file(sdk, &file, &users_or_groups, out, infile)?;
+    let encrypt_result = encrypt_bytes_to_file(sdk, &file, &users_or_groups, out, infile)?;
+    let (resolved_users, maybe_resolved_groups): (Vec<UserId>, Vec<Option<GroupMetaResult>>) =
+        encrypt_result
+            .grants
+            .into_iter()
+            .partition_map(|u_or_g| match u_or_g {
+                UserOrGroup::User { id } => Either::Left(id),
+                UserOrGroup::Group { id } => Either::Right(groups_by_id.get(&id).cloned()),
+            });
+    let resolved_groups = maybe_resolved_groups.into_iter().flatten().collect_vec();
     if delete {
         match infile {
             Some(infile) => {
@@ -167,7 +214,11 @@ fn encrypt_file(
             )),
         }
     }
-    Ok(output_log)
+    Ok(EncryptResultWithResolved {
+        resolved_users,
+        resolved_groups,
+        output_log: encrypt_result.output_log,
+    })
 }
 
 /// Validate that the output path provided by the user can be used for encryption. If no path is provided,
@@ -251,6 +302,18 @@ fn validate_encrypt_output_path(
     Ok(output)
 }
 
+struct EncryptResult {
+    grants: Vec<UserOrGroup>,
+    output_log: String,
+}
+
+#[derive(Clone)]
+struct EncryptResultWithResolved {
+    resolved_users: Vec<UserId>,
+    resolved_groups: Vec<GroupMetaResult>,
+    output_log: String,
+}
+
 /// Encrypt the provided file to the `users_or_groups`. The file will also be granted to the calling user.
 /// The bytes of the encrypted file will be written to `output_path`.
 fn encrypt_bytes_to_file(
@@ -259,7 +322,7 @@ fn encrypt_bytes_to_file(
     users_or_groups: &[UserOrGroup],
     outfile: &Option<PathBuf>,
     infile: Option<&PathBuf>,
-) -> Result<String, String> {
+) -> Result<EncryptResult, String> {
     let grants = ExplicitGrant::new(true, users_or_groups);
     let opts = DocumentEncryptOpts::new(None, None, EitherOrBoth::Left(grants));
     let encrypt_result = sdk.document_encrypt(file.to_vec(), &opts)?;
@@ -269,5 +332,8 @@ fn encrypt_bytes_to_file(
         .write_all(encrypt_result.encrypted_data())
         .map_err(|e| format!("Couldn't write encrypted file: {e}"))?;
 
-    Ok(output_log)
+    Ok(EncryptResult {
+        grants: encrypt_result.grants().to_vec(),
+        output_log,
+    })
 }

@@ -4,6 +4,7 @@ use clap::Parser;
 use ironoxide::prelude::{BlockingIronOxide, UserId};
 
 use crate::util;
+use base64::{Engine, prelude::BASE64_STANDARD};
 
 pub const EXAMPLE: &str = "EXAMPLE
 
@@ -16,10 +17,10 @@ pub const EXAMPLE: &str = "EXAMPLE
 /// Retrieve the public keys for a user or a list of users using their email addresses.
 pub struct UserLookup {
     /// Email address of the user to locate.
-    #[clap(parse(from_str), min_values = 1, required = true)]
-    users: Vec<String>,
+    #[clap(num_args = 1.., required = true)]
+    users: Vec<String>, // TODO
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 
@@ -43,7 +44,7 @@ pub fn lookup_users(sdk: &BlockingIronOxide, user_lookup: &UserLookup) -> Result
                 match key_list.get(&user_id) {
                     Some(public_key) => table.add_row(row![
                                           Fg->user_id.id(),
-                                          Fg->base64::encode(public_key.as_bytes())]),
+                                          Fg->BASE64_STANDARD.encode(public_key.as_bytes())]),
                     None => {
                         table.add_row(row![Fr->user_id.id(), Fr->"user has not generated keys yet"])
                     }

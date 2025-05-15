@@ -34,9 +34,7 @@
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
             nativeBuildInputs = with pkgs;
-              [rusttoolchain]
-              ++ lib.optionals stdenv.isDarwin
-              (with darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
+              [rusttoolchain];
           };
         default = packages.ironhide;
       };
@@ -44,9 +42,7 @@
       # nix develop
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs;
-          [rusttoolchain]
-          ++ lib.optionals stdenv.isDarwin
-          (with darwin.apple_sdk.frameworks; [Security SystemConfiguration]);
+          [rusttoolchain];
       };
     });
 }

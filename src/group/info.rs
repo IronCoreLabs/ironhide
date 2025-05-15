@@ -16,11 +16,11 @@ use time::OffsetDateTime;
 /// Get detailed information about a group.
 pub struct Info {
     /// Name of the group to retrieve. Can alternately refer to a group by ID. Indicate IDs by prefixing with 'id^' e.g. 'id^groupID'.
-    #[clap(parse(try_from_str = util::group_identifier_from_string), min_values = 1, required = true)]
+    #[clap(value_parser = util::group_identifier_from_string, num_args = 1.., required = true)]
     name: Either<GroupName, GroupId>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 

@@ -4,6 +4,7 @@ use ironoxide::group::GroupName;
 use ironoxide::prelude::BlockingIronOxide;
 use yansi::Paint;
 
+use ironoxide::IronOxideErr;
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
@@ -21,12 +22,16 @@ const EXAMPLE: &str = "EXAMPLE
 pub struct Create {
     /// Name for the group. Will be used when referencing this group from all other
     /// commands.
-    #[clap(parse(try_from_str = GroupName::try_from))]
+    #[clap(value_parser = parse_group_name)]
     name: GroupName,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
+}
+
+pub(crate) fn parse_group_name(s: &str) -> Result<GroupName, IronOxideErr> {
+    GroupName::try_from(s)
 }
 
 impl GetKeyfile for Create {

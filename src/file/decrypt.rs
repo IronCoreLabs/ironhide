@@ -37,29 +37,23 @@ const EXAMPLES: &str = "EXAMPLES
 /// '.iron' extension.
 pub struct Decrypt {
     /// Delete the encrypted source file(s) after successful encryption.
-    #[clap(short, long, takes_value = false)]
+    #[clap(short, long, num_args = 0)]
     delete: bool,
     /// Path of file or files to decrypt.
-    #[clap(parse(from_os_str), min_values = 1, required = true)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), num_args = 1.., required = true)]
     files: Vec<PathBuf>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
     /// Filename where decrypted file will be written. Only allowed if a single file is
     /// being decrypted.
     /// Use '-o -' to write decrypted file content to stdout, but fair warning, the output is binary and not ASCII.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     out: Option<PathBuf>,
     /// Read data to decrypt from stdin. If used, no source files should be provided as
     /// arguments and you must use the '-o' flag.
-    #[clap(
-        short,
-        long,
-        takes_value = false,
-        conflicts_with = "files",
-        requires = "out"
-    )]
+    #[clap(short, long, num_args = 0, conflicts_with = "files", requires = "out")]
     stdin: bool,
 }
 
@@ -137,7 +131,8 @@ pub fn decrypt_files(
                 Ok(())
             },
             "decrypted",
-        )?;
+        )
+        .map_err(|(e, _)| e)?;
     }
 
     Ok(())
