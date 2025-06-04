@@ -17,11 +17,11 @@ pub const EXAMPLE: &str = "EXAMPLE
 /// Deauthorize a device, so it is no longer able to decrypt your data. Use this to deauthorize devices other than the one you are currently using. To deauthorize your current device, use 'ironhide logout'.
 pub struct DeviceDelete {
     /// One or more IDs of the device keys to revoke.
-    #[clap(min_values = 1, required = true)]
+    #[clap(num_args = 1.., required = true)]
     device_ids: Vec<u64>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 

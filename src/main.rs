@@ -3,6 +3,7 @@ use clap::Parser;
 use clap::crate_version;
 use derive_more::{Display, Error};
 use ironoxide::{blocking::BlockingIronOxide, prelude::*};
+use logout::Logout;
 use promptly::prompt;
 use std::time::Duration;
 use util::GetKeyfile;
@@ -14,6 +15,7 @@ mod auth;
 mod file;
 mod group;
 mod group_maps;
+mod logout;
 mod user;
 mod util;
 
@@ -34,6 +36,9 @@ enum IronhideSubcommands {
     /// Login to the ironhide CLI tool to either create a new account or authorize a new device for an existing account by generating device-specific keys and enabling them.
     #[clap(name = "login")]
     Login,
+    /// Log out of the ironhide CLI tool. This will deauthorize your current device. You can re-authorize the device by calling `ironhide login`.
+    #[clap(name = "logout")]
+    Logout(Logout),
     #[clap(name = "user")]
     User(user::User),
 }
@@ -117,10 +122,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             "Device Authorization Passphrase: ".to_string(),
                         ))?;
 
+                        let device_name: String = prompt(format!(
+                            "{}",
+                            Paint::magenta("Please provide a name for this device"),
+                        ))?;
+
                         let device = BlockingIronOxide::generate_new_device(
                             &auth0_token,
                             &pass,
-                            &DeviceCreateOpts::default(),
+                            &DeviceCreateOpts::new(Some(DeviceName::try_from(device_name)?)),
                             None,
                         )
                         .or_else(|e| {
@@ -146,7 +156,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let device_context = util::IHDeviceContext::from(device);
 
                         // write their device to their keyring
-                        let keyring = keyring::Entry::new("ironhide", user_id);
+                        let keyring = keyring::Entry::new("ironhide", user_id)?;
                         match keyring.set_password(serde_json::to_string(&device_context)?.as_str())
                         {
                             Ok(_) => {}
@@ -200,7 +210,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let device_context = util::IHDeviceContext::from(device);
 
                         // write their device to their keyring
-                        let keyring = keyring::Entry::new("ironhide", user.id());
+                        let keyring = keyring::Entry::new("ironhide", user.id())?;
                         keyring.set_password(serde_json::to_string(&device_context)?.as_str())?;
 
                         // as well as to the default file location
@@ -217,6 +227,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             } else {
                 println!("Ok, maybe next time! Bye!");
             }
+            Ok(())
+        }
+        IronhideSubcommands::Logout(logout) => {
+            util::println_paint(Paint::magenta(
+                "This will log you out of the ironhide CLI and deauthorize your current device keys. You can re-authorize the device with `ironhide login`.".to_string(),
+            ));
+
+            if logout.force
+                || prompt(format!(
+                    "{} {}",
+                    Paint::magenta("Continue?"),
+                    Paint::rgb(169, 169, 169, "[y/n]")
+                ))?
+            {
+                let sdk = util::initialize_sdk(logout.get_keyfile())?;
+                sdk.user_delete_device(None)?;
+            }
+            util::println_paint(Paint::magenta(
+                "Successfully logged out of ironhide CLI.".to_string(),
+            ));
             Ok(())
         }
         IronhideSubcommands::User(user) => {

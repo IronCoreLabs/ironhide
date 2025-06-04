@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
++ Update dependencies
++ Add more info about who was encrypted to for file encrypt, so it's clearer if a group doesn't exist
++ Add explicit logout command
+
 ## 1.0.9
 
 + Update to the nix flake

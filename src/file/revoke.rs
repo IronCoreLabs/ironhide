@@ -22,18 +22,18 @@ Revoke access to all of the '.iron' files from 'myGroup'.
 #[clap(after_help = EXAMPLES)]
 pub struct Revoke {
     /// Path of file or files to revoke access to.
-    #[clap(parse(from_os_str), min_values = 1, required = true)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), num_args = 1.., required = true)]
     files: Vec<PathBuf>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
     /// Revoke access to the file(s) to a comma separated list of groups.
     /// Can refer to a group by ID or by name. Indicate IDs by prefixing with 'id^' e.g. 'id^groupID'.
-    #[clap(parse(try_from_str = util::group_identifier_from_string), short, long, use_value_delimiter = true, require_value_delimiter = true, required = false)]
+    #[clap(value_parser = util::group_identifier_from_string, short, long, use_value_delimiter = true, value_delimiter = ',', required = false)]
     groups: Vec<Either<GroupName, GroupId>>,
     /// Revoke access to the file(s) to a comma separated list of user emails.
-    #[clap(parse(try_from_str = util::try_from_email), short, long, use_value_delimiter = true, require_value_delimiter = true, required = false)]
+    #[clap(value_parser = util::try_from_email, short, long, use_value_delimiter = true, value_delimiter = ',', required = false)]
     users: Vec<UserId>,
 }
 

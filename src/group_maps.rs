@@ -7,7 +7,7 @@ use prettytable::{Attr, Cell, Row, color};
 use std::collections::HashMap;
 use yansi::Paint;
 
-use crate::util::{println_paint, time_format};
+use crate::util::{self, println_paint, time_format};
 
 type GroupsByName = HashMap<GroupName, Vec<GroupMetaResult>>;
 type GroupsById = HashMap<GroupId, GroupMetaResult>;
@@ -79,9 +79,18 @@ pub fn convert_group_names_to_ids(
                             }
                             _ => {
                                 // we got a "valid" name that didn't match up to any names we know about, so we'll just log and exclude it
-                                println!("Couldn't find group id for {}", provided_name.name());
+                                util::print_paint(Paint::red(format!(
+                                    "Couldn't find group ID for {}\n",
+                                    provided_name.name()
+                                )));
                             }
                         }
+                    } else {
+                        // we got an invalid name that didn't match up to any names we know about, so we'll just log and exclude it
+                        util::print_paint(Paint::red(format!(
+                            "Couldn't find group ID for {}\n",
+                            provided_name.name()
+                        )));
                     }
                 }
                 Either::Right(group_id) => {

@@ -9,7 +9,7 @@ use crate::util;
 /// List all of the devices authorized to decrypt your data.
 pub struct DeviceList {
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 

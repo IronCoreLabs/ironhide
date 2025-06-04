@@ -80,12 +80,12 @@ pub fn initialize_sdk_from_file(device_path: &Path) -> Result<BlockingIronOxide,
                     e
                 )
             })?;
-        let io_context = DeviceContext::new(
+        let io_context = BlockingDeviceContext::new(DeviceContext::new(
             UserId::unsafe_from_string(ih_context.account_id),
             ih_context.segment_id,
             ih_context.device_keys.private_key,
             ih_context.signing_keys.private_key,
-        );
+        ));
         Ok(ironoxide::blocking::initialize(
             &io_context,
             &IronOxideConfig::default(),
@@ -97,7 +97,7 @@ pub fn initialize_sdk_from_file(device_path: &Path) -> Result<BlockingIronOxide,
 
 pub fn initialize_sdk_from_keyring() -> Result<BlockingIronOxide, String> {
     let logged_in_user = ensure_login()?;
-    let keyring = keyring::Entry::new("ironhide", &logged_in_user);
+    let keyring = keyring::Entry::new("ironhide", &logged_in_user).map_err(|e| e.to_string())?;
     let device_context_json = keyring
         .get_password()
         .map_err(|e| format!("Couldn't get device context from your keyring: {:?}", e))?;
@@ -107,8 +107,8 @@ pub fn initialize_sdk_from_keyring() -> Result<BlockingIronOxide, String> {
             e
         )
     })?;
-
-    ironoxide::blocking::initialize(&device, &IronOxideConfig::default())
+    let blocking_device = BlockingDeviceContext::new(device);
+    ironoxide::blocking::initialize(&blocking_device, &IronOxideConfig::default())
         .map_err(|e| format!("Failed to initialize SDK using keyring device: {:?}", e))
 }
 
@@ -270,26 +270,43 @@ pub fn is_group_id(group_identifier: &str) -> bool {
 }
 
 // Run an action closure across all files and print messages for the successes and failures.
-pub fn act_on_all_files<F>(files: &[PathBuf], action: F, action_verb: &str) -> Result<(), String>
+pub fn act_on_all_files<F, T: Clone>(
+    files: &[PathBuf],
+    action: F,
+    action_verb: &str,
+) -> Result<Option<T>, (String, Option<T>)>
 where
-    F: FnMut(&PathBuf) -> Result<(), String>,
+    F: FnMut(&PathBuf) -> Result<T, String>,
 {
     let (successes, failures): (Vec<_>, Vec<_>) = files.iter().map(action).partition_result();
     if !successes.is_empty() {
+        let file_or_files = match successes.len() {
+            1 => "file",
+            _ => "files",
+        };
         println_paint(Paint::green(format!(
-            "{} files successfully {action_verb}.",
-            successes.len()
+            "{} {} successfully {action_verb}.",
+            successes.len(),
+            file_or_files,
         )))
     }
     if !failures.is_empty() {
+        let file_or_files = match failures.len() {
+            1 => "file",
+            _ => "files",
+        };
         println_paint(Paint::red(format!(
-            "{} file(s) failed to be {action_verb}. Error(s): {:#?}",
+            "{} {} failed to be {action_verb}. Error(s): {:#?}",
             failures.len(),
+            file_or_files,
             failures
         )));
-        Err("Not all file operations were successful.".to_string())
+        Err((
+            "Not all file operations were successful.".to_string(),
+            successes.first().cloned(),
+        ))
     } else {
-        Ok(())
+        Ok(successes.first().cloned())
     }
 }
 

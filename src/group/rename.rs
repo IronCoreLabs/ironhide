@@ -6,7 +6,7 @@ use ironoxide::prelude::{BlockingIronOxide, GroupId};
 use itertools::Either;
 use yansi::Paint;
 
-use std::convert::TryFrom;
+use super::create::parse_group_name;
 use std::path::PathBuf;
 
 const EXAMPLE: &str = "EXAMPLE
@@ -20,14 +20,14 @@ const EXAMPLE: &str = "EXAMPLE
 /// Change the name of a group. Won't change any of the group admins, members, or files encrypted to the group.
 pub struct Rename {
     /// Current name of the group. Can alternately refer to a group by ID. Indicate IDs by prefixing with 'id^' e.g. 'id^groupID'.
-    #[clap(parse(try_from_str = group_identifier_from_string))]
+    #[clap(value_parser = group_identifier_from_string)]
     current_group_name: Either<GroupName, GroupId>,
     /// New name of the group.
-    #[clap(parse(try_from_str = GroupName::try_from))]
+    #[clap(value_parser = parse_group_name)]
     new_group_name: GroupName,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
 }
 

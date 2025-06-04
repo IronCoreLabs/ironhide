@@ -24,14 +24,14 @@ const EXAMPLE: &str = "EXAMPLE
 #[clap(after_help = EXAMPLE)]
 pub struct RemoveMember {
     /// Name of the group. Can alternately refer to a group by ID. Indicate IDs by prefixing with 'id^' e.g. 'id^groupID'.
-    #[clap(parse(try_from_str = util::group_identifier_from_string))]
+    #[clap(value_parser = util::group_identifier_from_string)]
     group: Either<GroupName, GroupId>,
     /// Path to location of file which contains keys to use for this operation. Overrides using default key file from
     /// '~/.iron' directory.
-    #[clap(parse(from_os_str), short, long)]
+    #[clap(value_parser = clap::value_parser!(PathBuf), short, long)]
     keyfile: Option<PathBuf>,
     /// Remove member permissions from the comma-separated list of user emails.
-    #[clap(parse(try_from_str = util::try_from_email), short, long, use_value_delimiter = true, require_value_delimiter = true, required = true)]
+    #[clap(value_parser = util::try_from_email, short, long, use_value_delimiter = true, value_delimiter = ',', required = true)]
     users: Vec<UserId>,
 }
 
