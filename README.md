@@ -11,6 +11,10 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 ## Installation
 
+### GitHub Releases
+
+Statically linked binaries are available for the most popular architectures and operating systems. Download them directly from GitHub.
+
 ### Cargo
 
 ```bash
