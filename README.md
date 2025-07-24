@@ -13,7 +13,7 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 ### GitHub Releases
 
-Statically linked binaries are available for the most popular architectures and operating systems. Download them directly from GitHub.
+Statically linked binaries are available for the most popular architectures and operating systems. [Download them directly from GitHub](https://github.com/IronCoreLabs/ironhide/releases).
 
 ### Cargo
 
