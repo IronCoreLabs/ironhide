@@ -1,0 +1,15 @@
+name: Rust Cargo Update
+on:
+  workflow_dispatch:
+    inputs:
+      reviewer:
+        description: GitHub username to set as PR reviewer. Falls back to github.actor if not set.
+        type: string
+        required: false
+
+jobs:
+  rust-cargo-update:
+    uses: IronCoreLabs/workflows/.github/workflows/rust-cargo-update.yaml@rust-cargo-update-v1
+    with:
+      reviewer: ${{inputs.reviewer}}
+    secrets: inherit
