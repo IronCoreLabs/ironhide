@@ -103,7 +103,11 @@ pub fn authorize() -> Jwt {
     }
 }
 
-fn poll_for_token(client: &Client, token_request: &Auth0TokenRequest, interval: Duration) -> String {
+fn poll_for_token(
+    client: &Client,
+    token_request: &Auth0TokenRequest,
+    interval: Duration,
+) -> String {
     let token_resp = client
         .post(AUTH0_TOKEN_URL)
         .form(&token_request)
