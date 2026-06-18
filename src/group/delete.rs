@@ -64,10 +64,11 @@ pub fn verify_group(
 ) -> Result<GroupGetResult, String> {
     let (groups_by_name, _) = group_maps::get_group_maps(sdk);
 
-    let group_id = group_maps::convert_group_names_to_ids(&[identifier.clone()], &groups_by_name)
-        .first()
-        .cloned()
-        .expect("Unknown group provided.");
+    let group_id =
+        group_maps::convert_group_names_to_ids(std::slice::from_ref(identifier), &groups_by_name)
+            .first()
+            .cloned()
+            .expect("Unknown group provided.");
 
     match sdk.group_get_metadata(&group_id) {
         Ok(group_info) => {
