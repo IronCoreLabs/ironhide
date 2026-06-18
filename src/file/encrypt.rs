@@ -146,10 +146,14 @@ pub fn encrypt_files(
             "encrypted",
         )
         .map_err(|(e, maybe_success)| {
-            maybe_success.map(|success| print_resolved_grants(success));
+            if let Some(success) = maybe_success {
+                print_resolved_grants(success);
+            }
             e
         })?;
-        result.map(|encrypt_result| print_resolved_grants(encrypt_result));
+        if let Some(encrypt_result) = result {
+            print_resolved_grants(encrypt_result);
+        }
     }
 
     Ok(())

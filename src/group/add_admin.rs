@@ -43,10 +43,11 @@ impl util::GetKeyfile for AddAdmin {
 
 pub fn add_admins(sdk: &BlockingIronOxide, add_admin: AddAdmin) -> Result<(), String> {
     let (groups_by_name, _) = get_group_maps(sdk);
-    let requested_group = convert_group_names_to_ids(&[add_admin.group.clone()], &groups_by_name)
-        .first()
-        .cloned()
-        .expect("Unknown group provided.");
+    let requested_group =
+        convert_group_names_to_ids(std::slice::from_ref(&add_admin.group), &groups_by_name)
+            .first()
+            .cloned()
+            .expect("Unknown group provided.");
     let response = sdk
         .group_add_admins(&requested_group, &add_admin.users)
         .map_err(|e| match e {

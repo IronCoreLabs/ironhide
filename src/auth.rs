@@ -1,4 +1,5 @@
 use ironoxide::user::Jwt;
+use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use yansi::Paint;
@@ -54,15 +55,17 @@ struct Auth0PollingResponse {
 }
 
 pub fn authorize() -> Jwt {
+    let client = Client::new();
+
     // request a device activation code
     let device_code_request = Auth0DeviceCodeRequest {
         client_id: AUTH0_CLIENT_ID.to_string(),
         scope: "openid".to_string(),
         audience: format!("{}/api/v2/", AUTH0_DOMAIN),
     };
-    let device_code_resp = attohttpc::post(AUTH0_DEVICE_CODE_URL)
+    let device_code_resp = client
+        .post(AUTH0_DEVICE_CODE_URL)
         .form(&device_code_request)
-        .unwrap()
         .send()
         .unwrap()
         .json::<Auth0DeviceCodeResponse>()
@@ -83,7 +86,11 @@ pub fn authorize() -> Jwt {
         client_id: AUTH0_CLIENT_ID.to_string(),
         device_code: device_code_resp.device_code,
     };
-    let jwt_str = poll_for_token(&token_request, Duration::new(device_code_resp.interval, 0));
+    let jwt_str = poll_for_token(
+        &client,
+        &token_request,
+        Duration::new(device_code_resp.interval, 0),
+    );
     match Jwt::new(&jwt_str) {
         Ok(jwt) => jwt,
         Err(err) => {
@@ -96,13 +103,17 @@ pub fn authorize() -> Jwt {
     }
 }
 
-fn poll_for_token(token_request: &Auth0TokenRequest, interval: Duration) -> String {
-    let token_resp = attohttpc::post(AUTH0_TOKEN_URL)
+fn poll_for_token(
+    client: &Client,
+    token_request: &Auth0TokenRequest,
+    interval: Duration,
+) -> String {
+    let token_resp = client
+        .post(AUTH0_TOKEN_URL)
         .form(&token_request)
-        .unwrap()
         .send()
         .unwrap();
-    if token_resp.is_success() {
+    if token_resp.status().is_success() {
         token_resp.json::<Auth0TokenResponse>().unwrap().id_token
     } else {
         let Auth0PollingResponse { error } = token_resp.json::<Auth0PollingResponse>().unwrap();
@@ -123,7 +134,7 @@ fn poll_for_token(token_request: &Auth0TokenRequest, interval: Duration) -> Stri
             SlowDown | AuthorizationPending => {
                 println!("Waiting for authorization from Auth0...");
                 std::thread::sleep(interval);
-                poll_for_token(token_request, interval)
+                poll_for_token(client, token_request, interval)
             }
         }
     }

@@ -333,7 +333,7 @@ pub fn execute_permissioning_operation(
     let (groups_by_name, _) = get_group_maps(sdk);
     let requested_groups = convert_group_names_to_ids(groups, &groups_by_name);
     let application_list = collect_users_and_groups(users, &requested_groups);
-    let results = files
+    files
         .iter()
         .map(|infile| {
             let file = fs::read(infile).unwrap();
@@ -372,8 +372,7 @@ pub fn execute_permissioning_operation(
                 }
             }
         })
-        .collect();
-    results
+        .collect()
 }
 
 pub fn build_permissioning_result_table(

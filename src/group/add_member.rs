@@ -43,10 +43,11 @@ impl util::GetKeyfile for AddMember {
 
 pub fn add_members(sdk: &BlockingIronOxide, add_member: AddMember) -> Result<(), String> {
     let (groups_by_name, _) = get_group_maps(sdk);
-    let requested_group = convert_group_names_to_ids(&[add_member.group.clone()], &groups_by_name)
-        .first()
-        .cloned()
-        .expect("Unknown group provided.");
+    let requested_group =
+        convert_group_names_to_ids(std::slice::from_ref(&add_member.group), &groups_by_name)
+            .first()
+            .cloned()
+            .expect("Unknown group provided.");
     let response = sdk
         .group_add_members(&requested_group, &add_member.users)
         .map_err(|e| match e {
