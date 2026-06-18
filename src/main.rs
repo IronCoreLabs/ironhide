@@ -44,6 +44,13 @@ enum IronhideSubcommands {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Pin the process-wide rustls CryptoProvider to aws-lc-rs before any TLS is
+    // used. Both reqwest (ironoxide + Auth0 login) build their config from this
+    // default, so this makes the entire tool use aws-lc-rs explicitly.
+    rustls::crypto::aws_lc_rs::default_provider()
+        .install_default()
+        .expect("failed to install aws-lc-rs as the default rustls CryptoProvider");
+
     // TODO: more unified error handling. All errors should be printed out with the message
     // in red.
     let ironhide = Ironhide::parse();
