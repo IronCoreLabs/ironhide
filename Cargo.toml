@@ -9,22 +9,22 @@ edition = "2024"
 homepage = "https://github.com/ironcorelabs/ironhide"
 include = [".cargo/config.toml", "**/*.rs", "./Cargo.toml"]
 keywords = [
-    "cryptography",
-    "proxy-re-encryption",
-    "transform-encryption",
-    "secrets",
-    "encryption",
+  "cryptography",
+  "proxy-re-encryption",
+  "transform-encryption",
+  "secrets",
+  "encryption",
 ]
 license = "AGPL-3.0-only"
 readme = "README.md"
 repository = "https://github.com/IronCoreLabs/ironhide"
 
 [dependencies]
-attohttpc = { version = "0.28", features = [
-    "form",
-    "json",
-    "tls-rustls",
-    "compress",
+attohttpc = { version = "0.31", features = [
+  "form",
+  "json",
+  "tls-rustls",
+  "compress",
 ], default-features = false }
 atty = "0.2.14"
 base64 = "0.22"
@@ -33,8 +33,8 @@ derive_more = { version = "2", features = ["display", "error"] }
 dirs = "6.0"
 fancy-regex = "0.14"
 ironoxide = { version = "4", features = [
-    "blocking",
-    "tls-rustls",
+  "blocking",
+  "tls-rustls",
 ], default-features = false }
 itertools = "0.14"
 keyring = "3"
