@@ -9,7 +9,7 @@ on:
 
 jobs:
   rust-cargo-update:
-    uses: IronCoreLabs/workflows/.github/workflows/rust-cargo-update.yaml@rust-cargo-update-v1
+    uses: IronCoreLabs/workflows/.github/workflows/rust-cargo-update.yaml@rust-cargo-update-v1.0.0
     with:
       reviewer: ${{inputs.reviewer}}
     secrets: inherit
