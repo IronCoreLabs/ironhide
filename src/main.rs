@@ -174,12 +174,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         };
 
                         // as well as to the default file location
-                        std::fs::create_dir_all(dirs::home_dir().unwrap().join(".iron"))?;
-                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), user_id)?;
-                        std::fs::write(
-                            dirs::home_dir().unwrap().join(".iron/keys"),
-                            serde_json::to_string(&device_context)?.as_str(),
-                        )?;
+                        util::write_default_keyfiles(user_id, &device_context)?;
 
                         util::println_paint(Paint::green("Login successful! This device is now able to decrypt files you can access. Use 'ironhide -help' to see what else is possible.".to_string()));
                     }
@@ -221,12 +216,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         keyring.set_password(serde_json::to_string(&device_context)?.as_str())?;
 
                         // as well as to the default file location
-                        std::fs::create_dir_all(dirs::home_dir().unwrap().join(".iron"))?;
-                        std::fs::write(dirs::home_dir().unwrap().join(".iron/login"), user.id())?;
-                        std::fs::write(
-                            dirs::home_dir().unwrap().join(".iron/keys"),
-                            serde_json::to_string(&device_context)?.as_str(),
-                        )?;
+                        util::write_default_keyfiles(user.id(), &device_context)?;
 
                         util::println_paint(Paint::green("Authorization successful! This device is now able to decrypt files you can access. Use 'ironhide -help' to see what else is possible.".to_string()));
                     }
