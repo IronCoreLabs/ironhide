@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
++ On Unix, `~/.iron` is created `0700` and `~/.iron/login` / `~/.iron/keys` `0600` regardless of umask; `ironhide login` also tightens existing files
+
 ## 1.1.0
 
 + Update dependencies

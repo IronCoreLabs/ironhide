@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::Error;
 use std::convert::TryFrom;
 use std::fmt::Display;
-use std::fs;
-use std::path::PathBuf;
-use std::{fs::File, path::Path};
+use std::fs::{self, File, OpenOptions};
+use std::io::{self, Write};
+use std::path::{Path, PathBuf};
 use yansi::Paint;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -51,6 +51,51 @@ struct IHDeviceKeys {
 #[serde(rename_all = "camelCase")]
 struct IHSigningKeys {
     pub private_key: DeviceSigningKeyPair,
+}
+
+/// Writes `~/.iron/login` and `~/.iron/keys`. On Unix the directory is `0700` and the files `0600`
+/// regardless of umask, and pre-existing paths are tightened to match.
+pub fn write_default_keyfiles(user_id: &str, device_context: &IHDeviceContext) -> io::Result<()> {
+    let iron_dir = dirs::home_dir().unwrap().join(".iron");
+    create_private_dir(&iron_dir)?;
+    write_private_file(&iron_dir.join("login"), user_id.as_bytes())?;
+    write_private_file(
+        &iron_dir.join("keys"),
+        &serde_json::to_vec(device_context).map_err(io::Error::other)?,
+    )
+}
+
+#[cfg(unix)]
+fn create_private_dir(path: &Path) -> io::Result<()> {
+    use std::os::unix::fs::{DirBuilderExt, PermissionsExt};
+    fs::DirBuilder::new()
+        .recursive(true)
+        .mode(0o700)
+        .create(path)?;
+    fs::set_permissions(path, fs::Permissions::from_mode(0o700))
+}
+
+#[cfg(not(unix))]
+fn create_private_dir(path: &Path) -> io::Result<()> {
+    fs::create_dir_all(path)
+}
+
+#[cfg(unix)]
+fn write_private_file(path: &Path, contents: &[u8]) -> io::Result<()> {
+    use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .mode(0o600)
+        .open(path)?;
+    file.set_permissions(fs::Permissions::from_mode(0o600))?;
+    file.write_all(contents)
+}
+
+#[cfg(not(unix))]
+fn write_private_file(path: &Path, contents: &[u8]) -> io::Result<()> {
+    fs::write(path, contents)
 }
 
 // Helper to get a keyfile off something that has a keyfile (if it exists) and initialize.
