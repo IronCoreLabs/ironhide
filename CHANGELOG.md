@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
++ Update `rustls-webpki` to 0.103.16 and `webpki-root-certs` to 1.0.11 to distrust the compromised eMudhra (emSign) intermediate CAs ([advisory](https://emudhra.we-have-a-problem.com/))
+
 ## 1.1.1
 
 + On Unix, `~/.iron` is created `0700` and `~/.iron/login` / `~/.iron/keys` `0600` regardless of umask; `ironhide login` also tightens existing files
