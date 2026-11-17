@@ -11,7 +11,7 @@ use std::{
     convert::TryFrom,
     fs::{self, OpenOptions},
     io::{self, Read, Write},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 use yansi::Paint;
 
@@ -209,7 +209,7 @@ fn encrypt_file(
                 if fs::remove_file(infile).is_err() {
                     util::println_paint(Paint::yellow(format!(
                         "Unable to delete source file '{}' as it is not writable.",
-                        &infile.display()
+                        infile.display()
                     )))
                 }
             }
@@ -235,10 +235,10 @@ fn validate_encrypt_output_path(
         // User specified an output path.
         Some(desired) => {
             // User specified a directory for output
-            if desired.is_dir() && infile.is_some() {
+            if desired.is_dir()
+                && let Some(infile) = infile
+            {
                 let mut filename = infile
-                    // unwrap here is safe because of the .is_some check above
-                    .unwrap()
                     .file_name()
                     .ok_or_else(|| "Invalid input file".to_string())?
                     .to_os_string();
@@ -263,7 +263,7 @@ fn validate_encrypt_output_path(
                     ),
                     desired_dir.to_string_lossy().to_string(),
                 )
-            } else if desired == PathBuf::from("-") {
+            } else if desired == Path::new("-") {
                 (Box::new(io::stdout()), "stdout".to_string())
             } else {
                 (

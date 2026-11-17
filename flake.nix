@@ -34,7 +34,11 @@
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
             nativeBuildInputs = with pkgs;
-              [rusttoolchain];
+              [rusttoolchain pkg-config];
+            # buildRustPackage's cargoUseSystemLibs hook sets AWS_LC_SYS_USE_SYSTEM=1,
+            # so aws-lc-sys looks for aws-lc through pkg-config instead of vendoring it.
+            buildInputs = with pkgs;
+              [aws-lc];
           };
         default = packages.ironhide;
       };

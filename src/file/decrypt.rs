@@ -139,7 +139,7 @@ pub fn decrypt_files(
 }
 
 fn get_output_writer(out_path: PathBuf) -> Result<Box<dyn Write>, String> {
-    let out_writer: Box<dyn Write> = if out_path == PathBuf::from("-") {
+    let out_writer: Box<dyn Write> = if out_path == Path::new("-") {
         Box::new(io::stdout())
     } else {
         OpenOptions::new()
@@ -158,7 +158,7 @@ fn get_output_writer(out_path: PathBuf) -> Result<Box<dyn Write>, String> {
 }
 
 fn get_output_logged_path(out_path: PathBuf) -> Result<String, String> {
-    let out_logged_path = if out_path == PathBuf::from("-") {
+    let out_logged_path = if out_path == Path::new("-") {
         "stdout"
     } else {
         out_path.to_str().ok_or(format!(
@@ -190,7 +190,7 @@ fn decrypt_file(
                 if fs::remove_file(infile).is_err() {
                     util::println_paint(Paint::yellow(format!(
                         "Unable to delete source file '{}' as it is not writable.",
-                        &infile.display()
+                        infile.display()
                     )))
                 }
             }
