@@ -31,6 +31,7 @@ jobs:
           - pinned-32
           - pinned-arm
           - pinned-arm64
+          - msrv
           - stable
           - beta
           - nightly
@@ -56,6 +57,10 @@ jobs:
             cross: true
           - build: pinned-arm64
             os: ubuntu-24.04-arm
+          # Keeps rust-version in Cargo.toml honest.
+          - build: msrv
+            os: ubuntu-24.04
+            rust: 1.88.0
           - build: stable
             os: ubuntu-24.04
             rust: stable
@@ -84,16 +89,20 @@ jobs:
           toolchain: ${{ matrix.rust }}
           targets: ${{ matrix.target }}
 
-      # The cache key covers the installed toolchains, so install them first.
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
       # if we're on windows building with gnu we need to do something special
       - name: Install win-gnu toolchain
         if: matrix.build == 'win-gnu'
         shell: bash
         run: |
           rustup override set $(cat ./rust-toolchain.toml | grep channel | sed 's/channel = "//' | sed 's/"//')-x86_64-gnu
+
+      # The cache key covers the installed toolchains, so install them first. rust-cache keys
+      # on the job id and not the matrix, so `key` keeps the legs sharing a runner and
+      # toolchain from evicting each other's target dir.
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.build }}
 
       - name: Install cross
         if: matrix.cross

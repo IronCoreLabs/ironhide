@@ -1,12 +1,14 @@
 [package]
 name = "ironhide"
-version = "1.1.2"
+version = "1.1.3"
 authors = ["IronCore Labs <info@ironcorelabs.com>"]
 categories = ["cryptography"]
 description = "Tool to easily encrypt and decrypt files to users and groups. Similar to GPG, but usable at scale."
 documentation = "https://docs.rs/ironhide"
 edition = "2024"
 homepage = "https://github.com/ironcorelabs/ironhide"
+# Let chains in validate_encrypt_output_path need 1.88, above edition 2024's own 1.85 floor.
+rust-version = "1.88.0"
 include = [".cargo/config.toml", "**/*.rs", "./Cargo.toml"]
 keywords = [
     "cryptography",
