@@ -1,0 +1,5 @@
+# cc falls back to the build machine's SDK version when this is unset, so aws-lc-sys's C
+# objects, not rustc, would decide the minimum macOS of a release binary. Deliberately not
+# forced: the nix devShell sets its own value to match the SDK in nixpkgs.
+[env]
+MACOSX_DEPLOYMENT_TARGET = "11.0"

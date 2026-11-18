@@ -13,7 +13,7 @@ Read our blog post in [Hacker Noon](https://medium.com/hackernoon/ironhide-bette
 
 ### GitHub Releases
 
-Statically linked binaries are available for the most popular architectures and operating systems. [Download them directly from GitHub](https://github.com/IronCoreLabs/ironhide/releases).
+Prebuilt binaries are available for the most popular architectures and operating systems. [Download them directly from GitHub](https://github.com/IronCoreLabs/ironhide/releases).
 
 ### Cargo
 
@@ -64,13 +64,19 @@ At that point, he will no longer be able to decrypt the `secrets.json.iron` file
 
 ## Supported Platforms
 
-|                     |   |
-| ------------------- | - |
-| Linux x64 glibc     | ✓ |
-| Linux x64 musl-libc | ✓ |
-| OSX x64             | ✓ |
-| OSX arm64           | ✓ |
-| Windows x64         | ✓ |
+Every [release](https://github.com/IronCoreLabs/ironhide/releases) attaches an archive for each of these.
+
+| Platform           | Target                        |
+| ------------------ | ----------------------------- |
+| Linux x64          | `x86_64-unknown-linux-musl`   |
+| Linux arm64        | `aarch64-unknown-linux-gnu`   |
+| Linux armv7        | `arm-unknown-linux-gnueabihf` |
+| macOS x64          | `x86_64-apple-darwin`         |
+| macOS arm64        | `aarch64-apple-darwin`        |
+| Windows x64 (MSVC) | `x86_64-pc-windows-msvc`      |
+| Windows x64 (GNU)  | `x86_64-pc-windows-gnu`       |
+
+The Linux x64 build is statically linked against musl, so it runs on glibc distributions too. The arm64 and armv7 builds link against glibc.
 
 ## Overview
 

@@ -4,15 +4,14 @@ use fancy_regex::Regex;
 use ironoxide::prelude::*;
 use ironoxide::prelude::{GroupId, UserId, UserOrGroup};
 use itertools::{Either, Itertools};
-use lazy_static::lazy_static;
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use serde_json::Error;
 use std::convert::TryFrom;
 use std::fmt::Display;
 use std::fs::{self, File, OpenOptions};
-use std::io::{self, Write};
+use std::io::{self, IsTerminal, Write};
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 use yansi::Paint;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -195,21 +194,21 @@ pub fn collect_users_and_groups(user_ids: &[UserId], group_ids: &[GroupId]) -> V
 
 pub fn print_paint(paint: yansi::Paint<String>) {
     // only print to stdout if we're not being piped somewhere
-    if atty::is(atty::Stream::Stdout) {
+    if io::stdout().is_terminal() {
         print!("{}", paint);
     }
 }
 
 pub fn println_paint(paint: yansi::Paint<String>) {
     // only print to stdout if we're not being piped somewhere
-    if atty::is(atty::Stream::Stdout) {
+    if io::stdout().is_terminal() {
         println!("{}", paint);
     }
 }
 
 pub fn time_format(utc_ts: &time::OffsetDateTime) -> String {
-    static LOCAL_TZ: Lazy<tz::TimeZoneRef<'static>> =
-        Lazy::new(|| tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT));
+    static LOCAL_TZ: LazyLock<tz::TimeZoneRef<'static>> =
+        LazyLock::new(|| tzdb::local_tz().unwrap_or(tzdb::time_zone::GMT));
     if let Ok(adjusted_local_time) =
         tz::DateTime::from_total_nanoseconds(utc_ts.unix_timestamp_nanos(), *LOCAL_TZ)
     {
@@ -255,15 +254,17 @@ pub fn console_pretty_println(message: &str) {
 
 // Regex email validation from https://github.com/Keats/validator/blob/master/validator/src/validation/email.rs
 // but tone a bit back since this is mostly to avoid typos by the user on the CLI. Does not allow IP email addresses.
-lazy_static! {
-    // Regex from the specs
-    // https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
-    // It will mark esoteric email addresses like quoted string as invalid
-    static ref EMAIL_USER_RE: Regex = Regex::new(r"^(?i)[a-z0-9.!#$%&'*+/=?^_`{|}~-]+\z").unwrap();
-    static ref EMAIL_DOMAIN_RE: Regex = Regex::new(
-        r"(?i)^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$"
-    ).unwrap();
-}
+// Regex from the specs
+// https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
+// It will mark esoteric email addresses like quoted string as invalid
+static EMAIL_USER_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(?i)[a-z0-9.!#$%&'*+/=?^_`{|}~-]+\z").unwrap());
+static EMAIL_DOMAIN_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(
+        r"(?i)^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+    )
+    .unwrap()
+});
 
 /// Parse a UserId from a string, checking to make sure that it's an email address.
 pub fn try_from_email(email: &str) -> Result<UserId, String> {

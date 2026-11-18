@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.3
+
++ Update dependencies to get clean CVEs.
++ macOS builds now declare a fixed minimum of macOS 11 rather than inheriting whatever SDK is on the runner.
++ Build with Rust 1.100, and declare a minimum supported Rust version of 1.88
+
 ## 1.1.2
 
 + Update `rustls-webpki` to 0.103.16 and `webpki-root-certs` to 1.0.11 to distrust the compromised eMudhra (emSign) intermediate CAs ([advisory](https://emudhra.we-have-a-problem.com/))

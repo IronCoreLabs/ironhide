@@ -71,7 +71,7 @@ fn build_result_table(
             for succeeded_id in results.succeeded() {
                 table.add_row(row![
                     Fw -> succeeded_id.id(),
-                    Fg -> format!("{}", "✔ Removed as admin"),
+                    Fg -> "✔ Removed as admin",
                 ]);
             }
             for failure in results.failed() {

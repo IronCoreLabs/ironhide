@@ -20,6 +20,7 @@ jobs:
       RUST_BACKTRACE: 1
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         build:
           # We test ironhide on a pinned version of Rust, along with the moving
@@ -30,6 +31,7 @@ jobs:
           - pinned-32
           - pinned-arm
           - pinned-arm64
+          - msrv
           - stable
           - beta
           - nightly
@@ -38,19 +40,27 @@ jobs:
           - win-msvc
           - win-gnu
         include:
+          # Only the targets whose linker the runner doesn't already have need cross.
           - build: pinned
             os: ubuntu-24.04
           - build: pinned-musl
             os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
+            cross: true
           - build: pinned-32
             os: ubuntu-24.04
             target: i686-unknown-linux-gnu
+            cross: true
           - build: pinned-arm
             os: ubuntu-24.04
             target: arm-unknown-linux-gnueabihf
+            cross: true
           - build: pinned-arm64
             os: ubuntu-24.04-arm
+          # Keeps rust-version in Cargo.toml honest.
+          - build: msrv
+            os: ubuntu-24.04
+            rust: 1.88.0
           - build: stable
             os: ubuntu-24.04
             rust: stable
@@ -64,7 +74,7 @@ jobs:
             os: macos-15-intel
             target: x86_64-apple-darwin
           - build: macos-arm64
-            os: macos-14
+            os: macos-15
             target: aarch64-apple-darwin
           - build: win-msvc
             os: windows-2022
@@ -72,7 +82,7 @@ jobs:
             os: windows-2022
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - uses: IronCoreLabs/rust-toolchain@v1
         with:
@@ -86,11 +96,27 @@ jobs:
         run: |
           rustup override set $(cat ./rust-toolchain.toml | grep channel | sed 's/channel = "//' | sed 's/"//')-x86_64-gnu
 
+      # The cache key covers the installed toolchains, so install them first. rust-cache keys
+      # on the job id and not the matrix, so `key` keeps the legs sharing a runner and
+      # toolchain from evicting each other's target dir.
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.build }}
+
+      - name: Install cross
+        if: matrix.cross
+        uses: taiki-e/install-action@cross
+
       - name: Use Cross
+        if: matrix.cross
+        shell: bash
+        run: echo "CARGO=cross" >> $GITHUB_ENV
+
+      - name: Set target flags
         if: matrix.target != ''
+        shell: bash
         run: |
-          cargo install cross
-          echo "CARGO=cross" >> $GITHUB_ENV
           echo "TARGET_FLAGS=--target ${{ matrix.target }}" >> $GITHUB_ENV
           echo "TARGET_DIR=./target/${{ matrix.target }}" >> $GITHUB_ENV
 
@@ -110,21 +136,33 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: actions/checkout@v7
+      - uses: IronCoreLabs/rust-toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
       - name: Check formatting
         run: cargo fmt --all --check
 
+  clippy:
+    name: clippy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - uses: IronCoreLabs/rust-toolchain@v1
+        with:
+          components: clippy
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --all-targets -- -D warnings
+
   docs:
     name: Docs
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - uses: IronCoreLabs/rust-toolchain@v1
         with:
           toolchain: stable
